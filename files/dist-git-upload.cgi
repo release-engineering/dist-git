@@ -18,6 +18,8 @@ import smtplib
 import fedmsg
 import fedmsg.config
 
+from ConfigParser import ConfigParser
+
 from email import Header, Utils
 try:
     from email.mime.text import MIMEText
@@ -37,6 +39,9 @@ CACHE_DIR = '/srv/cache/lookaside/pkgs'
 
 # Fedora Packager Group
 PACKAGER_GROUP = 'packager'
+
+# dist git configuration file
+CONFIG_FILE = "/etc/dist-git/dist-git.conf"
 
 def send_error(text):
     print text
@@ -59,17 +64,18 @@ def check_auth(username):
         pass
     return authenticated
 
-def send_email(pkg, checksum, filename, username):
+def send_email(pkg, checksum, filename, username, email_domain, owner_emails):
     text = """A file has been added to the lookaside cache for %(pkg)s:
 
 %(checksum)s  %(filename)s""" % locals()
     msg = MIMEText(text)
     try:
         sender_name = pwd.getpwnam(username)[4]
-        sender_email = '%s@fedoraproject.org' % username
+        sender_email = "{username}@{domain}".format(username=username,
+                                                    domain=email_domain)
     except KeyError:
         sender_name = ''
-        sender_email = 'nobody@fedoraproject.org'
+        sender_email = "nobody@{domain}".format(domain=email_domain)
         syslog.syslog('Unable to find account info for %s (uploading %s)' %
                       (username, filename))
     if sender_name:
@@ -79,8 +85,8 @@ def send_email(pkg, checksum, filename, username):
             sender_name = Header.Header(sender_name, 'utf-8').encode()
             msg.set_charset('utf-8')
     sender = Utils.formataddr((sender_name, sender_email))
-    recipients = ['%s-owner@fedoraproject.org' % pkg,
-                  'scm-commits@lists.fedoraproject.org']
+
+    recipients = owner_emails.replace("$PACKAGE", pkg).split(",")
     msg['Subject'] = 'File %s uploaded to lookaside cache by %s' % (
             filename, username)
     msg['From'] = sender
@@ -92,7 +98,19 @@ def send_email(pkg, checksum, filename, username):
     except:
         syslog.syslog('sending mail for upload of %s failed!' % filename)
 
+def _get_conf(cp, section, option, default):
+    if cp.has_section(section) and cp.has_option(section, option):
+        return cp.get(section, option)
+    return default
+
 def main():
+    config = ConfigParser()
+    config.read(CONFIG_FILE)
+
+    EMAIL_DOMAIN = _get_conf(config, "notifications", "email_domain", "fedoraproject.org")
+    PKG_OWNER_EMAILS = _get_conf(config, "notifications", "pkg_owner_emails",
+                                 "$PACKAGE-owner@fedoraproject.org,scm-commits@lists.fedoraproject.org")
+
     os.umask(002)
 
     username = os.environ.get('SSL_CLIENT_S_DN_CN', None)
@@ -218,7 +236,7 @@ def main():
 
     print >> sys.stderr, '[username=%s] Stored %s (%d bytes)' % (username, dest_file, filesize)
     print 'File %s size %d %s %s stored OK' % (filename, filesize, hash_type.upper(), checksum)
-    send_email(name, checksum, filename, username)
+    send_email(name, checksum, filename, username, EMAIL_DOMAIN, PKG_OWNER_EMAILS)
 
     # Emit a fedmsg message.  Load the config to talk to the fedmsg-relay.
     try:
