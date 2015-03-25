@@ -1,0 +1,4 @@
+{% for username in admin_user_list.stdout.split('\n') %}
+{{ username }}                              
+{% endfor %}                                      
+

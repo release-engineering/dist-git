@@ -1,0 +1,136 @@
+#!/usr/bin/python -t
+#
+# Create an /etc/gitolog/conf/getolog.conf file with acls for dist-git
+#
+# Takes no arguments!
+#
+
+import grp
+import sys
+
+import requests
+
+if __name__ == '__main__':
+    # Get the users in various groups
+    TRUSTED = grp.getgrnam('cvsadmin')[3]
+    ARM = grp.getgrnam('fedora-arm')[3]
+    SPARC = grp.getgrnam('fedora-sparc')[3]
+    IA64 = grp.getgrnam('fedora-ia64')[3]
+    S390 = grp.getgrnam('fedora-s390')[3]
+    PPC = grp.getgrnam('fedora-ppc')[3]
+    PROVEN = grp.getgrnam('provenpackager')[3]
+
+    # Set the active branches to create ACLs for
+    # Give them the git branch eqiv until pkgdb follows suite
+    ACTIVE = {'OLPC-2': 'olpc2', 'OLPC-3': 'olpc3', 'EL-4': 'el4',
+	        'EL-5': 'el5', 'el5': 'el5', 'el6': 'el6', 'EL-6': 'el6',
+            'epel7': 'epel7',
+	        'F-11': 'f11', 'F-12': 'f12', 'F-13': 'f13', 'f14': 'f14', 'f15':
+	        'f15', 'f16': 'f16', 'f17': 'f17', 'f18': 'f18', 'f19': 'f19',
+            'f20': 'f20', 'f21': 'f21', 'f22': 'f22',
+            'devel': 'master', 'master': 'master'}
+
+    # Create a "regex"ish list 0f the reserved branches
+    RESERVED = ['f[0-9][0-9]', 'epel[0-9]', 'epel[0-9][0-9]', 'el[0-9]', 'olpc[0-9]']
+
+    # Read the ACL information from the packageDB
+{% if env == 'staging' %}
+    url = 'https://admin.stg.fedoraproject.org/pkgdb/api/vcs?format=json'
+{% else %}
+    url = 'https://admin.fedoraproject.org/pkgdb/api/vcs?format=json'
+{% endif %}
+    data = requests.get(url).json()
+
+    # Get a list of all the packages
+    acls = data['packageAcls']
+    pkglist = data['packageAcls'].keys()
+    pkglist.sort()
+
+    # sanity check
+    if len(pkglist) < 2500:
+        sys.exit(1)
+
+    # print out our user groups
+    print '@admins = %s' % ' '.join(TRUSTED)
+    print '@provenpackager = %s' % ' '.join(PROVEN)
+    print '@fedora-arm = %s' % ' '.join(ARM)
+    print '@fedora-s390 = %s' % ' '.join(S390)
+    print '@fedora-ppc = %s' % ' '.join(PPC)
+
+    # Get a list of all the groups
+{% if env == 'staging' %}
+    groups = requests.get('https://admin.stg.fedoraproject.org/pkgdb/api/groups?format=json').json()
+{% else %}
+    groups = requests.get('https://admin.fedoraproject.org/pkgdb/api/groups?format=json').json()
+{% endif %}
+    for group in groups['groups']:
+        print '@%s = %s' % (group, ' '.join(grp.getgrnam(group)[3]))
+
+    # Give a little space before moving onto the permissions
+    print ''
+    # print our default permissions
+    print 'repo @all'
+    print '    -   VREF/update-block-push-origin = @all'
+    print '    RWC = @admins @fedora-arm @fedora-s390 @fedora-ppc'
+    print '    R = @all'
+    #print '    RW  private-     = @all'
+    # dont' enable the above until we prevent building for real from private-
+
+    for pkg in pkglist:
+        branchAcls = {} # Check whether we need to set separate per branch acls
+        buffer = [] # Buffer the output per package
+        masters = [] # Folks that have commit to master
+        writers = [] # Anybody that has write access
+
+        # Examine each branch in the package
+        branches = acls[pkg].keys()
+        branches.sort()
+        for branch in branches:
+            if not branch in ACTIVE.keys():
+                continue
+            if 'packager' in acls[pkg][branch]['commit']['groups']:
+                # If the packager group is defined, everyone has access
+                buffer.append('    RWC   %s = @all' % (ACTIVE[branch]))
+                branchAcls.setdefault('@all', []).append((pkg,
+                                                          ACTIVE[branch]))
+                if branch == 'master':
+                    masters.append('@all')
+                if '@all' not in writers:
+                    writers.append('@all')
+            else:
+                # Extract the owners
+                committers = []
+                owners = acls[pkg][branch]['commit']['people']
+                owners.sort()
+                for owner in owners:
+                    committers.append(owner)
+                for group in acls[pkg][branch]['commit']['groups']:
+                    committers.append('@%s' % group)
+                if branch == 'master':
+                    masters.extend(committers)
+
+                # add all the committers to the top writers list
+                for committer in committers:
+                    if not committer in writers:
+                        writers.append(committer)
+
+                # Print the committers to the acl for this package-branch
+                committers = ' '.join(committers)
+                buffer.append('    RWC   %s = %s' %
+                              (ACTIVE[branch], committers))
+                branchAcls.setdefault(committers, []).append((pkg,
+                                                              ACTIVE[branch]))
+
+        print
+        print 'repo %s' % pkg
+        #if len(branchAcls.keys()) == 1:
+        #    acl = branchAcls.keys()[0]
+        #    print '    RW               = %s' % acl
+        #else:
+        print '\n'.join(buffer)
+        for reserved in RESERVED:
+            print '    -    %s = @all' % reserved
+        print '    RWC  refs/tags/ = %s' % ' '.join(writers)
+        if masters:
+            print '    RWC      = %s' % ' '.join(masters)
+    sys.exit(0)
