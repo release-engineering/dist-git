@@ -50,6 +50,10 @@ def _get_conf(cp, section, option, default):
 config = ConfigParser()
 config.read("/etc/dist-git/dist-git.conf")
 PKGDB_URL = _get_conf(config, "acls", "pkgdb_acls_url", "")
+EMAIL_DOMAIN = _get_conf(config, "notifications", "email_domain", "fedoraproject.org")
+PKG_OWNER_EMAILS = _get_conf(config, "notifications", "pkg_owner_emails",
+                             "$PACKAGE-owner@fedoraproject.org,scm-commits@lists.fedoraproject.org")
+
 
 GIT_FOLDER = '/srv/git/rpms/'
 MKBRANCH = '/usr/local/bin/mkbranch'
@@ -179,7 +183,8 @@ def branch_package(pkgname, requested_branches, existing_branches):
     # Create the devel branch if necessary
     exists = os.path.exists(os.path.join(GIT_FOLDER, '%s.git' % pkgname))
     if not exists or 'master' not in existing_branches:
-        _invoke(SETUP_PACKAGE, [pkgname])
+        emails = PKG_OWNER_EMAILS.replace("$PACKAGE", pkgname)
+        _invoke(SETUP_PACKAGE, ["--pkg-owner-emails", emails, "--email-domain", EMAIL_DOMAIN, pkgname])
         if 'master' in requested_branches:
             requested_branches.remove('master')  # SETUP_PACKAGE creates master
 

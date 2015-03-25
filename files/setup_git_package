@@ -8,6 +8,7 @@
 # All local changes will be lost.
 
 
+
 # Figure out the environment we're running in
 GITROOT=/srv/git/rpms
 
@@ -29,41 +30,55 @@ GIT_SSH_URL="ssh://localhost"
 Usage() {
     cat <<EOF
 Usage:
-    $0 <package_name>
+    $0 [OPTIONS] <package_name>
 
     Creates a new repo for <package_name>
 
 Options:
     -h,--help			This help message
+    --email-domain DOMAIN       Email domain for git hooks.maildomain
+    --pkg-owner-emails EMAILS   Comma separated list of emails for
+                                git hooks.mailinglist
 EOF
 }
 
-if [ $# -gt 2 ]; then
+# fail with no arguments
+if [ $# -eq 0 ]; then
     Usage
     exit -1
 fi
 
-# parse the arguments
-while [ -n "$1" ] ; do
-    case "$1" in
-	-h | --help )
-	    Usage
-	    exit 0
-	    ;;
+OPTS=$(getopt -o h -l help -l email-domain: -l pkg-owner-emails: -- "$@")
+if [ $? != 0 ]
+then
+    exit 1
+fi
 
-	* )
-	    PACKAGE="$1"
-	    ;;
+eval set -- "$OPTS"
+
+while true ; do
+    case "$1" in
+        -h | --help) Usage; exit 0;;
+        --email-domain) EMAIL_DOMAIN=$2; shift 2;;
+        --pkg-owner-emails) PKG_OWNER_EMAILS=$2; shift 2;;
+        --) shift; break;;
     esac
-    shift
 done
 
-# I hate shell scripting.  I'm sure the above is totally wrong
-
-# check the arguments
-if [ -z "$PACKAGE" ] ; then
+# fail when more or none packages are specified
+if ! [ $# -eq 1 ]; then
     Usage
     exit -1
+fi
+
+PACKAGE=$1
+
+if [ -z $EMAIL_DOMAIN ]; then
+    EMAIL_DOMAIN=fedoraproject.org
+fi
+
+if [ -z $PKG_OWNER_EMAILS ]; then
+    PKG_OWNER_EMAILS=$PACKAGE-owner@fedoraproject.org,scm-commits@lists.fedoraproject.org
 fi
 
 # Sanity checks before we start doing damage
@@ -95,8 +110,8 @@ mkdir -p $GITROOT/$PACKAGE.git
 pushd $GITROOT/$PACKAGE.git >/dev/null
 git init -q --shared --bare
 echo "$PACKAGE" > description # This is used to figure out who to send mail to.
-git config --add hooks.mailinglist "$PACKAGE-owner@fedoraproject.org,scm-commits@lists.fedoraproject.org"
-git config --add hooks.maildomain fedoraproject.org
+git config --add hooks.mailinglist $PKG_OWNER_EMAILS
+git config --add hooks.maildomain $EMAIL_DOMAIN
 popd >/dev/null
 
 # Now clone that repo and create the .gitignore and sources file
