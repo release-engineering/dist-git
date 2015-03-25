@@ -32,8 +32,7 @@ import subprocess
 import time
 
 import requests
-
-import fedmsg
+from ConfigParser import ConfigParser
 
 # Do some off-the-bat configuration of fedmsg.
 #   1) since this is a one-off script and not a daemon, it needs to connect
@@ -43,16 +42,14 @@ import fedmsg
 #      read access to.  Contrast that with the 'scm' certificate which
 #      everyone in the 'packager' group has access to.
 
-config = fedmsg.config.load_config([], None)
-config['active'] = True
-config['endpoints']['relay_inbound'] = config['relay_inbound']
-fedmsg.init(name='relay_inbound', cert_prefix='shell', **config)
+def _get_conf(cp, section, option, default):
+    if cp.has_section(section) and cp.has_option(section, option):
+        return cp.get(section, option)
+    return default
 
-{% if env == 'staging' %}
-PKGDB_URL = 'https://admin.stg.fedoraproject.org/pkgdb'
-{% else %}
-PKGDB_URL = 'https://admin.fedoraproject.org/pkgdb'
-{% endif %}
+config = ConfigParser()
+config.read("/etc/dist-git/dist-git.conf")
+PKGDB_URL = _get_conf(config, "acls", "pkgdb_acls_url", "")
 
 GIT_FOLDER = '/srv/git/rpms/'
 MKBRANCH = '/usr/local/bin/mkbranch'
@@ -122,15 +119,6 @@ def _create_branch(pkgname, branch, existing_branches):
 
     try:
         _invoke(MKBRANCH, [branch, pkgname])
-        fedmsg.publish(
-            topic='branch',
-            modname='git',
-            msg=dict(
-                agent='pkgdb',
-                name=pkgname,
-                branch=branch,
-            ),
-        )
     except ProcessError, e:
         if e.returnCode == 255:
             # This is a warning, not an error
@@ -145,9 +133,7 @@ def pkgdb_pkg_branch():
     :return: a dict[pkg_name] = [pkg_branches]
     :rtype: dict
     """
-    url = '%s/api/vcs' % PKGDB_URL
-    req = requests.get(url, params={'format': 'json'})
-    data = req.json()
+    data = requests.get(PKGDB_URL).json()
 
     output = {}
     for pkg in data['packageAcls']:
@@ -196,15 +182,6 @@ def branch_package(pkgname, requested_branches, existing_branches):
         _invoke(SETUP_PACKAGE, [pkgname])
         if 'master' in requested_branches:
             requested_branches.remove('master')  # SETUP_PACKAGE creates master
-        fedmsg.publish(
-            topic='branch',
-            modname='git',
-            msg=dict(
-                agent='pkgdb',
-                name=pkgname,
-                branch='master',
-            ),
-        )
 
     # Create all the required branches for the package
     # Use the translated branch name until pkgdb falls inline
