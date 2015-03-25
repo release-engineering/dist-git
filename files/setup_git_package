@@ -24,7 +24,6 @@ fi
 VERBOSE=0
 TEST=
 IGNORE=
-AUTHOR="Fedora Release Engineering <rel-eng@lists.fedoraproject.org>"
 GIT_SSH_URL="ssh://localhost"
 
 Usage() {
@@ -61,6 +60,7 @@ while true ; do
         -h | --help) Usage; exit 0;;
         --email-domain) EMAIL_DOMAIN=$2; shift 2;;
         --pkg-owner-emails) PKG_OWNER_EMAILS=$2; shift 2;;
+        --default-branch-author) AUTHOR=$2; shift 2;;
         --) shift; break;;
     esac
 done
@@ -79,6 +79,10 @@ fi
 
 if [ -z $PKG_OWNER_EMAILS ]; then
     PKG_OWNER_EMAILS=$PACKAGE-owner@fedoraproject.org,scm-commits@lists.fedoraproject.org
+fi
+
+if [ -z $AUTHOR ]; then
+    AUTHOR="Fedora Release Engineering <rel-eng@lists.fedoraproject.org>"
 fi
 
 # Sanity checks before we start doing damage

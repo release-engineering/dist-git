@@ -30,6 +30,7 @@ import multiprocessing.pool
 import os
 import subprocess
 import time
+import pipes
 
 import requests
 from ConfigParser import ConfigParser
@@ -53,6 +54,8 @@ PKGDB_URL = _get_conf(config, "acls", "pkgdb_acls_url", "")
 EMAIL_DOMAIN = _get_conf(config, "notifications", "email_domain", "fedoraproject.org")
 PKG_OWNER_EMAILS = _get_conf(config, "notifications", "pkg_owner_emails",
                              "$PACKAGE-owner@fedoraproject.org,scm-commits@lists.fedoraproject.org")
+DEFAULT_BRANCH_AUTHOR = _get_conf(config, "git", "default_branch_author",
+                             "Fedora Release Engineering <rel-eng@lists.fedoraproject.org>")
 
 
 GIT_FOLDER = '/srv/git/rpms/'
@@ -184,7 +187,10 @@ def branch_package(pkgname, requested_branches, existing_branches):
     exists = os.path.exists(os.path.join(GIT_FOLDER, '%s.git' % pkgname))
     if not exists or 'master' not in existing_branches:
         emails = PKG_OWNER_EMAILS.replace("$PACKAGE", pkgname)
-        _invoke(SETUP_PACKAGE, ["--pkg-owner-emails", emails, "--email-domain", EMAIL_DOMAIN, pkgname])
+        _invoke(SETUP_PACKAGE, ["--pkg-owner-emails", pipes.quote(emails),
+                                "--email-domain", pipes.quote(EMAIL_DOMAIN),
+                                "--default-branch-author", pipes.quote(DEFAULT_BRANCH_AUTHOR),
+                                pkgname])
         if 'master' in requested_branches:
             requested_branches.remove('master')  # SETUP_PACKAGE creates master
 
