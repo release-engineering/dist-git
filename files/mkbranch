@@ -30,7 +30,6 @@ IGNORE=
 BRANCH=""
 PACKAGES=""
 SRC_BRANCH="master"
-AUTHOR="Fedora Release Engineering <rel-eng@lists.fedoraproject.org>"
 
 Usage() {
     cat <<EOF
@@ -75,6 +74,11 @@ while [ -n "$1" ] ; do
         BRANCH=$1/master
         ;;
 
+    --default-branch-author )
+        shift
+        AUTHOR=$1
+        ;;
+
     * )
         if [ -z "$BRANCH" ] ; then
         BRANCH="$1"
@@ -90,6 +94,10 @@ done
 if [ -z "$BRANCH" -o -z "$PACKAGES" ] ; then
     Usage
     exit -1
+fi
+
+if [ -z $AUTHOR ]; then
+    AUTHOR="Fedora Release Engineering <rel-eng@lists.fedoraproject.org>"
 fi
 
 

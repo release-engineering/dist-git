@@ -125,7 +125,8 @@ def _create_branch(pkgname, branch, existing_branches):
        return
 
     try:
-        _invoke(MKBRANCH, [branch, pkgname])
+        _invoke(MKBRANCH, ["--default-branch-author", pipes.quote(DEFAULT_BRANCH_AUTHOR),
+                           branch, pkgname])
     except ProcessError, e:
         if e.returnCode == 255:
             # This is a warning, not an error
