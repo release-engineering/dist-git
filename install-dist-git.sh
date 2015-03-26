@@ -7,15 +7,15 @@ systemctl stop firewalld
 
 
 ### ENV ###
-DISTGITHOME="/srv/git/"
-
+DISTGITHOME="/var/lib/dist-git/git/"
+cd /home/adam
 ### COMMON CONFIG ###
 
 echo ACTION: configuration
 mkdir /etc/dist-git/
 chmod 0755 /etc/dist-git/
 cp files/dist_git_main.conf /etc/dist-git/dist-git.conf
-mod 0755 /etc/dist-git/dist-git.conf
+chmod 0755 /etc/dist-git/dist-git.conf
 
 echo ACTION: install all the packages:
 yum install -y git httpd gitolite3 cgit perl-Sys-Syslog git-daemon python-requests /usr/sbin/semanage
@@ -41,15 +41,19 @@ chown :packager $DISTGITHOME/rpms
 chmod 2775 $DISTGITHOME/rpms
 
 echo ACTION: selinux context
-semanage fcontext -a -t httpd_git_content_t "/srv/git(/.*)?"
-restorecon -R /srv/git/
+semanage fcontext -a -t httpd_git_content_t "/var/lib/dist-git/git(/.*)?"
+restorecon -R /var/lib/dist-git/git/
+
+echo ACTION: dist git script dir
+mkdir /usr/share/dist-git
+chmod 755 /usr/share/dist-git
 
 echo ACTION: dist git scripts
 for SCRIPT in setup_git_package mkbranch pkgdb2-clone pkgdb_sync_git_branches.py
 do
-    cp files/$SCRIPT /usr/local/bin/
-    chown root:root /usr/local/bin/$SCRIPT
-    chmod 0755 /usr/local/bin/$SCRIPT
+    cp files/$SCRIPT /usr/share/dist-git/
+    chown root:root /usr/share/dist-git/$SCRIPT
+    chmod 0755 /usr/share/dist-git/$SCRIPT
 done
 
 echo ACTION: httpd config for dist git
@@ -99,12 +103,12 @@ echo ACTION: update-block-push-origin symlink
 ln -s /usr/share/git-core/update-block-push-origin /etc/gitolite/local/VREF/update-block-push-origin
 
 echo ACTION: genacls.sh script
-cp files/genacls.sh /usr/local/bin/
-chmod 0755 /usr/local/bin/genacls.sh
+cp files/genacls.sh /usr/share/dist-git/
+chmod 0755 /usr/share/dist-git/genacls.sh
 
 echo ACTION: genacls.pkgdb script
-cp files/genacls.pkgdb /usr/local/bin/
-chmod 0755 /usr/local/bin/genacls.pkgdb
+cp files/genacls.pkgdb /usr/share/dist-git/
+chmod 0755 /usr/share/dist-git/genacls.pkgdb
 
 echo ACTION: genacl daily cron job
 # tbd
@@ -141,8 +145,8 @@ echo ACTION: make pkgs list script
 touch $DISTGITHOME/pkgs-git-repos-list
 chown apache:apache $DISTGITHOME/pkgs-git-repos-list
 chmod 0644 $DISTGITHOME/pkgs-git-repos-list
-cp files/make-cgit-pkgs-list.sh /usr/local/bin/
-chmod 0755 /usr/local/bin/make-cgit-pkgs-list.sh
+cp files/make-cgit-pkgs-list.sh /usr/share/dist-git/
+chmod 0755 /usr/share/dist-git/make-cgit-pkgs-list.sh
 # tbd: cron job
 
 # cgit/clean_lock_cron
@@ -158,15 +162,15 @@ chmod 0644 /usr/lib/systemd/system/git@.service
 ### LOOKASIDE ###
 
 echo ACTION: lookaside cache
-mkdir -p /srv/cache/lookaside/pkgs
-chown apache:apache /srv/cache/lookaside/pkgs
+mkdir -p /var/lib/dist-git/cache/lookaside/pkgs
+chown apache:apache /var/lib/dist-git/cache/lookaside/pkgs
 
 cp files/lookaside.conf /etc/httpd/conf.d/dist-git/
 cp files/lookaside-upload.conf /etc/httpd/conf.d/dist-git/
 
-mkdir /srv/web
-cp files/dist-git-upload.cgi /srv/web/upload.cgi
-chmod 0755 /srv/web/upload.cgi
+mkdir /var/lib/dist-git/web
+cp files/dist-git-upload.cgi /var/lib/dist-git/web/upload.cgi
+chmod 0755 /var/lib/dist-git/web/upload.cgi
 
 
 ### OTHERS ###
@@ -197,13 +201,13 @@ USER="frank"
 RSA="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC68iXNohFGki3huodI6FJi4ivRqkt8Dx/XWel8qmMuqezCoWNQN9w1mNvKaIfPGZCjBtLcKawNgliYvrOpBydHIgqMwXkw4rv3NBPDHKw5XVS4YsSZVdgE5JaEcLR85ahU4r25bfBP/Av0os0TkUzO9ij/6wNXGWpLs1611B2zI4IB0xpp9CVY4aEU3zgbDCHEMSqJZ39M4mJD2iitXpMF/yhvf4Z7jRWa2539HUXVvPp72rCQCgyvhJdcagQBHPWGT8gwipIL+RapF2Hyz+t8/zbQh1L+fwIL2w1tzSjq5SkdPlrNJjdW4XD56aUItRgjZJzwX12wLJY+CFwYqfTP frank@localhost.localdomain"
 
 mkdir /home/$USER/.ssh
-echo "command=\"HOME=/srv/git/ /usr/share/gitolite3/gitolite-shell $USER\",no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty $RSA" > /home/$USER/.ssh/authorized_keys
+echo "command=\"HOME=/var/lib/dist-git/git/ /usr/share/gitolite3/gitolite-shell $USER\",no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty $RSA" > /home/$USER/.ssh/authorized_keys
 chown -R $USER:$USER /home/$USER/.ssh
 usermod -aG packager $USER
 
 # packages
-/usr/local/bin/genacls.sh
-/usr/local/bin/make-cgit-pkgs-list.sh
+/usr/share/dist-git/genacls.sh
+/usr/share/dist-git/make-cgit-pkgs-list.sh
 
 
 
