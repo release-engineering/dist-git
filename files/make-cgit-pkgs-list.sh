@@ -7,8 +7,8 @@
 #
 newfile=`mktemp`
 
-cd /srv/git/rpms
+cd /var/lib/dist-git/git/rpms
 ls > $newfile
-mv -Z $newfile /srv/git/pkgs-git-repos-list
-chown apache:apache /srv/git/pkgs-git-repos-list
-chmod 644 /srv/git/pkgs-git-repos-list
+mv -Z $newfile /var/lib/dist-git/git/pkgs-git-repos-list
+chown apache:apache /var/lib/dist-git/git/pkgs-git-repos-list
+chmod 644 /var/lib/dist-git/git/pkgs-git-repos-list

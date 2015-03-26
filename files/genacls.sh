@@ -10,7 +10,7 @@ cd $TEMPDIR
 if /usr/local/bin/genacls.pkgdb > gitolite.conf ; then
     mv gitolite.conf /etc/gitolite/conf/
     chown gen-acls:gen-acls -R /etc/gitolite/conf/
-    HOME=/srv/git /usr/bin/gitolite compile
+    HOME=/var/lib/dist-git/git /usr/bin/gitolite compile
 fi
 cd /
 rm -rf $TEMPDIR

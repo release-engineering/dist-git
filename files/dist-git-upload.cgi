@@ -32,10 +32,10 @@ import hashlib
 BUFFER_SIZE = 4096
 
 # We check modules exist from this dircetory
-GITREPO = '/srv/git/rpms'
+GITREPO = '/var/lib/dist-git/git/rpms'
 
 # Lookaside cache directory
-CACHE_DIR = '/srv/cache/lookaside/pkgs'
+CACHE_DIR = '/var/lib/dist-git/cache/lookaside/pkgs'
 
 # Fedora Packager Group
 PACKAGER_GROUP = 'packager'
@@ -174,7 +174,7 @@ def main():
         hash_dir = os.path.join(module_dir, filename, checksum)
         msgpath = os.path.join(name, module_dir, filename, checksum, filename)
 
-    unwanted_prefix = '/srv/cache/lookaside/pkgs/'
+    unwanted_prefix = '/var/lib/dist-git/cache/lookaside/pkgs/'
     if msgpath.startswith(unwanted_prefix):
         msgpath = msgpath[len(unwanted_prefix):]
 

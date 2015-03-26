@@ -67,5 +67,5 @@ mimetype.svg=image/svg+xml
 ##     displayed under a section heading
 ## PPS: This list could be kept in a different file (e.g. '/etc/cgitrepos')
 ##      and included like this:
-project-list=/srv/git/pkgs-git-repos-list
-scan-path=/srv/git/rpms/
+project-list=/var/lib/dist-git/git/pkgs-git-repos-list
+scan-path=/var/lib/dist-git/git/rpms/

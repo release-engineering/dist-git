@@ -58,7 +58,7 @@ DEFAULT_BRANCH_AUTHOR = _get_conf(config, "git", "default_branch_author",
                              "Fedora Release Engineering <rel-eng@lists.fedoraproject.org>")
 
 
-GIT_FOLDER = '/srv/git/rpms/'
+GIT_FOLDER = '/var/lib/dist-git/git/rpms/'
 MKBRANCH = '/usr/local/bin/mkbranch'
 SETUP_PACKAGE = '/usr/local/bin/setup_git_package'
 
