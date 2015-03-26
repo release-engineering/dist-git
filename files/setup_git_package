@@ -47,7 +47,7 @@ if [ $# -eq 0 ]; then
     exit -1
 fi
 
-OPTS=$(getopt -o h -l help -l email-domain: -l pkg-owner-emails: -- "$@")
+OPTS=$(getopt -o h -l help -l email-domain: -l pkg-owner-emails: -l default-branch-author: -- "$@")
 if [ $? != 0 ]
 then
     exit 1
