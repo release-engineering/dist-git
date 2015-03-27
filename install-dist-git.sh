@@ -49,9 +49,9 @@ mkdir /usr/share/dist-git
 chmod 755 /usr/share/dist-git
 
 echo ACTION: dist git scripts
-for SCRIPT in setup_git_package mkbranch pkgdb2-clone pkgdb_sync_git_branches.py
+for SCRIPT in git_package.sh git_branch.sh pkgdb2-clone pkgdb_sync_git_branches.py
 do
-    cp files/$SCRIPT /usr/share/dist-git/
+    cp files/scripts/$SCRIPT /usr/share/dist-git/
     chown root:root /usr/share/dist-git/$SCRIPT
     chmod 0755 /usr/share/dist-git/$SCRIPT
 done
@@ -59,7 +59,7 @@ done
 echo ACTION: httpd config for dist git
 cp files/git-smart-http.conf /etc/httpd/conf.d/dist-git/
 
-echo ACTION: cron job pkgdb_sync_git_branches
+echo ACTION: cron job pkgdb_pkgdb_sync_git_branches
 # tbd
 
 
@@ -102,13 +102,13 @@ ln -s /etc/gitolite/ $DISTGITHOME/.gitolite
 echo ACTION: update-block-push-origin symlink
 ln -s /usr/share/git-core/update-block-push-origin /etc/gitolite/local/VREF/update-block-push-origin
 
-echo ACTION: genacls.sh script
-cp files/genacls.sh /usr/share/dist-git/
-chmod 0755 /usr/share/dist-git/genacls.sh
+echo ACTION: dist_git_sync.sh script
+cp files/scripts/dist_git_sync.sh /usr/share/dist-git/
+chmod 0755 /usr/share/dist-git/dist_git_sync.sh
 
-echo ACTION: genacls.pkgdb script
-cp files/genacls.pkgdb /usr/share/dist-git/
-chmod 0755 /usr/share/dist-git/genacls.pkgdb
+echo ACTION: pkgdb_gen_gitolite_conf.py script
+cp files/scripts/pkgdb_gen_gitolite_conf.py /usr/share/dist-git/
+chmod 0755 /usr/share/dist-git/pkgdb_gen_gitolite_conf.py
 
 echo ACTION: genacl daily cron job
 # tbd
@@ -145,8 +145,8 @@ echo ACTION: make pkgs list script
 touch $DISTGITHOME/pkgs-git-repos-list
 chown apache:apache $DISTGITHOME/pkgs-git-repos-list
 chmod 0644 $DISTGITHOME/pkgs-git-repos-list
-cp files/make-cgit-pkgs-list.sh /usr/share/dist-git/
-chmod 0755 /usr/share/dist-git/make-cgit-pkgs-list.sh
+cp files/scripts/gen_cgit_list.sh /usr/share/dist-git/
+chmod 0755 /usr/share/dist-git/gen_cgit_list.sh
 # tbd: cron job
 
 # cgit/clean_lock_cron
@@ -206,8 +206,8 @@ chown -R $USER:$USER /home/$USER/.ssh
 usermod -aG packager $USER
 
 # packages
-/usr/share/dist-git/genacls.sh
-/usr/share/dist-git/make-cgit-pkgs-list.sh
+/usr/share/dist-git/dist_git_sync.sh
+/usr/share/dist-git/gen_cgit_list.sh
 
 
 

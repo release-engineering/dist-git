@@ -59,8 +59,8 @@ DEFAULT_BRANCH_AUTHOR = _get_conf(config, "git", "default_branch_author",
 
 
 GIT_FOLDER = '/var/lib/dist-git/git/rpms/'
-MKBRANCH = '/usr/share/dist-git/mkbranch'
-SETUP_PACKAGE = '/usr/share/dist-git/setup_git_package'
+MKBRANCH = '/usr/share/dist-git/git_branch.sh'
+SETUP_PACKAGE = '/usr/share/dist-git/git_package.sh'
 
 THREADS = 20
 VERBOSE = False

@@ -1,1 +1,1 @@
-02 10 * * * root /usr/share/dist-git/genacls.sh
+02 10 * * * root /usr/share/dist-git/dist_git_sync.sh

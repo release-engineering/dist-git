@@ -140,7 +140,7 @@ def main(args):
                       "name, " + src_branchname + " -> " + dest_branchname
             else:
                 if process_package(pkgdb, key, src_branchname, dest_branchname):
-                    subprocess.call(["mkbranch",
+                    subprocess.call(["git_branch.sh",
                                      "-s",
                                      NEW_EPEL_SOURCE_BRANCH,
                                      "epel" + NEW_EPEL_VERSION,
