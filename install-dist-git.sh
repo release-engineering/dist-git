@@ -21,7 +21,7 @@ echo ACTION: install all the packages:
 yum install -y git httpd gitolite3 cgit perl-Sys-Syslog git-daemon python-requests /usr/sbin/semanage
 
 echo ACTION: httpd config dir:
-echo "include \"conf.d/dist-git/*.conf\"" > /etc/httpd/conf.d/dist-git.conf
+cp files/dist-git.conf /etc/httpd/conf.d/dist-git.conf
 mkdir /etc/httpd/conf.d/dist-git
 
 # echo ACTION: install the mod_ssl config:
