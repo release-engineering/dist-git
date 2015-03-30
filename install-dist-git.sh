@@ -145,8 +145,8 @@ echo ACTION: make pkgs list script
 touch $DISTGITHOME/pkgs-git-repos-list
 chown apache:apache $DISTGITHOME/pkgs-git-repos-list
 chmod 0644 $DISTGITHOME/pkgs-git-repos-list
-cp files/scripts/gen_cgit_list.sh /usr/share/dist-git/
-chmod 0755 /usr/share/dist-git/gen_cgit_list.sh
+cp files/scripts/cgit_pkg_list.sh /usr/share/dist-git/
+chmod 0755 /usr/share/dist-git/cgit_pkg_list.sh
 # tbd: cron job
 
 # cgit/clean_lock_cron
@@ -169,7 +169,7 @@ cp files/lookaside.conf /etc/httpd/conf.d/dist-git/
 cp files/lookaside-upload.conf /etc/httpd/conf.d/dist-git/
 
 mkdir /var/lib/dist-git/web
-cp files/dist-git-upload.cgi /var/lib/dist-git/web/upload.cgi
+cp files/scripts/dist-git-upload.cgi /var/lib/dist-git/web/upload.cgi
 chmod 0755 /var/lib/dist-git/web/upload.cgi
 
 
@@ -207,7 +207,7 @@ usermod -aG packager $USER
 
 # packages
 /usr/share/dist-git/dist_git_sync.sh
-/usr/share/dist-git/gen_cgit_list.sh
+/usr/share/dist-git/cgit_pkg_list.sh
 
 
 
