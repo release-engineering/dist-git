@@ -1,5 +1,5 @@
 Name:		dist-git
-Version:	1.0
+Version:	0.2
 Release:	1%{?dist}
 Summary:	Package source version control system
 
@@ -95,4 +95,7 @@ cp -a configs/systemd/git@.service %{buildroot}%{_libdir}/systemd/system/git@.se
 
 
 %changelog
+* Mon Mar 30 2015 Adam Samalik <asamalik@redhat.com> 0.2-1
+- new package built with tito
+
 
