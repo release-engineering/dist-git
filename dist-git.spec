@@ -25,7 +25,7 @@ Lorem ipsum dolor sit amet
 
 
 %prep
-%setup -q -c
+%setup -q
 
 
 %build
@@ -56,10 +56,11 @@ cp -a scripts/httpd/upload.cgi %{buildroot}%{_sharedstatedir}/dist-git/web/
 cp -a configs/cgit/cgitrc %{buildroot}%{_sysconfdir}/
 
 # FIXME: I can't override other configs!
+install -d  %{buildroot}%{_sysconfdir}/gitolite
 cp -a configs/gitolite/gitolite.rc %{buildroot}%{_sysconfdir}/gitolite/
 
 # FIXME: I can't override people's configs!
-cp -a configs/systemd/git@.service %{buildroot}%{_libdir}/systemd/system/git@.service
+cp -a configs/systemd/git@.service %{buildroot}%{_libdir}/systemd/system/
 
 
 %files
