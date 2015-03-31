@@ -129,7 +129,7 @@ git push -q origin master
 popd >/dev/null
 
 # Place the gitolite update hook in place since we're not using our own
-ln -s /etc/gitolite/hooks/common/update $GITROOT/$PACKAGE.git/hooks/update
+ln -s /var/lib/dist-git/gitolite/hooks/common/update $GITROOT/$PACKAGE.git/hooks/update
 
 
 # Setup our post-receive hooks

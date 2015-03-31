@@ -16,6 +16,7 @@ Requires:	perl-Sys-Syslog
 Requires:	git-daemon
 Requires:	python-requests
 Requires:	/usr/sbin/semanage
+Requires(pre):  shadow-utils
 
 %description
 Lorem ipsum dolor sit amet
@@ -33,65 +34,104 @@ Lorem ipsum dolor sit amet
 
 
 %install
+
+# ------------------------------------------------------------------------------
+# /usr/share/ .... static files
+# ------------------------------------------------------------------------------
 install -d %{buildroot}%{_datadir}/dist-git
+
 cp -a scripts/dist-git/* %{buildroot}%{_datadir}/dist-git/
 
+
+# ------------------------------------------------------------------------------
+# /etc/ .......... config files
+# ------------------------------------------------------------------------------
 install -d %{buildroot}%{_sysconfdir}/dist-git
-cp -a configs/dist-git/dist-git.conf %{buildroot}%{_sysconfdir}/dist-git/
-
 install -d %{buildroot}%{_sysconfdir}/httpd/conf.d/dist-git
-cp -a configs/httpd/dist-git.conf %{buildroot}%{_sysconfdir}/httpd/
-cp -a configs/httpd/ssl.conf %{buildroot}%{_sysconfdir}/httpd/
-cp -a configs/httpd/dist-git/* %{buildroot}%{_sysconfdir}/httpd/conf.d/dist-git/
-
 install -d %{buildroot}%{_sysconfdir}/cron.d/dist-git
-cp -a configs/cron/* %{buildroot}%{_sysconfdir}/cron.d/dist-git/
 
+cp -a configs/dist-git/dist-git.conf  %{buildroot}%{_sysconfdir}/dist-git/
+cp -a configs/gitolite/gitolite.rc    %{buildroot}%{_sysconfdir}/dist-git/
+cp -a configs/httpd/dist-git.conf     %{buildroot}%{_sysconfdir}/httpd/
+cp -a configs/httpd/ssl.conf          %{buildroot}%{_sysconfdir}/httpd/
+cp -a configs/httpd/dist-git/* %{buildroot}%{_sysconfdir}/httpd/conf.d/dist-git/
+cp -a configs/cron/*           %{buildroot}%{_sysconfdir}/cron.d/dist-git/
+
+
+# ------------------------------------------------------------------------------
+# /var/lib/ ...... dynamic persistent files
+# ------------------------------------------------------------------------------
 install -d %{buildroot}%{_sharedstatedir}/dist-git/git/rpms
+install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/conf
+install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/logs
+install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/local/VREF
+install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/hooks/common/update
 install -d %{buildroot}%{_sharedstatedir}/dist-git/cache/lookaside/pkgs
 install -d %{buildroot}%{_sharedstatedir}/dist-git/web
+
 cp -a scripts/httpd/upload.cgi %{buildroot}%{_sharedstatedir}/dist-git/web/
 
-# FIXME: I can't override other configs!
-cp -a configs/cgit/cgitrc %{buildroot}%{_sysconfdir}/
-
-# FIXME: I can't override other configs!
-install -d  %{buildroot}%{_sysconfdir}/gitolite
-cp -a configs/gitolite/gitolite.rc %{buildroot}%{_sysconfdir}/gitolite/
-
-# FIXME: I can't override people's configs!
-cp -a configs/systemd/git@.service %{buildroot}%{_libdir}/systemd/system/
 
 
 %files
-%dir %{_datadir}/dist-git
-%attr (755, -, -) %{_datadir}/dist-git
+
+# ------------------------------------------------------------------------------
+# /usr/share/ .... static files
+# ------------------------------------------------------------------------------
 %attr (755, -, -) %{_datadir}/dist-git/*
 
-%dir %{_sysconfdir}/dist-git
-%attr (755, -, -) %{_sysconfdir}/dist-git
 
-%config(noreplace) %{_sysconfdir}/dist-git/dist-git.conf
-%attr (755, -, -) %{_sysconfdir}/dist-git/dist-git.conf
+# ------------------------------------------------------------------------------
+# /etc/ .......... config files
+# ------------------------------------------------------------------------------
+%config     %{_sysconfdir}/dist-git/dist-git.conf
+%config     %{_sysconfdir}/dist-git/gitolite.rc
+%config     %{_sysconfdir}/httpd/dist-git.conf
+%config     %{_sysconfdir}/httpd/ssl.conf
+%config     %{_sysconfdir}/httpd/conf.d/dist-git/*
+%config     %{_sysconfdir}/cron.d/dist-git/cgit_pkg_list.cron
+%config     %{_sysconfdir}/cron.d/dist-git/dist_git_sync.cron
 
-%dir %{_sysconfdir}/httpd/conf.d/dist-git
-%config(noreplace) %{_sysconfdir}/httpd/conf.d/dist-git.conf
 
-%config(noreplace) %{_sysconfdir}/cron.d/dist-git/cgit_pkg_list.cron
-%config(noreplace) %{_sysconfdir}/cron.d/dist-git/dist_git_sync.cron
+# ------------------------------------------------------------------------------
+# /var/lib/ ...... dynamic persistent files
+# ------------------------------------------------------------------------------
+%attr (2775, -, packager)         %{_sharedstatedir}/dist-git/git/rpms
+%attr (755, gen-acls, gen-acls)   %{_sharedstatedir}/dist-git/gitolite/conf
+%attr (775, gen-acls, packager)   %{_sharedstatedir}/dist-git/gitolite/logs
+%attr (775, gen-acls, packager)   %{_sharedstatedir}/dist-git/gitolite/local/VREF
+%attr (770, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks
+%attr (770, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks/common
+%attr (755, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks/common/update
+%attr (755, apache, apache)       %{_sharedstatedir}/dist-git/web/upload.cgi
+%attr (755, apache, apache)       %{_sharedstatedir}/dist-git/cache/lookaside/pkgs
 
-%dir %{_sharedstatedir}/dist-git/git
-%attr (755, -, -) %{_sharedstatedir}/dist-git/git
 
-%dir %{_sharedstatedir}/dist-git/git/rpms
-%attr (2775, -, packager) %{_sharedstatedir}/dist-git/git/rpms
 
-%dir %{_sharedstatedir}/dist-git/cache/lookaside/pkgs
-%attr (755, apache, apache) %{_sharedstatedir}/dist-git/cache/lookaside/pkgs
+%pre
+getent group packager > /dev/null || \
+    groupadd -r packager
 
-%dir %{_sharedstatedir}/dist-git/web
-%attr (755, apache, apache) %{_sharedstatedir}/dist-git/web
-%attr (755, apache, apache) %{_sharedstatedir}/dist-git/web/upload.cgi
+getent group gen-acls > /dev/null || \
+    groupadd -r gen-acls
+
+getent passed gen-acls > /dev/null || \
+    useradd -r -g gen-acls -G packager -s /bin/bash \
+            -d %{buildroot}%{_sharedstatedir}/dist-git/git/ gen-acls
+
+
+%post
+ln -s %{_sysconfdir}/dist-git/gitolite.rc \
+      %{_sharedstatedir}/dist-git/git/.gitolite.rc
+
+ln -s %{_sharedstatedir}/dist-git/gitolite \
+      %{_sharedstatedir}/dist-git/git/.gitolite
+
+ln -s %{_sharedstatedir}/dist-git/git/rpms \
+      %{_sharedstatedir}/dist-git/git/repositories
+
+ln -s %{_datadir}/git-core/update-block-push-origin \
+      %{_sharedstatedir}/dist-git/gitolite/local/VREF/update-block-push-origin
 
 
 
