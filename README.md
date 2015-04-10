@@ -1,3 +1,5 @@
+**This project is under developement. Please do not use it in production. Ideas, issues and patches are very welcome.**
+
 Dist Git
 ========
 
