@@ -19,27 +19,33 @@ User cat interact with the Dist Git server using client probably based on [rpkg]
 ### Package Database communication
 The following is an example JSON data comming from the Package Database which would create two packages: *copr-frontend* and *copr-backend*. The first package would be for Fedora 21 only and permissions to commit into this repo would be granted to users *mirek*, *adam* and anyone in the group *provenpackager*. The *copr-backend* package would be for Fedora 21 and CentOS 7. The permissions would be processed the same way as for the first package.
 
-    "packageAcls": {
-        "copr-frontend": {
-            "fedora-21": {
-                "commit": {
-                    "groups": ["provenpackager"],
-                    "people": ["mirek", "adam"]
-                }
+```JSON
+"packageAcls": {
+    "copr-frontend": {
+        "fedora-21": {
+            "commit": {
+                "groups": ["provenpackager"],
+                "people": ["mirek", "adam"]
+            }
+        }
+    },
+    "copr-backend": {
+        "fedora-21": {
+            "commit": {
+                "groups": ["provenpackager"],
+                "people": ["mirek", "valentin"]
             }
         },
-        "copr-backend": {
-            "fedora-21": {
-                "commit": {
-                    "groups": ["provenpackager"],
-                    "people": ["mirek", "valentin"]
-                }
-            }
-            "centos-7": {
-                "commit": {
-                    "groups": ["provenpackager"],
-                    "people": ["mirek", "valentin"]
-                }
+        "centos-7": {
+            "commit": {
+                "groups": ["provenpackager"],
+                "people": ["mirek", "valentin"]
             }
         }
     }
+}
+```
+
+The final result would consist of two package repositories:
+- *copr-frontend* with branches *master* and *fedora-21*
+- *copr-backend* with three branches *master*, *fedora-21* and *centos-7*
