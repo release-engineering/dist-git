@@ -1,7 +1,7 @@
 [Unit]
 Description=Git Repositories Server Daemon
 Documentation=man:git-daemon(1)
-Wants=git.socket
+Wants=dist-git.socket
 
 [Service]
 User=nobody
