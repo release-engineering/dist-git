@@ -17,13 +17,11 @@ Requires:	perl-Sys-Syslog
 Requires:	git-daemon
 Requires:	python-requests
 Requires:	/usr/sbin/semanage
+Requires:       mod_ssl
 Requires(pre):  shadow-utils
 
 %description
 Lorem ipsum dolor sit amet
-
-# todo:
-#   add group packager
 
 
 %prep
@@ -67,8 +65,8 @@ mkdir -p   %{buildroot}%{_unitdir}
 
 cp -a configs/dist-git/dist-git.conf  %{buildroot}%{_sysconfdir}/dist-git/
 cp -a configs/gitolite/gitolite.rc    %{buildroot}%{_sysconfdir}/dist-git/
-cp -a configs/httpd/dist-git.conf     %{buildroot}%{_sysconfdir}/httpd/
-cp -a configs/httpd/ssl.conf          %{buildroot}%{_sysconfdir}/httpd/
+cp -a configs/httpd/dist-git.conf     %{buildroot}%{_sysconfdir}/httpd/conf.d/
+cp -a configs/httpd/ssl.conf.example  %{buildroot}%{_sysconfdir}/httpd/conf.d/
 cp -a configs/httpd/dist-git/* %{buildroot}%{_sysconfdir}/httpd/conf.d/dist-git/
 cp -a configs/cron/*           %{buildroot}%{_sysconfdir}/cron.d/dist-git/
 cp -a configs/systemd/*        %{buildroot}%{_unitdir}/
@@ -114,8 +112,8 @@ ln -f -s %{_datadir}/git-core/update-block-push-origin \
 # ------------------------------------------------------------------------------
 %config     %{_sysconfdir}/dist-git/dist-git.conf
 %config     %{_sysconfdir}/dist-git/gitolite.rc
-%config     %{_sysconfdir}/httpd/dist-git.conf
-%config     %{_sysconfdir}/httpd/ssl.conf
+%config     %{_sysconfdir}/httpd/conf.d/dist-git.conf
+%config     %{_sysconfdir}/httpd/conf.d/ssl.conf.example
 %config     %{_sysconfdir}/httpd/conf.d/dist-git/*
 %config     %{_sysconfdir}/cron.d/dist-git/cgit_pkg_list.cron
 %config     %{_sysconfdir}/cron.d/dist-git/dist_git_sync.cron
