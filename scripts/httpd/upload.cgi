@@ -107,9 +107,8 @@ def main():
     config = ConfigParser()
     config.read(CONFIG_FILE)
 
-    EMAIL_DOMAIN = _get_conf(config, "notifications", "email_domain", "fedoraproject.org")
-    PKG_OWNER_EMAILS = _get_conf(config, "notifications", "pkg_owner_emails",
-                                 "$PACKAGE-owner@fedoraproject.org,scm-commits@lists.fedoraproject.org")
+    EMAIL_DOMAIN = _get_conf(config, "notifications", "email_domain", "")
+    PKG_OWNER_EMAILS = _get_conf(config, "notifications", "pkg_owner_emails", "")
 
     os.umask(002)
 

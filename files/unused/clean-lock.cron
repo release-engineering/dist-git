@@ -1,2 +1,0 @@
-*/15 * * * * root find /var/cache/cgit/ -cmin +60 -name '*.lock' -type f -delete -maxdepth 1
-
