@@ -56,7 +56,7 @@ The final result would consist of two package repositories:
 
 In order to make changes in the package repositories, client needs to have a permission to do that. Both Git and Lookaside Cache have their own auth process.
 
-Git uses ssh communication and client authenticates with public key. Each user needs to have an account on the server and be in a *packager* group. Their ssh shell must be set to "`HOME=/var/lib/dist-git /usr/share/gitolite3/gitolite-shell %(username)s`" in order to have authorization working.
+Git uses ssh communication and client authenticates with public key. Each user needs to have an account on the server and be in a *packager* group. Their ssh shell must be set to "`HOME=/var/lib/dist-git/git /usr/share/gitolite3/gitolite-shell %(username)s`" in order to have authorization working.
 
 Authorization is done by Gitolte. The configuration file describing all the permisions is automaticaly generated each time a Package Database is queried. Gitolite uses system users and groups.
 
