@@ -1,5 +1,5 @@
 Name:		dist-git
-Version:	0.3
+Version:	0.4
 Release:	1%{?dist}
 Summary:	Package source version control system
 
@@ -142,6 +142,9 @@ ln -f -s %{_datadir}/git-core/update-block-push-origin \
 
 
 %changelog
+* Fri Apr 10 2015 Adam Samalik <asamalik@redhat.com> 0.4-1
+- spec and config fix
+- systemd services
 * Tue Mar 31 2015 Adam Samalik <asamalik@redhat.com> 0.3-1
 - alpha package (asamalik@redhat.com)
 
