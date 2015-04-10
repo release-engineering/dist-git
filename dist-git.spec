@@ -63,6 +63,7 @@ cp -a scripts/dist-git/* %{buildroot}%{_datadir}/dist-git/
 install -d %{buildroot}%{_sysconfdir}/dist-git
 install -d %{buildroot}%{_sysconfdir}/httpd/conf.d/dist-git
 install -d %{buildroot}%{_sysconfdir}/cron.d/dist-git
+mkdir -p   %{buildroot}%{_unitdir}
 
 cp -a configs/dist-git/dist-git.conf  %{buildroot}%{_sysconfdir}/dist-git/
 cp -a configs/gitolite/gitolite.rc    %{buildroot}%{_sysconfdir}/dist-git/
@@ -86,17 +87,17 @@ install -d %{buildroot}%{_sharedstatedir}/dist-git/web
 
 cp -a scripts/httpd/upload.cgi %{buildroot}%{_sharedstatedir}/dist-git/web/
 
-ln -s %{_sysconfdir}/dist-git/gitolite.rc \
-      %{_sharedstatedir}/dist-git/git/.gitolite.rc
+ln -f -s %{_sysconfdir}/dist-git/gitolite.rc \
+         %{buildroot}%{_sharedstatedir}/dist-git/git/.gitolite.rc
 
-ln -s %{_sharedstatedir}/dist-git/gitolite \
-      %{_sharedstatedir}/dist-git/git/.gitolite
+ln -f -s %{_sharedstatedir}/dist-git/gitolite \
+         %{buildroot}%{_sharedstatedir}/dist-git/git/.gitolite
 
-ln -s %{_sharedstatedir}/dist-git/git/rpms \
-      %{_sharedstatedir}/dist-git/git/repositories
+ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
+         %{buildroot}%{_sharedstatedir}/dist-git/git/repositories
 
-ln -s %{_datadir}/git-core/update-block-push-origin \
-      %{_sharedstatedir}/dist-git/gitolite/local/VREF/update-block-push-origin
+ln -f -s %{_datadir}/git-core/update-block-push-origin \
+         %{buildroot}%{_sharedstatedir}/dist-git/gitolite/local/VREF/update-block-push-origin
 
 
 
@@ -134,6 +135,9 @@ ln -s %{_datadir}/git-core/update-block-push-origin \
 %attr (755, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks/common/update
 %attr (755, apache, apache)       %{_sharedstatedir}/dist-git/web/upload.cgi
 %attr (755, apache, apache)       %{_sharedstatedir}/dist-git/cache/lookaside/pkgs
+%{_sharedstatedir}/dist-git/git/repositories
+%{_sharedstatedir}/dist-git/git/.gitolite
+%{_sharedstatedir}/dist-git/git/.gitolite.rc
 
 
 
