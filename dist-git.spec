@@ -9,9 +9,10 @@ URL:		none
 Source0:	%{name}-%{version}.tar.gz
 BuildArch:      noarch
 
+BuildRequires:  systemd
+
 Requires:	httpd
 Requires:	gitolite3
-Requires:	cgit
 Requires:	perl-Sys-Syslog
 Requires:	git-daemon
 Requires:	python-requests
@@ -30,6 +31,19 @@ Lorem ipsum dolor sit amet
 
 
 %build
+
+
+
+%pre
+getent group packager > /dev/null || \
+    groupadd -r packager
+
+getent group gen-acls > /dev/null || \
+    groupadd -r gen-acls
+
+getent passed gen-acls > /dev/null || \
+    useradd -r -g gen-acls -G packager -s /bin/bash \
+            -d %{buildroot}%{_sharedstatedir}/dist-git/git/ gen-acls
 
 
 
@@ -56,6 +70,7 @@ cp -a configs/httpd/dist-git.conf     %{buildroot}%{_sysconfdir}/httpd/
 cp -a configs/httpd/ssl.conf          %{buildroot}%{_sysconfdir}/httpd/
 cp -a configs/httpd/dist-git/* %{buildroot}%{_sysconfdir}/httpd/conf.d/dist-git/
 cp -a configs/cron/*           %{buildroot}%{_sysconfdir}/cron.d/dist-git/
+cp -a configs/systemd/*        %{buildroot}%{_unitdir}/
 
 
 # ------------------------------------------------------------------------------
@@ -70,6 +85,18 @@ install -d %{buildroot}%{_sharedstatedir}/dist-git/cache/lookaside/pkgs
 install -d %{buildroot}%{_sharedstatedir}/dist-git/web
 
 cp -a scripts/httpd/upload.cgi %{buildroot}%{_sharedstatedir}/dist-git/web/
+
+ln -s %{_sysconfdir}/dist-git/gitolite.rc \
+      %{_sharedstatedir}/dist-git/git/.gitolite.rc
+
+ln -s %{_sharedstatedir}/dist-git/gitolite \
+      %{_sharedstatedir}/dist-git/git/.gitolite
+
+ln -s %{_sharedstatedir}/dist-git/git/rpms \
+      %{_sharedstatedir}/dist-git/git/repositories
+
+ln -s %{_datadir}/git-core/update-block-push-origin \
+      %{_sharedstatedir}/dist-git/gitolite/local/VREF/update-block-push-origin
 
 
 
@@ -91,6 +118,8 @@ cp -a scripts/httpd/upload.cgi %{buildroot}%{_sharedstatedir}/dist-git/web/
 %config     %{_sysconfdir}/httpd/conf.d/dist-git/*
 %config     %{_sysconfdir}/cron.d/dist-git/cgit_pkg_list.cron
 %config     %{_sysconfdir}/cron.d/dist-git/dist_git_sync.cron
+%config     %{_unitdir}/dist-git@.service
+%config     %{_unitdir}/dist-git.socket
 
 
 # ------------------------------------------------------------------------------
@@ -105,33 +134,6 @@ cp -a scripts/httpd/upload.cgi %{buildroot}%{_sharedstatedir}/dist-git/web/
 %attr (755, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks/common/update
 %attr (755, apache, apache)       %{_sharedstatedir}/dist-git/web/upload.cgi
 %attr (755, apache, apache)       %{_sharedstatedir}/dist-git/cache/lookaside/pkgs
-
-
-
-%pre
-getent group packager > /dev/null || \
-    groupadd -r packager
-
-getent group gen-acls > /dev/null || \
-    groupadd -r gen-acls
-
-getent passed gen-acls > /dev/null || \
-    useradd -r -g gen-acls -G packager -s /bin/bash \
-            -d %{buildroot}%{_sharedstatedir}/dist-git/git/ gen-acls
-
-
-%post
-ln -s %{_sysconfdir}/dist-git/gitolite.rc \
-      %{_sharedstatedir}/dist-git/git/.gitolite.rc
-
-ln -s %{_sharedstatedir}/dist-git/gitolite \
-      %{_sharedstatedir}/dist-git/git/.gitolite
-
-ln -s %{_sharedstatedir}/dist-git/git/rpms \
-      %{_sharedstatedir}/dist-git/git/repositories
-
-ln -s %{_datadir}/git-core/update-block-push-origin \
-      %{_sharedstatedir}/dist-git/gitolite/local/VREF/update-block-push-origin
 
 
 
