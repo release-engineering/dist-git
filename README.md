@@ -56,10 +56,78 @@ The final result would consist of two package repositories:
 
 In order to make changes in the package repositories, client needs to have a permission to do that. Both Git and Lookaside Cache have their own auth process.
 
-Git uses ssh communication and client authenticates with public key. Each user needs to have an account on the server and be in a *packager* group. Their ssh shell must be set to "`HOME=/var/lib/dist-git/git /usr/share/gitolite3/gitolite-shell %(username)s`" in order to have authorization working.
+Git uses ssh communication and client authenticates with public key. Each user needs to have an account on the server and be in a *packager* group. Their ssh shell must be set to "`HOME=/var/lib/dist-git/git /usr/share/gitolite3/gitolite-shell $USERNAME`" in order to have authorization working.
 
 Authorization is done by Gitolte. The configuration file describing all the permisions is automaticaly generated each time a Package Database is queried. Gitolite uses system users and groups.
 
 Lookaside Cache uses https communication and client authenticates with ssl client certificate. The Dist Git service provider needs to issue the client certificate for every user.
 
 There is no authentication needed in order to read from the server.
+
+
+Instalation Guide 
+-----------------
+
+The project is prepared to be built as an RPM package. You can easily build it on [Fedora](https://getfedora.org/) or [CentOS](https://www.centos.org/) using a tool called [Tito](https://github.com/dgoodwin/tito).
+
+#### 1. Build and install the package:
+
+To build the current release, use the following command in the repo directory:  
+`$ tito build --rpm`  
+
+Install the resulting RPM package:  
+`# yum install /path/to/the-package.rpm`  
+
+#### 2. Configuration:
+
+Edit the configuration file at `/etc/dist-git/dist-git.conf` to match your requirements. The file contains several examples and tips that should help you with your setup.
+
+Enable the lookaside cache by using and modifying the example httpd scripts:
+```
+# cd /etc/httpd/conf.d/
+# cp ssl.conf.example ssl.conf
+
+# cd /etc/httpd/conf.d/dist-git/
+# cp lookaside-upload.conf.example lookaside-upload.conf
+# vim lookaside-upload.conf
+```
+
+#### 3. Users and groups:
+
+All users need to:
+ 1. have an ssh access with private key authentication
+ 2. be in a *packager* group
+ 3. have their ssh shell restricted to "`HOME=/var/lib/dist-git/git /usr/share/gitolite3/gitolite-shell $USERNAME`"
+ 4. be provided with an ssl client certificate to authenticate with the lookaside cache
+
+An example setup of the first three steps could look like this:
+```
+USER="frank"
+RSA="ssh-rsa AAA...YqfTP frank@example.com"
+
+useradd $USER
+usermod -aG packager $USER
+mkdir /home/$USER/.ssh
+echo "command=\"HOME=/var/lib/dist-git/git/ /usr/share/gitolite3/gitolite-shell $USER $RSA\" > /home/$USER/.ssh/authorized_keys
+```
+
+#### 4. Install the web interface:
+
+Install Cgit, the web interface for git:
+`# yum install cgit`  
+
+And point it to the distgit repositories:  
+```
+# echo "project-list=/var/lib/dist-git/git/pkgs-git-repos-list" >> /etc/cgitrc
+# echo "scan-path=/var/lib/dist-git/git/rpms/" >> /etc/cgitrc
+```
+
+The web interface will be available on address like `http://your-server/cgit`.
+
+#### 5. Systemd services:
+
+```
+# systemctl start sshd
+# systemctl start httpd
+# systemctl start dist-git.socket
+```
