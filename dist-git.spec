@@ -41,7 +41,7 @@ getent group gen-acls > /dev/null || \
 
 getent passed gen-acls > /dev/null || \
     useradd -r -g gen-acls -G packager -s /bin/bash \
-            -d %{buildroot}%{_sharedstatedir}/dist-git/git/ gen-acls
+            -d %{_sharedstatedir}/dist-git/git gen-acls
 
 
 
