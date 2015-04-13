@@ -1,0 +1,69 @@
+This file describes the changes with files and paths that has been made during
+the separation of this project from the fedora-infra-ansible git.
+
+
+Renamed files:
+================================================================================
+genacls.sh ................. dist_git_sync.sh
+genacls.pkgdb .............. pkgdb_gen_gitolite_conf.py
+pkgdb_sync_branches.py ..... pkgdb_sync_git_branches.py
+setup_git_package .......... git_package.sh
+mkbranch ................... git_branch.sh
+make-cgit-pkgs-list.sh ..... gen_cgit_list.sh
+
+
+
+Files and paths:
+================================================================================
+configs
+├── cron
+│   ├── cgit_pkg_list.cron ................ /etc/cron.d/dist-git/
+│   └── dist_git_sync.cron ................ /etc/cron.d/dist-git/
+├── dist-git
+│   └── dist-git.conf ..................... /etc/dist-git/
+├── gitolite
+│   └── gitolite.rc ....................... /etc/dist-git/
+├── httpd
+│   ├── dist-git
+│   │   ├── git-smart-http.conf ........... /etc/httpd/conf.d/dist-git/
+│   │   ├── lookaside.conf ................ /etc/httpd/conf.d/dist-git/
+│   │   └── lookaside-upload.conf ......... /etc/httpd/conf.d/dist-git/
+│   ├── dist-git.conf ..................... /etc/httpd/conf.d/
+│   └── ssl.conf .......................... /etc/httpd/conf.d/
+└── systemd
+    └── dist-git@.service ................. systemd service directory
+    └── dist-git.socket ................... systemd service directory
+
+scripts
+├── dist-git
+│   ├── cgit_pkg_list.sh .................. /usr/share/dist-git/
+│   ├── dist_git_sync.sh .................. /usr/share/dist-git/
+│   ├── git_branch.sh ..................... /usr/share/dist-git/
+│   ├── git_package.sh .................... /usr/share/dist-git/
+│   ├── pkgdb_gen_gitolite_conf.py ........ /usr/share/dist-git/
+│   └── pkgdb_sync_git_branches.py ........ /usr/share/dist-git/
+└── httpd
+    └── upload.cgi ........................ /var/lib/dist-git/web/
+
+
+places:
+    git repositories ...................... /var/lib/dist-git/git/rpms/
+    lookaside cache files ................. /var/lib/dist-git/cache/lookaside/pkgs/
+
+symbolic links:
+    /etc/dist-git/gitolite.rc ............. /var/lib/dist-git/git/.gitolite.rc
+    /var/lib/dist-git/gitolite/ ........... /var/lib/dist-git/git/.gitolite/
+    /var/lib/dist-git/git/rpms/ ........... /var/lib/dist-git/git/repositories/
+
+
+
+Excluded files:
+================================================================================
+cgitrc
+clean-lock.cron
+fedmsg-genacls-config.py
+pkgdb2-clone
+redirect.conf
+upload_cgi.pp  -> SELinux policies will be included in a subpackage
+upload_cgi.te  -> SELinux policies will be included in a subpackage
+updatecrl.sh
