@@ -88,6 +88,9 @@ touch      %{buildroot}%{_sharedstatedir}/dist-git/gitolite/hooks/common/update
 
 cp -a scripts/httpd/upload.cgi %{buildroot}%{_sharedstatedir}/dist-git/web/
 
+cp -a scripts/git/hooks/update-block-push-origin \
+      %{buildroot}%{_sharedstatedir}/dist-git/gitolite/local/VREF/update-block-push-origin
+
 ln -f -s %{_sysconfdir}/dist-git/gitolite.rc \
          %{buildroot}%{_sharedstatedir}/dist-git/git/.gitolite.rc
 
@@ -97,8 +100,6 @@ ln -f -s %{_sharedstatedir}/dist-git/gitolite \
 ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
          %{buildroot}%{_sharedstatedir}/dist-git/git/repositories
 
-ln -f -s %{_datadir}/git-core/update-block-push-origin \
-         %{buildroot}%{_sharedstatedir}/dist-git/gitolite/local/VREF/update-block-push-origin
 
 
 
