@@ -18,50 +18,90 @@ SSLCryptoDevice builtin
     ScriptAlias /repo/pkgs/upload.cgi /var/lib/dist-git/web/upload.cgi
 
     Alias /repo/ /var/lib/dist-git/cache/lookaside/
-    ServerName pkgs.fedoraproject.org
-    ServerAdmin webmaster@fedoraproject.org
+
+    #ServerName pkgs.fedoraproject.org
+    #ServerAdmin webmaster@fedoraproject.org
 
     SSLEngine on
 
-    SSLCertificateFile    conf/pkgs.fedoraproject.org_key_and_cert.pem
-    SSLCertificateKeyFile conf/pkgs.fedoraproject.org_key_and_cert.pem
-    SSLCACertificateFile  conf/cacert.pem
+    # Server Certificate:
+    # Point SSLCertificateFile at a PEM encoded certificate.  If
+    # the certificate is encrypted, then you will be prompted for a
+    # pass phrase.  Note that a kill -HUP will prompt again.  A new
+    # certificate can be generated using the genkey(1) command.
+    SSLCertificateFile /etc/pki/tls/certs/localhost.crt
+
+    # Server Private Key:
+    # If the key is not combined with the certificate, use this
+    # directive to point at the key file.  Keep in mind that if
+    # you've both a RSA and a DSA private key you can configure
+    # both in parallel (to also allow the use of DSA ciphers, etc.)
+    SSLCertificateKeyFile /etc/pki/tls/private/localhost.key
+
+    # Certificate Authority (CA):
+    # Set the CA certificate verification path where to find CA
+    # certificates for client authentication or alternatively one
+    # huge file containing all of them (file must be PEM encoded)
+    SSLCACertificateFile /etc/pki/tls/certs/ca-bundle.crt
+
+    # Certificate Revocation Lists (CRL):
+    # Such a file is simply the concatenation of the various
+    # PEM-encoded CRL files, in order of preference.
+    # These are used to revoke the client certificate on 
+    # Client Authentication.
     SSLCARevocationFile  /etc/pki/tls/crl.pem
 
     SSLCipherSuite RSA:!EXPORT:!DH:!LOW:!NULL:+MEDIUM:+HIGH
 
-# Must be 'optional' everywhere in order to have POST operations work to upload.cgi
+    # Must be 'optional' everywhere in order to have POST operations work to upload.cgi
     SSLVerifyClient optional
-# Must be here for POST operations to upload.cgi
+    # Must be here for POST operations to upload.cgi
     SSLOptions +OptRenegotiate
     ErrorLog logs/ssl_error_log
     CustomLog logs/ssl_access_log \
          "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%{SSL_CLIENT_S_DN_OU}x\" %{SSL_CLIENT_S_DN_CN}x %{SSL_CLIENT_S_DN_emailAddress}x \"%r\" %b"
 
-   <Directory /repo/pkgs/>
-       SSLVerifyClient optional
-       SSLVerifyDepth 1
-       SSLOptions +StrictRequire +StdEnvVars +OptRenegotiate
-        # require that the client auth cert was created by us and signed by us
-       SSLRequire ( %{SSL_CIPHER} !~ m/^(EXP|NULL)/ \
+    <Directory /repo/pkgs/>
+        SSLVerifyClient optional
+        SSLVerifyDepth 1
+        SSLOptions +StrictRequire +StdEnvVars +OptRenegotiate
+        # Access Control:
+        # With SSLRequire you can do per-directory access control based
+        # on arbitrary complex boolean expressions containing server
+        # variable checks and other lookup directives.  The syntax is a
+        # mixture between C and Perl.  See the mod_ssl documentation
+        # for more details.
+        #
+        # Following example means:
+        # require that the access comes from internal or that
+        # the client auth cert was created by us and signed by us
+        SSLRequire ( %{SSL_CIPHER} !~ m/^(EXP|NULL)/ \
                   and %{SSL_CLIENT_S_DN_O} eq "Fedora Project" \
                   and %{SSL_CLIENT_S_DN_OU} eq "Fedora User Cert" \
                   and %{SSL_CLIENT_I_DN_O} eq "Fedora Project" \
                   and %{SSL_CLIENT_I_DN_OU} eq "Fedora Project CA" )
-   </Directory>
+    </Directory>
 
-   <Location /repo/pkgs/upload.cgi>
-       SSLRequireSSL
+    <Location /repo/pkgs/upload.cgi>
+        SSLRequireSSL
 
-       Options +ExecCGI
-       Require all granted
+        Options +ExecCGI
+        Require all granted
 
-       SSLVerifyClient optional
-       SSLVerifyDepth 1
-       SSLOptions +StrictRequire +StdEnvVars +OptRenegotiate
-       # require that the access comes from internal or that
-       # the client auth cert was created by us and signed by us
-       SSLRequire ( %{SSL_CIPHER} !~ m/^(EXP|NULL)/ \
+        SSLVerifyClient optional
+        SSLVerifyDepth 1
+        SSLOptions +StrictRequire +StdEnvVars +OptRenegotiate
+        # Access Control:
+        # With SSLRequire you can do per-directory access control based
+        # on arbitrary complex boolean expressions containing server
+        # variable checks and other lookup directives.  The syntax is a
+        # mixture between C and Perl.  See the mod_ssl documentation
+        # for more details.
+        #
+        # Following example means:
+        # require that the access comes from internal or that
+        # the client auth cert was created by us and signed by us
+        SSLRequire ( %{SSL_CIPHER} !~ m/^(EXP|NULL)/ \
                   and %{SSL_CLIENT_S_DN_O} eq "Fedora Project" \
                   and %{SSL_CLIENT_S_DN_OU} eq "Fedora User Cert" \
                   and %{SSL_CLIENT_I_DN_O} eq "Fedora Project" \
