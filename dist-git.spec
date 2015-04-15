@@ -1,5 +1,5 @@
 Name:		dist-git
-Version:	0.4
+Version:	0.5
 Release:	1%{?dist}
 Summary:	Package source version control system
 
@@ -144,6 +144,12 @@ ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
 
 
 %changelog
+* Wed Apr 15 2015 Adam Samalik <asamalik@redhat.com> 0.5-1
+- git hook: update-block-push-origin (asamalik@redhat.com)
+- lookaside-upload config comments (asamalik@redhat.com)
+- gen-acls user fix (asamalik@redhat.com)
+- ssl httpd configs as examples (asamalik@redhat.com)
+
 * Fri Apr 10 2015 Adam Samalik <asamalik@redhat.com> 0.4-1
 - spec and config fix
 - systemd services
