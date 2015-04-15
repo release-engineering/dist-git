@@ -40,7 +40,7 @@ getent group packager > /dev/null || \
 getent group gen-acls > /dev/null || \
     groupadd -r gen-acls
 
-getent passed gen-acls > /dev/null || \
+getent passwd gen-acls > /dev/null || \
     useradd -r -g gen-acls -G packager -s /bin/bash \
             -d %{_sharedstatedir}/dist-git/git gen-acls
 
