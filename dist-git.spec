@@ -18,6 +18,7 @@ Requires:	git-daemon
 Requires:	python-requests
 Requires:	/usr/sbin/semanage
 Requires:       mod_ssl
+Requires:       fedmsg
 Requires(pre):  shadow-utils
 
 %description
@@ -79,9 +80,11 @@ install -d %{buildroot}%{_sharedstatedir}/dist-git/git/rpms
 install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/conf
 install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/logs
 install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/local/VREF
-install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/hooks/common/update
 install -d %{buildroot}%{_sharedstatedir}/dist-git/cache/lookaside/pkgs
 install -d %{buildroot}%{_sharedstatedir}/dist-git/web
+install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/hooks/common
+
+touch      %{buildroot}%{_sharedstatedir}/dist-git/gitolite/hooks/common/update
 
 cp -a scripts/httpd/upload.cgi %{buildroot}%{_sharedstatedir}/dist-git/web/
 
