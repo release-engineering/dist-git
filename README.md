@@ -16,6 +16,8 @@ How does it work
 
 An RPM package repository typically consists of a spec file and the sources itself. Sources are most often taken from the upstream as they are and packed as a tarball. The sources can contain large files like virtual machine images, which, in some cases, can grow up to several GB. Those binary files can not be stored in git effectively - so the Dist Git stores them in a separate place called Lookaside Cache and only a text link to the cache is stored in the git itself.
 
+![storage](/images/storage.png)
+
 ### Communication
 
 The Dist Git server repeatedly asks a package database for information about packages. This information contains a list of packages and other information. Each package can have a list of users or groups entitled to commit to this package and a list of platforms for which the package is built. Sources for each platform are held in corresponding branches.
