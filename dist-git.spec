@@ -4,7 +4,9 @@ Release:	1%{?dist}
 Summary:	Package source version control system
 
 Group:		Applications/Productivity
-License:	gpl
+
+# upload.cgi uses GPLv1 and pkgdb_sync_git_branches.py uses GPLv2+
+License:	GPLv1 and GPLv2+
 URL:		none
 Source0:	%{name}-%{version}.tar.gz
 BuildArch:      noarch
