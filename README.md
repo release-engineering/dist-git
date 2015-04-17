@@ -9,10 +9,10 @@ Dist Git is a remote Git repository specificaly designed to hold RPM package sou
  2. Lookaside cache to store source tarballs
  3. Scripts to manage
 
-How does it work
+How Does It Work
 ----------------
 
-### Hosting files
+### Hosting Files
 
 An RPM package repository typically consists of a spec file and the sources itself. Sources are most often taken from the upstream as they are and packed as a tarball. The sources can contain large files like virtual machine images, which, in some cases, can grow up to several GB. Those binary files can not be stored in git effectively - so the Dist Git stores them in a separate place called Lookaside Cache and only a text link to the cache is stored in the git itself.
 
@@ -26,7 +26,7 @@ User cat interact with the Dist Git server using client probably based on [rpkg]
 
 ![server-communication](/images/server-communication.png)
 
-#### Package Database communication
+#### Package Database Communication
 The following is an example JSON data comming from the Package Database which would create two packages: *copr-frontend* and *copr-backend*. The first package would be for Fedora 21 only and permissions to commit into this repo would be granted to users *mirek*, *adam* and anyone in the group *provenpackager*. The *copr-backend* package would be for Fedora 21 and CentOS 7. The permissions would be processed the same way as for the first package.
 
 ```JSON
@@ -78,7 +78,7 @@ Instalation Guide
 
 The project is prepared to be built as an RPM package. You can easily build it on [Fedora](https://getfedora.org/) or [CentOS](https://www.centos.org/) using a tool called [Tito](https://github.com/dgoodwin/tito).
 
-#### 1. Build and install the package:
+#### 1. Build and Install the Package:
 
 To build the current release, use the following command in the repo directory:  
 `$ tito build --rpm`  
@@ -100,7 +100,7 @@ Enable the lookaside cache by using and modifying the example httpd scripts:
 # vim lookaside-upload.conf
 ```
 
-#### 3. Users and groups:
+#### 3. Users and Groups:
 
 All users need to:
  1. have an ssh access with private key authentication
@@ -119,7 +119,7 @@ mkdir /home/$USER/.ssh
 echo "command=\"HOME=/var/lib/dist-git/git/ /usr/share/gitolite3/gitolite-shell $USER $RSA\" > /home/$USER/.ssh/authorized_keys
 ```
 
-#### 4. Install the web interface:
+#### 4. Install the Web Interface:
 
 Install Cgit, the web interface for git:
 `# yum install cgit`  
@@ -132,7 +132,7 @@ And point it to the distgit repositories:
 
 The web interface will be available on address like `http://your-server/cgit`.
 
-#### 5. Systemd services:
+#### 5. Systemd Services:
 
 ```
 # systemctl start sshd
