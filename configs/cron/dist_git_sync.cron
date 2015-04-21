@@ -1,1 +1,3 @@
-
+# Sync the repositories with a Package Database
+#
+# 02 10 * * * root /usr/share/dist-git/dist_git_sync.sh

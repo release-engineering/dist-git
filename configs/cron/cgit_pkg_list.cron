@@ -1,0 +1,3 @@
+# This would allow to refresh the cgit repos every 10 minutes
+#
+# */10 * * * * root /usr/share/dist-git/cgit_pkg_list.sh
