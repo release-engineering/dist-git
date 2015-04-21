@@ -2,15 +2,22 @@ This file describes the changes with files and paths that has been made during
 the separation of this project from the fedora-infra-ansible git.
 
 
-Renamed files:
+Renamed files and their use of the main configutation file:
 ================================================================================
 genacls.sh ................. dist_git_sync.sh
-genacls.pkgdb .............. pkgdb_gen_gitolite_conf.py
-pkgdb_sync_branches.py ..... pkgdb_sync_git_branches.py
-setup_git_package .......... git_package.sh
-mkbranch ................... git_branch.sh
+genacls.pkgdb .............. pkgdb_gen_gitolite_conf.py  <-- Config driven
+pkgdb_sync_branches.py ..... pkgdb_sync_git_branches.py  <-- Config driven
+setup_git_package .......... git_package.sh       <-- Needs arguments*
+mkbranch ................... git_branch.sh        <-- Needs arguments*
 make-cgit-pkgs-list.sh ..... gen_cgit_list.sh
 
+* Scripts that needs some arguments to operate with the correct configuration.
+  Those scripts should be called by the pkgdb_sync_git_branches.py only.
+  In case we need an admin user to use them, a utility would be made for this
+  purpouse. Such utility would read the config itself and execute those scripts
+  with the correct arguments. Example usage would be something like:
+  $ dist-git add package copr-frontend
+  $ dist-git add branch epel-7
 
 
 Files and paths:
