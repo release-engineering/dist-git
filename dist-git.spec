@@ -128,8 +128,8 @@ ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
 %config(noreplace)     %{_sysconfdir}/httpd/conf.d/dist-git/*
 %config(noreplace)     %{_sysconfdir}/cron.d/dist-git/cgit_pkg_list.cron
 %config(noreplace)     %{_sysconfdir}/cron.d/dist-git/dist_git_sync.cron
-%config(noreplace)     %{_unitdir}/dist-git@.service
-%config(noreplace)     %{_unitdir}/dist-git.socket
+%config                %{_unitdir}/dist-git@.service
+%config                %{_unitdir}/dist-git.socket
 
 
 # ------------------------------------------------------------------------------
@@ -150,8 +150,12 @@ ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
 # - write access needed for gitolite admin groups
 # - exec permission needed for execution by git (it's a git hook script)
 %attr (775, gen-acls, packager)   %{_sharedstatedir}/dist-git/gitolite/local/VREF/update-block-push-origin
-%attr (755, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks
-%attr (755, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks/common
+# non-standard-dir-perm:
+# - write access needed for gitolite admin groups
+%attr (770, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks
+# non-standard-dir-perm:
+# - write access needed for gitolite admin groups
+%attr (770, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks/common
 # script-without-shebang:
 # zero-length:
 # - initial empty file required by gitolite with the correct perms
