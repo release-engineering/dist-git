@@ -67,7 +67,7 @@
     # suggested locations for site-local gitolite code (see cust.html)
 
         # this one is managed directly on the server
-        LOCAL_CODE                =>  "/etc/gitolite/local",
+        LOCAL_CODE                =>  "/var/lib/dist-git/gitolite/local",
 
         # or you can use this, which lets you put everything in a subdirectory
         # called "local" in your gitolite-admin repo.  For a SECURITY WARNING

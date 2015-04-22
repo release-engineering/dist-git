@@ -1,30 +1,34 @@
-Name:		dist-git
-Version:	0.6
-Release:	1%{?dist}
-Summary:	Package source version control system
+Name:           dist-git
+Version:        0.6
+Release:        1%{?dist}
+Summary:        Package source version control system
 
-Group:		Applications/Productivity
+Group:          Applications/Productivity
 
 # upload.cgi uses GPLv1 and pkgdb_sync_git_branches.py uses GPLv2+
-License:	MIT and GPLv1 and GPLv2+
-URL:		none
-Source0:	%{name}-%{version}.tar.gz
+License:        MIT and GPLv1 and GPLv2+
+URL:            https://github.com/release-engineering/dist-git
+# Source is created by
+# git clone https://github.com/release-engineering/dist-git.git
+# cd dist-git
+# tito build --tgz
+Source0:        %{name}-%{version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  systemd
 
-Requires:	httpd
-Requires:	gitolite3
-Requires:	perl-Sys-Syslog
-Requires:	git-daemon
-Requires:	python-requests
-Requires:	/usr/sbin/semanage
+Requires:       httpd
+Requires:       gitolite3
+Requires:       perl-Sys-Syslog
+Requires:       git-daemon
+Requires:       python-requests
+Requires:       /usr/sbin/semanage
 Requires:       mod_ssl
 Requires:       fedmsg
 Requires(pre):  shadow-utils
 
 %description
-Dist Git is a remote Git repository specificaly designed to hold RPM
+Dist Git is a remote Git repository specifically designed to hold RPM
 package sources.
 
 
@@ -131,12 +135,26 @@ ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
 # ------------------------------------------------------------------------------
 # /var/lib/ ...... dynamic persistent files
 # ------------------------------------------------------------------------------
+
+# non-standard-dir-perm:
+# - git repositories and their contents must have w permission for their creators
 %attr (2775, -, packager)         %{_sharedstatedir}/dist-git/git/rpms
 %attr (755, gen-acls, gen-acls)   %{_sharedstatedir}/dist-git/gitolite/conf
+# non-standard-dir-perm:
+# - write access needed into log directory for gitolite
 %attr (775, gen-acls, packager)   %{_sharedstatedir}/dist-git/gitolite/logs
+# non-standard-dir-perm:
+# - write access needed for gitolite admin groups
 %attr (775, gen-acls, packager)   %{_sharedstatedir}/dist-git/gitolite/local/VREF
-%attr (770, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks
-%attr (770, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks/common
+# non-standard-executable-perm:
+# - write access needed for gitolite admin groups
+# - exec permission needed for execution by git (it's a git hook script)
+%attr (775, gen-acls, packager)   %{_sharedstatedir}/dist-git/gitolite/local/VREF/update-block-push-origin
+%attr (755, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks
+%attr (755, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks/common
+# script-without-shebang:
+# zero-length:
+# - initial empty file required by gitolite with the correct perms
 %attr (755, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks/common/update
 %attr (755, apache, apache)       %{_sharedstatedir}/dist-git/web/upload.cgi
 %attr (755, apache, apache)       %{_sharedstatedir}/dist-git/cache/lookaside/pkgs
