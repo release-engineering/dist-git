@@ -1,5 +1,5 @@
 Name:		dist-git
-Version:	0.5
+Version:	0.6
 Release:	1%{?dist}
 Summary:	Package source version control system
 
@@ -147,6 +147,10 @@ ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
 
 
 %changelog
+* Wed Apr 22 2015 Adam Samalik <asamalik@redhat.com> 0.6-1
+- license + description (asamalik@redhat.com)
+- cron files fix (asamalik@redhat.com)
+
 * Wed Apr 15 2015 Adam Samalik <asamalik@redhat.com> 0.5-1
 - git hook: update-block-push-origin (asamalik@redhat.com)
 - lookaside-upload config comments (asamalik@redhat.com)
