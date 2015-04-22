@@ -6,7 +6,7 @@ Summary:	Package source version control system
 Group:		Applications/Productivity
 
 # upload.cgi uses GPLv1 and pkgdb_sync_git_branches.py uses GPLv2+
-License:	GPLv1 and GPLv2+
+License:	MIT and GPLv1 and GPLv2+
 URL:		none
 Source0:	%{name}-%{version}.tar.gz
 BuildArch:      noarch
@@ -24,7 +24,8 @@ Requires:       fedmsg
 Requires(pre):  shadow-utils
 
 %description
-Lorem ipsum dolor sit amet
+Dist Git is a remote Git repository specificaly designed to hold RPM
+package sources.
 
 
 %prep
