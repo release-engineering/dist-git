@@ -121,15 +121,15 @@ ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
 # ------------------------------------------------------------------------------
 # /etc/ .......... config files
 # ------------------------------------------------------------------------------
-%config     %{_sysconfdir}/dist-git/dist-git.conf
-%config     %{_sysconfdir}/dist-git/gitolite.rc
-%config     %{_sysconfdir}/httpd/conf.d/dist-git.conf
-%config     %{_sysconfdir}/httpd/conf.d/ssl.conf.example
-%config     %{_sysconfdir}/httpd/conf.d/dist-git/*
-%config     %{_sysconfdir}/cron.d/dist-git/cgit_pkg_list.cron
-%config     %{_sysconfdir}/cron.d/dist-git/dist_git_sync.cron
-%config     %{_unitdir}/dist-git@.service
-%config     %{_unitdir}/dist-git.socket
+%config(noreplace)     %{_sysconfdir}/dist-git/dist-git.conf
+%config(noreplace)     %{_sysconfdir}/dist-git/gitolite.rc
+%config(noreplace)     %{_sysconfdir}/httpd/conf.d/dist-git.conf
+%config(noreplace)     %{_sysconfdir}/httpd/conf.d/ssl.conf.example
+%config(noreplace)     %{_sysconfdir}/httpd/conf.d/dist-git/*
+%config(noreplace)     %{_sysconfdir}/cron.d/dist-git/cgit_pkg_list.cron
+%config(noreplace)     %{_sysconfdir}/cron.d/dist-git/dist_git_sync.cron
+%config(noreplace)     %{_unitdir}/dist-git@.service
+%config(noreplace)     %{_unitdir}/dist-git.socket
 
 
 # ------------------------------------------------------------------------------
