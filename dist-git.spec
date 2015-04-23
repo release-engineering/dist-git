@@ -100,8 +100,6 @@ install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite
 install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/hooks
 install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/hooks/common
 
-touch      %{buildroot}%{_sharedstatedir}/dist-git/gitolite/hooks/common/update
-
 cp -a scripts/httpd/upload.cgi %{buildroot}%{_sharedstatedir}/dist-git/web/
 
 cp -a scripts/git/hooks/update-block-push-origin \
@@ -176,7 +174,7 @@ ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
 # script-without-shebang:
 # zero-length:
 # - initial empty file required by gitolite with the correct perms
-%attr (755, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks/common/update
+%dir                              %{_sharedstatedir}/dist-git/gitolite/hooks/common
 %dir                              %{_sharedstatedir}/dist-git/web
 %attr (755, apache, apache)       %{_sharedstatedir}/dist-git/web/upload.cgi
 %dir                              %{_sharedstatedir}/dist-git/cache
