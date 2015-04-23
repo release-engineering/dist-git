@@ -1,5 +1,5 @@
 Name:           dist-git
-Version:        0.8
+Version:        0.9
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -187,6 +187,9 @@ ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
 
 
 %changelog
+* Thu Apr 23 2015 Adam Samalik <asamalik@redhat.com> 0.9-1
+- update hook update (asamalik@redhat.com)
+
 * Thu Apr 23 2015 Adam Samalik <asamalik@redhat.com> 0.8-1
 - review update (asamalik@redhat.com)
 
