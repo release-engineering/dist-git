@@ -25,6 +25,7 @@ Requires:       python-requests
 Requires:       /usr/sbin/semanage
 Requires:       mod_ssl
 Requires:       fedmsg
+Requires:       cronie
 Requires(pre):  shadow-utils
 
 %description
@@ -83,12 +84,20 @@ cp -a configs/systemd/*        %{buildroot}%{_unitdir}/
 # ------------------------------------------------------------------------------
 # /var/lib/ ...... dynamic persistent files
 # ------------------------------------------------------------------------------
+install -d %{buildroot}%{_sharedstatedir}/dist-git
+install -d %{buildroot}%{_sharedstatedir}/dist-git/git
 install -d %{buildroot}%{_sharedstatedir}/dist-git/git/rpms
+install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite
 install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/conf
 install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/logs
+install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/local
 install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/local/VREF
+install -d %{buildroot}%{_sharedstatedir}/dist-git/cache
+install -d %{buildroot}%{_sharedstatedir}/dist-git/cache/lookaside
 install -d %{buildroot}%{_sharedstatedir}/dist-git/cache/lookaside/pkgs
 install -d %{buildroot}%{_sharedstatedir}/dist-git/web
+install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite
+install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/hooks
 install -d %{buildroot}%{_sharedstatedir}/dist-git/gitolite/hooks/common
 
 touch      %{buildroot}%{_sharedstatedir}/dist-git/gitolite/hooks/common/update
@@ -112,24 +121,31 @@ ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
 
 %files
 
+%license LICENSE
+%doc README.md
+
 # ------------------------------------------------------------------------------
 # /usr/share/ .... static files
 # ------------------------------------------------------------------------------
+%dir              %{_datadir}/dist-git
 %attr (755, -, -) %{_datadir}/dist-git/*
 
 
 # ------------------------------------------------------------------------------
 # /etc/ .......... config files
 # ------------------------------------------------------------------------------
+%dir                   %{_sysconfdir}/dist-git
 %config(noreplace)     %{_sysconfdir}/dist-git/dist-git.conf
 %config(noreplace)     %{_sysconfdir}/dist-git/gitolite.rc
 %config(noreplace)     %{_sysconfdir}/httpd/conf.d/dist-git.conf
-%config(noreplace)     %{_sysconfdir}/httpd/conf.d/ssl.conf.example
+%config                %{_sysconfdir}/httpd/conf.d/ssl.conf.example
+%dir                   %{_sysconfdir}/httpd/conf.d/dist-git
 %config(noreplace)     %{_sysconfdir}/httpd/conf.d/dist-git/*
+%dir                   %{_sysconfdir}/cron.d/dist-git
 %config(noreplace)     %{_sysconfdir}/cron.d/dist-git/cgit_pkg_list.cron
 %config(noreplace)     %{_sysconfdir}/cron.d/dist-git/dist_git_sync.cron
-%config                %{_unitdir}/dist-git@.service
-%config                %{_unitdir}/dist-git.socket
+%{_unitdir}/dist-git@.service
+%{_unitdir}/dist-git.socket
 
 
 # ------------------------------------------------------------------------------
@@ -138,11 +154,15 @@ ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
 
 # non-standard-dir-perm:
 # - git repositories and their contents must have w permission for their creators
+%dir                              %{_sharedstatedir}/dist-git
+%dir                              %{_sharedstatedir}/dist-git/git
 %attr (2775, -, packager)         %{_sharedstatedir}/dist-git/git/rpms
+%dir                              %{_sharedstatedir}/dist-git/gitolite
 %attr (755, gen-acls, gen-acls)   %{_sharedstatedir}/dist-git/gitolite/conf
 # non-standard-dir-perm:
 # - write access needed into log directory for gitolite
 %attr (775, gen-acls, packager)   %{_sharedstatedir}/dist-git/gitolite/logs
+%dir                              %{_sharedstatedir}/dist-git/gitolite/local
 # non-standard-dir-perm:
 # - write access needed for gitolite admin groups
 %attr (775, gen-acls, packager)   %{_sharedstatedir}/dist-git/gitolite/local/VREF
@@ -153,14 +173,14 @@ ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
 # non-standard-dir-perm:
 # - write access needed for gitolite admin groups
 %attr (770, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks
-# non-standard-dir-perm:
-# - write access needed for gitolite admin groups
-%attr (770, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks/common
 # script-without-shebang:
 # zero-length:
 # - initial empty file required by gitolite with the correct perms
 %attr (755, -, packager)          %{_sharedstatedir}/dist-git/gitolite/hooks/common/update
+%dir                              %{_sharedstatedir}/dist-git/web
 %attr (755, apache, apache)       %{_sharedstatedir}/dist-git/web/upload.cgi
+%dir                              %{_sharedstatedir}/dist-git/cache
+%dir                              %{_sharedstatedir}/dist-git/cache/lookaside
 %attr (755, apache, apache)       %{_sharedstatedir}/dist-git/cache/lookaside/pkgs
 %{_sharedstatedir}/dist-git/git/repositories
 %{_sharedstatedir}/dist-git/git/.gitolite
