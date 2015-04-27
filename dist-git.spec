@@ -19,7 +19,7 @@ BuildRequires:  systemd
 
 Requires:       httpd
 Requires:       gitolite3
-Requires:       perl-Sys-Syslog
+Requires:       perl(Sys::Syslog)
 Requires:       git-daemon
 Requires:       python-requests
 Requires:       /usr/sbin/semanage
@@ -175,6 +175,7 @@ ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
 # zero-length:
 # - initial empty file required by gitolite with the correct perms
 %dir                              %{_sharedstatedir}/dist-git/gitolite/hooks/common
+%ghost %attr (775, gen-acls, packager)  %{_sharedstatedir}/dist-git/gitolite/hooks/common/update
 %dir                              %{_sharedstatedir}/dist-git/web
 %attr (755, apache, apache)       %{_sharedstatedir}/dist-git/web/upload.cgi
 %dir                              %{_sharedstatedir}/dist-git/cache
