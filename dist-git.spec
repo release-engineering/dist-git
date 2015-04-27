@@ -1,3 +1,8 @@
+%global selinux_variants mls targeted
+%global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
+%global modulename dist_git
+
+
 Name:           dist-git
 Version:        0.10
 Release:        1%{?dist}
@@ -22,7 +27,6 @@ Requires:       gitolite3
 Requires:       perl(Sys::Syslog)
 Requires:       git-daemon
 Requires:       python-requests
-Requires:       /usr/sbin/semanage
 Requires:       mod_ssl
 Requires:       fedmsg
 Requires:       cronie
@@ -33,15 +37,50 @@ Dist Git is a remote Git repository specifically designed to hold RPM
 package sources.
 
 
+%package selinux
+Summary:        SELinux support for dist-git
+
+BuildRequires:  checkpolicy
+BuildRequires:  policycoreutils
+BuildRequires:  selinux-policy-devel
+
+Requires:       %name = %version-%release
+%if "%{_selinux_policy_version}" != ""
+Requires:       selinux-policy >= %{selinux_policyver}
+%endif
+Requires(post):   /usr/sbin/semodule, /sbin/restorecon
+Requires(postun): /usr/sbin/semodule, /sbin/restorecon
+
+
+%description selinux
+Dist Git is a remote Git repository specifically designed to hold RPM
+package sources.
+
+This package includes SELinux support.
+
+
 %prep
 %setup -q
 
 
 %build
-
+# ------------------------------------------------------------------------------
+# SELinux
+# ------------------------------------------------------------------------------
+cd selinux
+for selinuxvariant in %{selinux_variants}
+do
+  make NAME=${selinuxvariant} -f /usr/share/selinux/devel/Makefile
+  mv %{modulename}.pp %{modulename}.pp.${selinuxvariant}
+  make NAME=${selinuxvariant} -f /usr/share/selinux/devel/Makefile clean
+done
+cd -
 
 
 %pre
+# ------------------------------------------------------------------------------
+# Users and Groups
+# ------------------------------------------------------------------------------
 getent group packager > /dev/null || \
     groupadd -r packager
 
@@ -53,16 +92,13 @@ getent passwd gen-acls > /dev/null || \
             -d %{_sharedstatedir}/dist-git/git gen-acls
 
 
-
 %install
-
 # ------------------------------------------------------------------------------
 # /usr/share/ .... static files
 # ------------------------------------------------------------------------------
 install -d %{buildroot}%{_datadir}/dist-git
 
 cp -a scripts/dist-git/* %{buildroot}%{_datadir}/dist-git/
-
 
 # ------------------------------------------------------------------------------
 # /etc/ .......... config files
@@ -79,7 +115,6 @@ cp -a configs/httpd/ssl.conf.example  %{buildroot}%{_sysconfdir}/httpd/conf.d/
 cp -a configs/httpd/dist-git/* %{buildroot}%{_sysconfdir}/httpd/conf.d/dist-git/
 cp -a configs/cron/*           %{buildroot}%{_sysconfdir}/cron.d/dist-git/
 cp -a configs/systemd/*        %{buildroot}%{_unitdir}/
-
 
 # ------------------------------------------------------------------------------
 # /var/lib/ ...... dynamic persistent files
@@ -114,11 +149,43 @@ ln -f -s %{_sharedstatedir}/dist-git/gitolite \
 ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
          %{buildroot}%{_sharedstatedir}/dist-git/git/repositories
 
+# ------------------------------------------------------------------------------
+# SELinux
+# ------------------------------------------------------------------------------
+cd selinux
+for selinuxvariant in %{selinux_variants}
+do
+  install -d %{buildroot}%{_datadir}/selinux/${selinuxvariant}
+  install -p -m 644 %{modulename}.pp.${selinuxvariant} \
+    %{buildroot}%{_datadir}/selinux/${selinuxvariant}/%{modulename}.pp
+done
+cd -
 
+/usr/sbin/hardlink -cv %{buildroot}%{_datadir}/selinux
+
+
+%post selinux
+for selinuxvariant in %{selinux_variants}
+do
+  /usr/sbin/semodule -s ${selinuxvariant} -i \
+    %{_datadir}/selinux/${selinuxvariant}/%{modulename}.pp &> /dev/null || :
+done
+%{_sbindir}/restorecon -Rv %{_sharedstatedir}/dist-git || :
+
+
+%postun selinux
+if [ $1 -eq 0 ] ; then
+  for selinuxvariant in %{selinux_variants}
+  do
+     /usr/sbin/semodule -s ${selinuxvariant} -r %{modulename} &> /dev/null || :
+  done
+fi
 
 
 %files
-
+# ------------------------------------------------------------------------------
+# Docs
+# ------------------------------------------------------------------------------
 %license LICENSE
 %doc README.md
 
@@ -127,7 +194,6 @@ ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
 # ------------------------------------------------------------------------------
 %dir              %{_datadir}/dist-git
 %attr (755, -, -) %{_datadir}/dist-git/*
-
 
 # ------------------------------------------------------------------------------
 # /etc/ .......... config files
@@ -144,7 +210,6 @@ ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
 %config(noreplace)     %{_sysconfdir}/cron.d/dist-git/dist_git_sync.cron
 %{_unitdir}/dist-git@.service
 %{_unitdir}/dist-git.socket
-
 
 # ------------------------------------------------------------------------------
 # /var/lib/ ...... dynamic persistent files
@@ -185,6 +250,11 @@ ln -f -s %{_sharedstatedir}/dist-git/git/rpms \
 %{_sharedstatedir}/dist-git/git/.gitolite
 %{_sharedstatedir}/dist-git/git/.gitolite.rc
 
+
+%files selinux
+%defattr(-,root,root,0755)
+%doc selinux/*
+%{_datadir}/selinux/*/%{modulename}.pp
 
 
 %changelog
