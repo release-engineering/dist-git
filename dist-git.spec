@@ -43,6 +43,7 @@ Summary:        SELinux support for dist-git
 BuildRequires:  checkpolicy
 BuildRequires:  policycoreutils
 BuildRequires:  selinux-policy-devel
+BuildRequires:  hardlink
 
 Requires:       %name = %version-%release
 %if "%{_selinux_policy_version}" != ""
