@@ -4,7 +4,7 @@
 
 
 Name:           dist-git
-Version:        0.10
+Version:        0.11
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -259,6 +259,8 @@ fi
 
 
 %changelog
+* Tue May 05 2015 Adam Samalik <asamalik@redhat.com> 0.11-1
+- SELinux subpackage
 * Mon Apr 27 2015 Adam Samalik <asamalik@redhat.com> 0.10-1
 - perl require and files update (asamalik@redhat.com)
 
