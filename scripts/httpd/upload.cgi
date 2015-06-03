@@ -14,6 +14,7 @@ import grp
 import pwd
 import syslog
 import smtplib
+import errno
 
 import fedmsg
 import fedmsg.config
@@ -63,45 +64,6 @@ def check_auth(username):
     except KeyError:
         pass
     return authenticated
-
-def send_email(pkg, checksum, filename, username, email_domain, owner_emails):
-    text = """A file has been added to the lookaside cache for %(pkg)s:
-
-%(checksum)s  %(filename)s""" % locals()
-    msg = MIMEText(text)
-    try:
-        sender_name = pwd.getpwnam(username)[4]
-        sender_email = "{username}@{domain}".format(username=username,
-                                                    domain=email_domain)
-    except KeyError:
-        sender_name = ''
-        sender_email = "nobody@{domain}".format(domain=email_domain)
-        syslog.syslog('Unable to find account info for %s (uploading %s)' %
-                      (username, filename))
-    if sender_name:
-        try:
-            sender_name = unicode(sender_name, 'ascii')
-        except UnicodeDecodeError:
-            sender_name = Header.Header(sender_name, 'utf-8').encode()
-            msg.set_charset('utf-8')
-    sender = Utils.formataddr((sender_name, sender_email))
-
-    recipients = owner_emails.replace("$PACKAGE", pkg).split(",")
-    msg['Subject'] = 'File %s uploaded to lookaside cache by %s' % (
-            filename, username)
-    msg['From'] = sender
-    msg['To'] = ', '.join(recipients)
-    msg['X-Fedora-Upload'] = '%s, %s' % (pkg, filename)
-    try:
-        s = smtplib.SMTP('bastion')
-        s.sendmail(sender, recipients, msg.as_string())
-    except:
-        syslog.syslog('sending mail for upload of %s failed!' % filename)
-
-def _get_conf(cp, section, option, default):
-    if cp.has_section(section) and cp.has_option(section, option):
-        return cp.get(section, option)
-    return default
 
 def main():
     config = ConfigParser()
@@ -168,11 +130,6 @@ def main():
     hash_dir = os.path.join(module_dir, filename, hash_type, checksum)
     msgpath = os.path.join(name, module_dir, filename, hash_type, checksum, filename)
 
-    if hash_type == "md5":
-        # Preserve compatibility with the current folder hierarchy for md5
-        hash_dir = os.path.join(module_dir, filename, checksum)
-        msgpath = os.path.join(name, module_dir, filename, checksum, filename)
-
     unwanted_prefix = '/var/lib/dist-git/cache/lookaside/pkgs/'
     if msgpath.startswith(unwanted_prefix):
         msgpath = msgpath[len(unwanted_prefix):]
@@ -235,7 +192,29 @@ def main():
 
     print >> sys.stderr, '[username=%s] Stored %s (%d bytes)' % (username, dest_file, filesize)
     print 'File %s size %d %s %s stored OK' % (filename, filesize, hash_type.upper(), checksum)
-    send_email(name, checksum, filename, username, EMAIL_DOMAIN, PKG_OWNER_EMAILS)
+
+    # Add the file to the old path, where fedpkg is currently looking for it
+    if hash_type == "md5":
+        old_dir = os.path.join(module_dir, filename, checksum)
+        old_path = os.path.join(old_dir, filename)
+
+        try:
+            os.makedirs(old_dir)
+
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise e
+
+        try:
+            os.link(dest_file, old_path)
+
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise e
+
+            # The file already existed at the old path, hardlink over it
+            os.unlink(old_path)
+            os.link(old_path)
 
     # Emit a fedmsg message.  Load the config to talk to the fedmsg-relay.
     try:
