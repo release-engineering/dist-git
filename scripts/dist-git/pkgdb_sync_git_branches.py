@@ -141,7 +141,9 @@ def pkgdb_pkg_branch():
     :return: a dict[pkg_name] = [pkg_branches]
     :rtype: dict
     """
-    data = requests.get(PKGDB_URL).json()
+    data = {"packageAcls": {}}
+    if PKGDB_URL:
+        data = requests.get(PKGDB_URL).json()
 
     output = {}
     for pkg in data['packageAcls']:

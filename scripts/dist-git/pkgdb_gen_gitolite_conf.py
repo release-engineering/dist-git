@@ -30,7 +30,9 @@ if __name__ == '__main__':
 
 
     # Read the ACL information from the packageDB
-    data = requests.get(pkgdb_acls_url).json()
+    data = {"packageAcls":{}}
+    if pkgdb_acls_url:
+        data = requests.get(pkgdb_acls_url).json()
 
     # Get a list of all the packages
     acls = data['packageAcls']
@@ -42,7 +44,9 @@ if __name__ == '__main__':
     #    sys.exit(1)
 
     # get the list of all groups
-    pkgdb_groups = requests.get(pkgdb_groups_url).json()
+    pkgdb_groups = {"groups":[]}
+    if pkgdb_groups_url:
+        pkgdb_groups = requests.get(pkgdb_groups_url).json()
 
     # print out our user groups
     for group in user_groups + pkgdb_groups["groups"]:
