@@ -116,7 +116,7 @@ RSA="ssh-rsa AAA...YqfTP frank@example.com"
 useradd $USER
 usermod -aG packager $USER
 mkdir /home/$USER/.ssh
-echo "command=\"HOME=/var/lib/dist-git/git/ /usr/share/gitolite3/gitolite-shell $USER $RSA\" > /home/$USER/.ssh/authorized_keys
+echo "command=\"HOME=/var/lib/dist-git/git/ /usr/share/gitolite3/gitolite-shell $USER\" $RSA" > /home/$USER/.ssh/authorized_keys
 ```
 
 #### 4. Install the Web Interface:
