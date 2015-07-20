@@ -4,7 +4,7 @@
 
 
 Name:           dist-git
-Version:        0.11
+Version:        0.12
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -259,6 +259,10 @@ fi
 
 
 %changelog
+* Mon Jul 20 2015 Adam Samalik <asamalik@redhat.com> 0.12-1
+- config update (asamalik@redhat.com)
+- Upload files to new and old paths + remove email (asamalik@redhat.com)
+
 * Tue May 05 2015 Adam Samalik <asamalik@redhat.com> 0.11-1
 - SELinux subpackage
 * Mon Apr 27 2015 Adam Samalik <asamalik@redhat.com> 0.10-1
