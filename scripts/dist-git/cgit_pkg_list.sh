@@ -10,5 +10,5 @@ newfile=`mktemp`
 cd /var/lib/dist-git/git/rpms
 ls > $newfile
 mv -Z $newfile /var/lib/dist-git/git/pkgs-git-repos-list
-chown apache:apache /var/lib/dist-git/git/pkgs-git-repos-list
+#chown apache:apache /var/lib/dist-git/git/pkgs-git-repos-list
 chmod 644 /var/lib/dist-git/git/pkgs-git-repos-list

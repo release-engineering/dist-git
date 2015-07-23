@@ -246,7 +246,7 @@ fi
 %attr (755, apache, apache)       %{_sharedstatedir}/dist-git/web/upload.cgi
 %dir                              %{_sharedstatedir}/dist-git/cache
 %dir                              %{_sharedstatedir}/dist-git/cache/lookaside
-%attr (755, apache, apache)       %{_sharedstatedir}/dist-git/cache/lookaside/pkgs
+%attr (775, apache, apache)       %{_sharedstatedir}/dist-git/cache/lookaside/pkgs
 %{_sharedstatedir}/dist-git/git/repositories
 %{_sharedstatedir}/dist-git/git/.gitolite
 %{_sharedstatedir}/dist-git/git/.gitolite.rc
