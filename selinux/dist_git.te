@@ -10,8 +10,7 @@ files_tmp_file(git_script_tmp_t);
 allow httpd_git_script_t git_script_tmp_t:file manage_file_perms;
 
 # Do not audit attempts to read the process state (/proc/pid) of all domains. 
-domain_read_all_domains_state(httpd_git_script_t);
-
+domain_dontaudit_read_all_domains_state(httpd_git_script_t)
 # List the contents of the sysfs directories. 
 dev_list_sysfs(httpd_git_script_t);
 
