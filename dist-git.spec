@@ -4,7 +4,7 @@
 
 
 Name:           dist-git
-Version:        0.12
+Version:        0.13
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -259,6 +259,11 @@ fi
 
 
 %changelog
+* Wed Aug 05 2015 Adam Samalik <asamalik@redhat.com> 0.13-1
+- optional cgit_pkg_list.sh parameter (asamalik@redhat.com)
+- change mv to cp + rm (asamalik@redhat.com)
+- update config to not be Fedora specific (asamalik@redhat.com)
+- Change: lookaside dir perms + cgit_pkg_list.sh (asamalik@redhat.com)
 * Mon Jul 20 2015 Adam Samalik <asamalik@redhat.com> 0.12-1
 - config update (asamalik@redhat.com)
 - Upload files to new and old paths + remove email (asamalik@redhat.com)
