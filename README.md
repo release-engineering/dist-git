@@ -3,7 +3,7 @@
 Dist Git
 ========
 
-Dist Git is a remote Git repository specificaly designed to hold RPM package sources. It consists of three main modules:
+Dist Git is a remote Git repository specifically designed to hold RPM package sources. It consists of three main modules:
 
  1. Git repository with permissions managed by [Gitolite](http://gitolite.com/gitolite/index.html)
  2. Lookaside cache to store source tarballs
@@ -22,12 +22,12 @@ An RPM package repository typically consists of a spec file and the sources itse
 
 The Dist Git server repeatedly asks a package database for information about packages. This information contains a list of packages and other information. Each package can have a list of users or groups entitled to commit to this package and a list of platforms for which the package is built. Sources for each platform are held in corresponding branches.
 
-User cat interact with the Dist Git server using client probably based on [rpkg](https://fedorahosted.org/rpkg/). The client authenticates with an ssh certificate for git communication and with an http client certificate for uploads to the lookaside cache.
+Users can interact with the Dist Git server using a client probably based on [rpkg](https://fedorahosted.org/rpkg/). The client authenticates with an ssh certificate for git communication and with an http client certificate for uploads to the lookaside cache.
 
 ![server-communication](/images/server-communication.png)
 
 #### Package Database Communication
-The following is an example JSON data comming from the Package Database which would create two packages: *copr-frontend* and *copr-backend*. The first package would be for Fedora 21 only and permissions to commit into this repo would be granted to users *mirek*, *adam* and anyone in the group *provenpackager*. The *copr-backend* package would be for Fedora 21 and CentOS 7. The permissions would be processed the same way as for the first package.
+The following is an example JSON data coming from the Package Database which would create two packages: *copr-frontend* and *copr-backend*. The first package would be for Fedora 21 only and permissions to commit into this repo would be granted to users *mirek*, *adam* and anyone in the group *provenpackager*. The *copr-backend* package would be for Fedora 21 and CentOS 7. The permissions would be processed the same way as for the first package.
 
 ```JSON
 "packageAcls": {
@@ -66,14 +66,14 @@ In order to make changes in the package repositories, client needs to have a per
 
 Git uses ssh communication and client authenticates with public key. Each user needs to have an account on the server and be in a *packager* group. Their ssh shell must be set to "`HOME=/var/lib/dist-git/git /usr/share/gitolite3/gitolite-shell $USERNAME`" in order to have authorization working.
 
-Authorization is done by Gitolte. The configuration file describing all the permisions is automaticaly generated each time a Package Database is queried. Gitolite uses system users and groups.
+Authorization is done by Gitolite. The configuration file describing all the permisions is automatically generated each time a Package Database is queried. Gitolite uses system users and groups.
 
 Lookaside Cache uses https communication and client authenticates with ssl client certificate. The Dist Git service provider needs to issue the client certificate for every user.
 
 There is no authentication needed in order to read from the server.
 
 
-Instalation Guide 
+Installation Guide 
 -----------------
 
 The project is prepared to be built as an RPM package. You can easily build it on [Fedora](https://getfedora.org/) or [CentOS](https://www.centos.org/) using a tool called [Tito](https://github.com/dgoodwin/tito).
