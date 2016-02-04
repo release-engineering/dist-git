@@ -1,9 +1,9 @@
-**This project is under developement. Please do not use it in production. Ideas, issues and patches are very welcome.**
+**This project is under development. Please do not use it in production. Ideas, issues and patches are very welcome.**
 
 Dist Git
 ========
 
-Dist Git is a remote Git repository specificaly designed to hold RPM package sources. It consists of three main modules:
+Dist Git is a remote Git repository specifically designed to hold RPM package sources. It consists of three main modules:
 
  1. Git repository with permissions managed by [Gitolite](http://gitolite.com/gitolite/index.html)
  2. Lookaside cache to store source tarballs
@@ -66,14 +66,14 @@ In order to make changes in the package repositories, client needs to have a per
 
 Git uses ssh communication and client authenticates with public key. Each user needs to have an account on the server and be in a *packager* group. Their ssh shell must be set to "`HOME=/var/lib/dist-git/git /usr/share/gitolite3/gitolite-shell $USERNAME`" in order to have authorization working.
 
-Authorization is done by Gitolte. The configuration file describing all the permisions is automaticaly generated each time a Package Database is queried. Gitolite uses system users and groups.
+Authorization is done by Gitolte. The configuration file describing all the permissions is automatically generated each time a Package Database is queried. Gitolite uses system users and groups.
 
 Lookaside Cache uses https communication and client authenticates with ssl client certificate. The Dist Git service provider needs to issue the client certificate for every user.
 
 There is no authentication needed in order to read from the server.
 
 
-Instalation Guide 
+Installation Guide 
 -----------------
 
 The project is prepared to be built as an RPM package. You can easily build it on [Fedora](https://getfedora.org/) or [CentOS](https://www.centos.org/) using a tool called [Tito](https://github.com/dgoodwin/tito).
