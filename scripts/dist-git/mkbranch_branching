@@ -10,7 +10,7 @@
 
 # Figure out the environment we're running in
 RUNDIR=$(cd $(dirname $0) && pwd)
-GITROOT=/var/lib/dist-git/git/rpms
+GITROOT=/srv/git/repositories
 
 # check if a moron is driving me
 if [ ! -d $GITROOT ] ; then
@@ -30,6 +30,7 @@ IGNORE=
 BRANCH=""
 PACKAGES=""
 SRC_BRANCH="master"
+AUTHOR="Fedora Release Engineering <rel-eng@lists.fedoraproject.org>"
 
 Usage() {
     cat <<EOF
@@ -40,9 +41,8 @@ Usage:
     The /master suffix on branch names is assumed.
 
 Options:
-                                /master suffix on other branches assumed
     -n,--test           Don't do nothing, only test
-    -i,--ignore                 Ignore erroneous modules
+    -i,--ignore         Ignore erroneous modules
     -h,--help           This help message
     -v,--verbose        Increase verbosity
 EOF
@@ -74,11 +74,6 @@ while [ -n "$1" ] ; do
         BRANCH=$1/master
         ;;
 
-    --default-branch-author )
-        shift
-        AUTHOR=$1
-        ;;
-
     * )
         if [ -z "$BRANCH" ] ; then
         BRANCH="$1"
@@ -94,10 +89,6 @@ done
 if [ -z "$BRANCH" -o -z "$PACKAGES" ] ; then
     Usage
     exit -1
-fi
-
-if [ -z $AUTHOR ]; then
-    AUTHOR="Fedora Release Engineering <rel-eng@lists.fedoraproject.org>"
 fi
 
 
@@ -155,7 +146,7 @@ for NAME in $PACKAGES ; do
     #}
     [ $VERBOSE -gt 0 ] && echo "Creating $NAME $BRANCH from $NAME ..."
     $(pushd $GITROOT/$NAME.git >/dev/null && \
-    git branch --no-track $BRANCH `git rev-list --max-parents=0 master | head -1` && \
+    git branch --no-track $BRANCH `git rev-list master | head -1` && \
     popd >/dev/null) || {
     echo "ERROR: Branch $NAME $BRANCH could not be created" >&2
         popd >/dev/null

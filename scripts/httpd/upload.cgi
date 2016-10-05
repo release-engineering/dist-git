@@ -6,55 +6,58 @@
 #
 # License: GPL
 
+import cgi
+import errno
+import grp
+import hashlib
 import os
 import sys
-import cgi
 import tempfile
-import grp
-import pwd
-import syslog
-import smtplib
-import errno
 
 import fedmsg
 import fedmsg.config
 
-from ConfigParser import ConfigParser
-
-from email import Header, Utils
-try:
-    from email.mime.text import MIMEText
-except ImportError:
-    from email.MIMEText import MIMEText
-
-import hashlib
 
 # Reading buffer size
 BUFFER_SIZE = 4096
 
 # We check modules exist from this dircetory
-GITREPO = '/var/lib/dist-git/git/rpms'
+GITREPO = '/srv/git/repositories'
 
 # Lookaside cache directory
-CACHE_DIR = '/var/lib/dist-git/cache/lookaside/pkgs'
+CACHE_DIR = '/srv/cache/lookaside/pkgs'
 
 # Fedora Packager Group
 PACKAGER_GROUP = 'packager'
 
-# dist git configuration file
-CONFIG_FILE = "/etc/dist-git/dist-git.conf"
 
-def send_error(text):
+def send_error(text, status='500 Internal Server Error'):
+    """Send an error back to the client
+
+    This ensures that the client will get a proper error, including the HTTP
+    status code, so that it can handle problems appropriately.
+
+    Args:
+        text (str): The error message to send the client
+        status (str, optional): The HTTP status code to return to the client.
+    """
+    print 'Status: %s' % status
+    print 'Content-type: text/plain'
+    print
     print text
-    sys.exit(1)
+    sys.exit(0)
+
 
 def check_form(form, var):
     ret = form.getvalue(var, None)
     if ret is None:
-        send_error('Required field "%s" is not present.' % var)
+        send_error('Required field "%s" is not present.' % var,
+                   status='400 Bad Request')
     if isinstance(ret, list):
-        send_error('Multiple values given for "%s". Aborting.' % var)
+        send_error('Multiple values given for "%s". Aborting.' % var,
+                   status='400 Bad Request')
     return ret
+
 
 def check_auth(username):
     authenticated = False
@@ -65,22 +68,42 @@ def check_auth(username):
         pass
     return authenticated
 
+
+def hardlink(src, dest, username):
+    makedirs(os.path.dirname(dest), username)
+
+    try:
+        os.link(src, dest)
+
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            send_error(str(e))
+
+        # The file already existed at the dest path, hardlink over it
+        os.unlink(dest)
+        os.link(src, dest)
+
+    sys.stderr.write("[username=%s] ln %s %s\n" % (username, src, dest))
+
+
+def makedirs(dir_, username, mode=02755):
+    try:
+        os.makedirs(dir_, mode=mode)
+        sys.stderr.write('[username=%s] mkdir %s\n' % (username, dir_))
+
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            send_error(str(e))
+
+
 def main():
-    config = ConfigParser()
-    config.read(CONFIG_FILE)
-
-    EMAIL_DOMAIN = _get_conf(config, "notifications", "email_domain", "")
-    PKG_OWNER_EMAILS = _get_conf(config, "notifications", "pkg_owner_emails", "")
-
     os.umask(002)
 
     username = os.environ.get('SSL_CLIENT_S_DN_CN', None)
     if not check_auth(username):
-        print 'Status: 403 Forbidden'
-        print 'Content-type: text/plain'
-        print
-        print 'You must connect with a valid certificate and be in the %s group to upload.' % PACKAGER_GROUP
-        sys.exit(0)
+        send_error('You must connect with a valid certificate and be in the '
+                   '%s group to upload.' % PACKAGER_GROUP,
+                   status='403 Forbidden')
 
     print 'Content-Type: text/plain'
     print
@@ -91,17 +114,18 @@ def main():
     name = check_form(form, 'name')
 
     # Search for the file hash, start with stronger hash functions
-    if form.has_key('sha512sum'):
+    if 'sha512sum' in form:
         checksum = check_form(form, 'sha512sum')
         hash_type = "sha512"
 
-    elif form.has_key('md5sum'):
+    elif 'md5sum' in form:
         # Fallback on md5, as it's what we currently use
         checksum = check_form(form, 'md5sum')
         hash_type = "md5"
 
     else:
-        send_error('Required checksum is not present.')
+        send_error('Required checksum is not present.',
+                   status='400 Bad Request')
 
     action = None
     upload_file = None
@@ -110,38 +134,47 @@ def main():
     # Is this a submission or a test?
     # in a test, we don't get a file, just a filename.
     # In a submission, we don;t get a filename, just the file.
-    if form.has_key('filename'):
+    if 'filename' in form:
         action = 'check'
         filename = check_form(form, 'filename')
         filename = os.path.basename(filename)
-        print >> sys.stderr, '[username=%s] Checking file status: NAME=%s FILENAME=%s %sSUM=%s' % (username, name, filename, hash_type.upper(), checksum)
+        sys.stderr.write('[username=%s] Checking file status: NAME=%s '
+                         'FILENAME=%s %sSUM=%s\n' % (username, name, filename,
+                                                     hash_type.upper(),
+                                                     checksum))
     else:
         action = 'upload'
-        if form.has_key('file'):
+        if 'file' in form:
             upload_file = form['file']
             if not upload_file.file:
-                send_error('No file given for upload. Aborting.')
+                send_error('No file given for upload. Aborting.',
+                           status='400 Bad Request')
             filename = os.path.basename(upload_file.filename)
         else:
-            send_error('Required field "file" is not present.')
-        print >> sys.stderr, '[username=%s] Processing upload request: NAME=%s FILENAME=%s %sSUM=%s' % (username, name, filename, hash_type.upper(), checksum)
+            send_error('Required field "file" is not present.',
+                       status='400 Bad Request')
+
+        sys.stderr.write('[username=%s] Processing upload request: '
+                         'NAME=%s FILENAME=%s %sSUM=%s\n' % (
+                             username, name, filename, hash_type.upper(),
+                             checksum))
 
     module_dir = os.path.join(CACHE_DIR, name)
     hash_dir = os.path.join(module_dir, filename, hash_type, checksum)
-    msgpath = os.path.join(name, module_dir, filename, hash_type, checksum, filename)
-
-    unwanted_prefix = '/var/lib/dist-git/cache/lookaside/pkgs/'
-    if msgpath.startswith(unwanted_prefix):
-        msgpath = msgpath[len(unwanted_prefix):]
+    msgpath = os.path.join(name, filename, hash_type, checksum, filename)
 
     # first test if the module really exists
-    git_dir = os.path.join(GITREPO, '%s.git' %  name)
+    git_dir = os.path.join(GITREPO, '%s.git' % name)
     if not os.path.isdir(git_dir):
-        print >> sys.stderr, '[username=%s] Unknown module: %s' % (username, name)
-        send_error('Module "%s" does not exist!' % name)
+        sys.stderr.write('[username=%s] Unknown module: %s' % (username, name))
+        send_error('Module "%s" does not exist!' % name,
+                   status='404 Not Found')
 
     # try to see if we already have this file...
     dest_file = os.path.join(hash_dir, filename)
+    old_dir = os.path.join(module_dir, filename, checksum)
+    old_path = os.path.join(old_dir, filename)
+
     if os.path.exists(dest_file):
         if action == 'check':
             print 'Available'
@@ -152,12 +185,17 @@ def main():
             print 'File: %s Size: %d' % (dest_file, dest_file_stat.st_size)
         sys.exit(0)
     elif action == 'check':
-        print 'Missing'
+        if os.path.exists(old_path):
+            # The file had been uploaded at the old path
+            hardlink(old_path, dest_file, username)
+            print 'Available'
+        else:
+            print 'Missing'
+
         sys.exit(0)
 
     # check that all directories are in place
-    if not os.path.isdir(module_dir):
-        os.makedirs(module_dir, 02775)
+    makedirs(module_dir, username)
 
     # grab a temporary filename and dump our file in there
     tempfile.tempdir = module_dir
@@ -180,41 +218,24 @@ def main():
     check_checksum = m.hexdigest()
     if checksum != check_checksum:
         os.unlink(tmpfile)
-        send_error("%s check failed. Received %s instead of %s." % (hash_type.upper(), check_checksum, checksum))
+        send_error("%s check failed. Received %s instead of %s." %
+                   (hash_type.upper(), check_checksum, checksum),
+                   status='400 Bad Request')
 
     # wow, even the checksum matches. make sure full path is valid now
-    if not os.path.isdir(hash_dir):
-        os.makedirs(hash_dir, 02775)
-        print >> sys.stderr, '[username=%s] mkdir %s' % (username, hash_dir)
-
+    makedirs(hash_dir, username)
     os.rename(tmpfile, dest_file)
     os.chmod(dest_file, 0644)
 
-    print >> sys.stderr, '[username=%s] Stored %s (%d bytes)' % (username, dest_file, filesize)
-    print 'File %s size %d %s %s stored OK' % (filename, filesize, hash_type.upper(), checksum)
+    sys.stderr.write('[username=%s] Stored %s (%d bytes)' % (username,
+                                                             dest_file,
+                                                             filesize))
+    print 'File %s size %d %s %s stored OK' % (filename, filesize,
+                                               hash_type.upper(), checksum)
 
     # Add the file to the old path, where fedpkg is currently looking for it
     if hash_type == "md5":
-        old_dir = os.path.join(module_dir, filename, checksum)
-        old_path = os.path.join(old_dir, filename)
-
-        try:
-            os.makedirs(old_dir)
-
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                raise e
-
-        try:
-            os.link(dest_file, old_path)
-
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                raise e
-
-            # The file already existed at the old path, hardlink over it
-            os.unlink(old_path)
-            os.link(old_path)
+        hardlink(dest_file, old_path, username)
 
     # Emit a fedmsg message.  Load the config to talk to the fedmsg-relay.
     try:
@@ -224,11 +245,18 @@ def main():
         fedmsg.init(name="relay_inbound", cert_prefix="lookaside", **config)
 
         topic = "lookaside.new"
-        msg = dict(name=name, md5sum=checksum, filename=filename.split('/')[-1],
-                   agent=username, path=msgpath)
+        msg = dict(name=name, md5sum=checksum,
+                   filename=filename.split('/')[-1], agent=username,
+                   path=msgpath)
         fedmsg.publish(modname="git", topic=topic, msg=msg)
     except Exception as e:
         print "Error with fedmsg", str(e)
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+
+    except Exception as e:
+        import traceback
+        sys.stderr.write('%s\n' % traceback.format_exc())
+        send_error(str(e))

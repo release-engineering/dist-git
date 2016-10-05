@@ -8,9 +8,8 @@
 # All local changes will be lost.
 
 
-
 # Figure out the environment we're running in
-GITROOT=/var/lib/dist-git/git/rpms
+GITROOT=/srv/git/repositories
 
 # check if a moron is driving me
 if [ ! -d $GITROOT ] ; then
@@ -24,65 +23,47 @@ fi
 VERBOSE=0
 TEST=
 IGNORE=
+AUTHOR="Fedora Release Engineering <rel-eng@lists.fedoraproject.org>"
 GIT_SSH_URL="ssh://localhost"
 
 Usage() {
     cat <<EOF
 Usage:
-    $0 [OPTIONS] <package_name>
+    $0 <package_name>
 
     Creates a new repo for <package_name>
 
 Options:
     -h,--help			This help message
-    --email-domain DOMAIN       Email domain for git hooks.maildomain
-    --pkg-owner-emails EMAILS   Comma separated list of emails for
-                                git hooks.mailinglist
 EOF
 }
 
-# fail with no arguments
-if [ $# -eq 0 ]; then
+if [ $# -gt 2 ]; then
     Usage
     exit -1
 fi
 
-OPTS=$(getopt -o h -l help -l email-domain: -l pkg-owner-emails: -l default-branch-author: -- "$@")
-if [ $? != 0 ]
-then
-    exit 1
-fi
-
-eval set -- "$OPTS"
-
-while true ; do
+# parse the arguments
+while [ -n "$1" ] ; do
     case "$1" in
-        -h | --help) Usage; exit 0;;
-        --email-domain) EMAIL_DOMAIN=$2; shift 2;;
-        --pkg-owner-emails) PKG_OWNER_EMAILS=$2; shift 2;;
-        --default-branch-author) AUTHOR=$2; shift 2;;
-        --) shift; break;;
+	-h | --help )
+	    Usage
+	    exit 0
+	    ;;
+
+	* )
+	    PACKAGE="$1"
+	    ;;
     esac
+    shift
 done
 
-# fail when more or none packages are specified
-if ! [ $# -eq 1 ]; then
+# I hate shell scripting.  I'm sure the above is totally wrong
+
+# check the arguments
+if [ -z "$PACKAGE" ] ; then
     Usage
     exit -1
-fi
-
-PACKAGE=$1
-
-if [ -z $EMAIL_DOMAIN ]; then
-    EMAIL_DOMAIN=fedoraproject.org
-fi
-
-if [ -z $PKG_OWNER_EMAILS ]; then
-    PKG_OWNER_EMAILS=$PACKAGE-owner@fedoraproject.org,scm-commits@lists.fedoraproject.org
-fi
-
-if [ -z $AUTHOR ]; then
-    AUTHOR="Fedora Release Engineering <rel-eng@lists.fedoraproject.org>"
 fi
 
 # Sanity checks before we start doing damage
@@ -114,8 +95,8 @@ mkdir -p $GITROOT/$PACKAGE.git
 pushd $GITROOT/$PACKAGE.git >/dev/null
 git init -q --shared --bare
 echo "$PACKAGE" > description # This is used to figure out who to send mail to.
-git config --add hooks.mailinglist $PKG_OWNER_EMAILS
-git config --add hooks.maildomain $EMAIL_DOMAIN
+git config --add hooks.mailinglist "$PACKAGE-owner@fedoraproject.org,scm-commits@lists.fedoraproject.org"
+git config --add hooks.maildomain fedoraproject.org
 popd >/dev/null
 
 # Now clone that repo and create the .gitignore and sources file
@@ -129,7 +110,7 @@ git push -q origin master
 popd >/dev/null
 
 # Place the gitolite update hook in place since we're not using our own
-ln -s /var/lib/dist-git/gitolite/hooks/common/update $GITROOT/$PACKAGE.git/hooks/update
+ln -s /etc/gitolite/hooks/common/update $GITROOT/$PACKAGE.git/hooks/update
 
 
 # Setup our post-receive hooks
