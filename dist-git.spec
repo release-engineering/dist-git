@@ -30,6 +30,7 @@ Requires:       python-requests
 Requires:       mod_ssl
 Requires:       fedmsg
 Requires:       cronie
+Requires:       crudini
 Requires(pre):  shadow-utils
 
 %description
