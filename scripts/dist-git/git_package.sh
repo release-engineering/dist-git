@@ -82,7 +82,7 @@ if [ -z $PKG_OWNER_EMAILS ]; then
 fi
 
 if [ -z $AUTHOR ]; then
-    AUTHOR="Fedora Release Engineering <rel-eng@lists.fedoraproject.org>"
+    AUTHOR=`crudini --get /etc/dist-git/dist-git.conf git default_branch_author`
 fi
 
 # Sanity checks before we start doing damage
