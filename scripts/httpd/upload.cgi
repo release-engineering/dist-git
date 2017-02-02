@@ -100,6 +100,9 @@ def main():
     os.umask(002)
 
     username = os.environ.get('SSL_CLIENT_S_DN_CN', None)
+    gssname = os.environ.get('GSS_NAME', None)
+    if gssname and '@' in gssname and not username:
+        username = gssname.partition('@')[0]
     if not check_auth(username):
         send_error('You must connect with a valid certificate and be in the '
                    '%s group to upload.' % PACKAGER_GROUP,
