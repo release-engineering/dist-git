@@ -89,7 +89,7 @@ getent group gen-acls > /dev/null || \
 
 getent passwd gen-acls > /dev/null || \
     useradd -r -g gen-acls -G packager -s /bin/bash \
-            -d /srv/git gen-acls
+            -d /srv/git gen-acls # gid: 417
 
 
 %install
