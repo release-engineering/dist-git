@@ -195,6 +195,7 @@ fi
 %attr (775, apache, apache)       %{installdir}/cache/lookaside/pkgs
 %attr (755, root, root) /usr/local/bin/mkbranch
 %attr (755, root, root) /usr/local/bin/mkbranch_branching
+%attr (755, root, root) /usr/local/bin/cgit_pkg_list
 %attr (755, root, root) /usr/local/bin/setup_git_package
 
 %files selinux
