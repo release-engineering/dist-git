@@ -24,6 +24,7 @@ BuildRequires:  systemd
 
 Requires:       httpd
 Requires:       perl(Sys::Syslog)
+Requires:       git
 Requires:       git-daemon
 Requires:       python-requests
 Requires:       mod_ssl
