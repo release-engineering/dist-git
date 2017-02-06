@@ -105,9 +105,8 @@ install -d %{buildroot}%{_sysconfdir}/dist-git
 install -d %{buildroot}%{_sysconfdir}/httpd/conf.d/dist-git
 mkdir -p   %{buildroot}%{_unitdir}
 
-cp -a configs/dist-git/dist-git.conf  %{buildroot}%{_sysconfdir}/dist-git/
-cp -a configs/httpd/dist-git.conf     %{buildroot}%{_sysconfdir}/httpd/conf.d/
 cp -a configs/httpd/ssl.conf.example  %{buildroot}%{_sysconfdir}/httpd/conf.d/
+cp -a configs/httpd/dist-git.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 cp -a configs/httpd/dist-git/* %{buildroot}%{_sysconfdir}/httpd/conf.d/dist-git/
 cp -a configs/systemd/*        %{buildroot}%{_unitdir}/
 
@@ -170,11 +169,10 @@ fi
 # /etc/ .......... config files
 # ------------------------------------------------------------------------------
 %dir                   %{_sysconfdir}/dist-git
-%config(noreplace)     %{_sysconfdir}/dist-git/dist-git.conf
-%config(noreplace)     %{_sysconfdir}/httpd/conf.d/dist-git.conf
 %config                %{_sysconfdir}/httpd/conf.d/ssl.conf.example
 %dir                   %{_sysconfdir}/httpd/conf.d/dist-git
 %config(noreplace)     %{_sysconfdir}/httpd/conf.d/dist-git/*
+%config(noreplace)     %{_sysconfdir}/httpd/conf.d/dist-git.conf
 
 %{_unitdir}/dist-git@.service
 %{_unitdir}/dist-git.socket
