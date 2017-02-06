@@ -84,13 +84,6 @@ cd -
 getent group packager > /dev/null || \
     groupadd -r packager
 
-getent group gen-acls > /dev/null || \
-    groupadd -r gen-acls
-
-getent passwd gen-acls > /dev/null || \
-    useradd -r -g gen-acls -G packager -s /bin/bash \
-            -d /srv/git gen-acls # gid: 417
-
 
 %install
 # ------------------------------------------------------------------------------
