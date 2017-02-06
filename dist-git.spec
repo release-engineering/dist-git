@@ -164,6 +164,8 @@ do
     %{_datadir}/selinux/${selinuxvariant}/%{modulename}.pp &> /dev/null || :
 done
 %{_sbindir}/restorecon -Rv /srv/git/ || :
+%{_sbindir}/restorecon -Rv /srv/cache/ || :
+%{_sbindir}/restorecon -Rv /srv/web/ || :
 
 
 %postun selinux
