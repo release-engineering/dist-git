@@ -23,7 +23,6 @@ BuildArch:      noarch
 BuildRequires:  systemd
 
 Requires:       httpd
-Requires:       gitolite3
 Requires:       perl(Sys::Syslog)
 Requires:       git-daemon
 Requires:       python-requests
@@ -103,25 +102,14 @@ cp -a scripts/dist-git/* %{buildroot}/usr/local/bin/
 # /etc/ .......... config files
 # ------------------------------------------------------------------------------
 install -d %{buildroot}%{_sysconfdir}/dist-git
-install -d %{buildroot}%{_sysconfdir}/gitolite
 install -d %{buildroot}%{_sysconfdir}/httpd/conf.d/dist-git
 mkdir -p   %{buildroot}%{_unitdir}
 
 cp -a configs/dist-git/dist-git.conf  %{buildroot}%{_sysconfdir}/dist-git/
 cp -a configs/httpd/dist-git.conf     %{buildroot}%{_sysconfdir}/httpd/conf.d/
-cp -a configs/gitolite/gitolite.rc    %{buildroot}%{_sysconfdir}/gitolite/
 cp -a configs/httpd/ssl.conf.example  %{buildroot}%{_sysconfdir}/httpd/conf.d/
 cp -a configs/httpd/dist-git/* %{buildroot}%{_sysconfdir}/httpd/conf.d/dist-git/
 cp -a configs/systemd/*        %{buildroot}%{_unitdir}/
-
-install -d %{buildroot}%{_sysconfdir}/gitolite
-install -d %{buildroot}%{_sysconfdir}/gitolite/conf
-install -d %{buildroot}%{_sysconfdir}/gitolite/logs
-install -d %{buildroot}%{_sysconfdir}/gitolite/local
-install -d %{buildroot}%{_sysconfdir}/gitolite/local/VREF
-install -d %{buildroot}%{_sysconfdir}/gitolite
-install -d %{buildroot}%{_sysconfdir}/gitolite/hooks
-install -d %{buildroot}%{_sysconfdir}/gitolite/hooks/common
 
 # ------------------------------------------------------------------------------
 # /var/lib/ ...... dynamic persistent files
@@ -135,12 +123,6 @@ install -d %{buildroot}%{installdir}/cache/lookaside/pkgs
 install -d %{buildroot}%{installdir}/web
 
 cp -a scripts/httpd/upload.cgi %{buildroot}%{installdir}/web/
-
-ln -f -s %{_sysconfdir}/gitolite/gitolite.rc \
-         %{buildroot}%{installdir}/git/.gitolite.rc
-
-ln -f -s %{_sysconfdir}/gitolite \
-         %{buildroot}%{installdir}/git/.gitolite
 
 # ------------------------------------------------------------------------------
 # SELinux
@@ -190,32 +172,12 @@ fi
 %dir                   %{_sysconfdir}/dist-git
 %config(noreplace)     %{_sysconfdir}/dist-git/dist-git.conf
 %config(noreplace)     %{_sysconfdir}/httpd/conf.d/dist-git.conf
-%config(noreplace)     %{_sysconfdir}/gitolite/gitolite.rc
 %config                %{_sysconfdir}/httpd/conf.d/ssl.conf.example
 %dir                   %{_sysconfdir}/httpd/conf.d/dist-git
 %config(noreplace)     %{_sysconfdir}/httpd/conf.d/dist-git/*
 
-# non-standard-dir-perm:
-# - write access needed into log directory for gitolite
-%attr (775, gen-acls, packager)   %{_sysconfdir}/gitolite/logs
-%dir                              %{_sysconfdir}/gitolite/local
-# non-standard-dir-perm:
-# - write access needed for gitolite admin groups
-%attr (775, gen-acls, packager)   %{_sysconfdir}/gitolite/local/VREF
-# non-standard-dir-perm:
-# - write access needed for gitolite admin groups
-%attr (770, -, packager)          %{_sysconfdir}/gitolite/hooks
-# script-without-shebang:
-# zero-length:
-# - initial empty file required by gitolite with the correct perms
-%dir                              %{_sysconfdir}/gitolite/hooks/common
-%ghost %attr (775, gen-acls, packager)  %{_sysconfdir}/gitolite/hooks/common/update
-
 %{_unitdir}/dist-git@.service
 %{_unitdir}/dist-git.socket
-
-%dir                              %{_sysconfdir}/gitolite
-%attr (755, gen-acls, gen-acls)   %{_sysconfdir}/gitolite/conf
 
 # ------------------------------------------------------------------------------
 # /var/lib/ ...... dynamic persistent files
@@ -231,8 +193,6 @@ fi
 %dir                              %{installdir}/cache
 %dir                              %{installdir}/cache/lookaside
 %attr (775, apache, apache)       %{installdir}/cache/lookaside/pkgs
-%{installdir}/git/.gitolite
-%{installdir}/git/.gitolite.rc
 %attr (755, root, root) /usr/local/bin/mkbranch
 %attr (755, root, root) /usr/local/bin/mkbranch_branching
 %attr (755, root, root) /usr/local/bin/setup_git_package
