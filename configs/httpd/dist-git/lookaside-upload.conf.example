@@ -1,5 +1,3 @@
-Alias /repo/ /srv/cache/lookaside/
-
 # default SSL configuration...
 Listen 443
 
