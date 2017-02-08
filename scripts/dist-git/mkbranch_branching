@@ -137,13 +137,6 @@ for NAME in $PACKAGES ; do
         echo "ERROR: $NAME can not be branched by you"
         continue
     fi
-    ####  Replace the above with a gitolite permission check
-    #[ $VERBOSE -gt 0 ] && echo "Creating $BRANCH-split tag for $NAME/$SRC_BRANCH..."
-    # Is the above needed?
-    #cvs -Q rtag -f "$BRANCH-split" $TOPLEVEL/$NAME/$SRC_BRANCH || {
-    #echo "ERROR: Branch split tag for $NAME/$SRC_BRANCH could not be created" >&2
-    #exit -2
-    #}
     [ $VERBOSE -gt 0 ] && echo "Creating $NAME $BRANCH from $NAME ..."
     $(pushd $GITROOT/$NAME.git >/dev/null && \
     git branch --no-track $BRANCH `git rev-list master | head -1` && \
