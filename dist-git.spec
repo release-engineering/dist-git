@@ -1,5 +1,7 @@
 %global selinux_variants mls targeted
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
+%global file_context_file %{_sysconfdir}/selinux/targeted/contexts/files/file_contexts
+%global file_context_file_pre %{_localstatedir}/lib/rpm-state/file_contexts.pre
 %global modulename dist_git
 %global installdir /srv
 
@@ -130,6 +132,10 @@ cd -
 
 /usr/sbin/hardlink -cv %{buildroot}%{_datadir}/selinux
 
+%pre selinux
+if /usr/sbin/selinuxenabled ; then
+   [ -f %{file_context_file_pre} ] || cp -f %{file_context_file} %{file_context_file_pre}
+fi
 
 %post selinux
 for selinuxvariant in %{selinux_variants}
@@ -137,10 +143,18 @@ do
   /usr/sbin/semodule -s ${selinuxvariant} -i \
     %{_datadir}/selinux/${selinuxvariant}/%{modulename}.pp &> /dev/null || :
 done
-%{_sbindir}/restorecon -Rv /srv/git/ || :
-%{_sbindir}/restorecon -Rv /srv/cache/ || :
-%{_sbindir}/restorecon -Rv /srv/web/ || :
 
+%posttrans selinux
+if /usr/sbin/selinuxenabled ; then
+   if [ -f %{file_context_file_pre} ]; then
+      /usr/sbin/fixfiles -C %{file_context_file_pre} restore
+      rm -f %{file_context_file_pre}
+   else
+      %{_sbindir}/restorecon -Rv /srv/git/ || :
+      %{_sbindir}/restorecon -Rv /srv/cache/ || :
+      %{_sbindir}/restorecon -Rv /srv/web/ || :
+   fi
+fi
 
 %postun selinux
 if [ $1 -eq 0 ] ; then
