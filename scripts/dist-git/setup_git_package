@@ -20,6 +20,7 @@ if [ ! -d $GITROOT ] ; then
 fi
 
 # Local variables
+GITOLITE=0
 VERBOSE=0
 TEST=
 IGNORE=
@@ -34,31 +35,28 @@ Usage:
     Creates a new repo for <package_name>
 
 Options:
-    -h,--help			This help message
+    -h,--help           This help message
+    -g,--gitolite       Install gitolite's update hook
 EOF
 }
 
-if [ $# -gt 2 ]; then
+while [[ $# > 0 ]]
+do
+key="$1"
+case $key in
+    --help|-h)
     Usage
-    exit -1
-fi
-
-# parse the arguments
-while [ -n "$1" ] ; do
-    case "$1" in
-	-h | --help )
-	    Usage
-	    exit 0
-	    ;;
-
-	* )
-	    PACKAGE="$1"
-	    ;;
-    esac
-    shift
+    exit 0
+    ;;
+    --gitolite|-g)
+    GITOLITE=1
+    ;;
+    *)
+    PACKAGE="$1"
+    ;;
+esac
+shift
 done
-
-# I hate shell scripting.  I'm sure the above is totally wrong
 
 # check the arguments
 if [ -z "$PACKAGE" ] ; then
@@ -71,12 +69,6 @@ fi
 if [ -f $GITROOT/$PACKAGE.git/refs/heads/master ] ; then
     echo "ERROR: Package module $PACKAGE already exists!" >&2
     exit -1
-fi
-
-# A cleanup in case gitolite came by this repo
-if [ -f $GITROOT/$PACKAGE.git/hooks/update ] ; then
-    echo "Gitolite already initialized this repo. Will remove its hooks"
-    rm -f $GITROOT/$PACKAGE.git/hooks/update
 fi
 
 # "global" permissions check
@@ -110,8 +102,9 @@ git push -q origin master
 popd >/dev/null
 
 # Place the gitolite update hook in place since we're not using our own
-ln -s /etc/gitolite/hooks/common/update $GITROOT/$PACKAGE.git/hooks/update
-
+if [ $GITOLITE -gt 0 ]; then
+    ln -s /etc/gitolite/hooks/common/update $GITROOT/$PACKAGE.git/hooks/update
+fi
 
 # Setup our post-receive hooks
 mkdir -p $GITROOT/$PACKAGE.git/hooks/post-receive-chained.d
