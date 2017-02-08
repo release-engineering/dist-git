@@ -10,8 +10,8 @@ Summary:        Package source version control system
 
 Group:          Applications/Productivity
 
-# upload.cgi uses GPLv1 and pkgdb_sync_git_branches.py uses GPLv2+
-License:        MIT and GPLv1 and GPLv2+
+# upload.cgi uses GPLv1
+License:        MIT and GPLv1
 URL:            https://github.com/release-engineering/dist-git
 # Source is created by
 # git clone https://github.com/release-engineering/dist-git.git
@@ -200,12 +200,14 @@ fi
 - change mv to cp + rm (asamalik@redhat.com)
 - update config to not be Fedora specific (asamalik@redhat.com)
 - Change: lookaside dir perms + cgit_pkg_list.sh (asamalik@redhat.com)
+
 * Mon Jul 20 2015 Adam Samalik <asamalik@redhat.com> 0.12-1
 - config update (asamalik@redhat.com)
 - Upload files to new and old paths + remove email (asamalik@redhat.com)
 
 * Tue May 05 2015 Adam Samalik <asamalik@redhat.com> 0.11-1
 - SELinux subpackage
+
 * Mon Apr 27 2015 Adam Samalik <asamalik@redhat.com> 0.10-1
 - perl require and files update (asamalik@redhat.com)
 
@@ -233,6 +235,7 @@ fi
 * Fri Apr 10 2015 Adam Samalik <asamalik@redhat.com> 0.4-1
 - spec and config fix
 - systemd services
+
 * Tue Mar 31 2015 Adam Samalik <asamalik@redhat.com> 0.3-1
 - alpha package (asamalik@redhat.com)
 
