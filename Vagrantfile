@@ -59,5 +59,9 @@ Vagrant.configure(2) do |config|
       inline: "systemctl enable httpd && systemctl start httpd",
       run: "always"
 
+    distgit.vm.provision "shell",
+      inline: "useradd clime -G packager",
+      run: "always"
+
   end
 end

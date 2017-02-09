@@ -6,7 +6,32 @@
 export TESTPATH="$( builtin cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 rlJournalStart
-    rlPhaseStartTest TestTemplate
-        # write your test here
+    rlPhaseStartSetup BasicTest
+        ssh clime@pkgs.fedoraproject.org 'setup_git_package prunerepo'
+    rlPhaseEnd
+
+    rlPhaseStartTest BasicTest
+        cd $TESTPATH
+
+        rlRun "fedpkg clone /srv/git/repositories/prunerepo"
+
+        cd prunerepo
+
+        rlRun "fedpkg import --skip-diffs ../prunerepo-1.1-1.fc23.src.rpm"
+        rlRun "git add -A && git commit -m 'test commit'"
+        rlRun "git push"
+
+        cd ..
+
+        rlRun "git clone git://pkgs.fedoraproject.org/prunerepo.git prunerepo-copy"
+
+        rlRun 'wget http://pkgs.fedoraproject.org/repo/pkgs/prunerepo/prunerepo-1.1.tar.gz/sha512/6a6a30c0e8c661176ba0cf7e8f1909a493a298fd5088389f5eb630b577dee157106e5f89dc429bcf2a6fdffe4bc10b498906b9746220882827560bc5f72a1b01/prunerepo-1.1.tar.gz'
+
+        cd -
+    rlPhaseEnd
+
+    rlPhaseStartCleanup BasicTest
+        rm -rf $TESTPATH/prunerepo $TESTPATH/prunerepo-copy $TESTPATH/prunerepo-1.1.tar.gz
+        ssh clime@pkgs.fedoraproject.org 'rm -rf /srv/git/repositories/prunerepo.git'
     rlPhaseEnd
 rlJournalEnd &> /dev/null

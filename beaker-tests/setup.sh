@@ -22,6 +22,7 @@ cp -rT $SCRIPTPATH/files /
 dnf -y install vagrant
 dnf -y install vagrant-libvirt
 dnf -y install jq
+dnf -y install fedpkg
 
 # enable libvirtd for Vagrant (distgit)
 systemctl enable libvirtd && systemctl start libvirtd
@@ -30,6 +31,20 @@ systemctl start virtlogd.socket # this is currently needed in f25 for vagrant to
 cd $DISTGITROOTDIR
 vagrant up distgit
 
-echo 'pkgs.fedoraproject.org 192.168.0.17' >> /etc/hosts
+echo '192.168.0.17 pkgs.fedoraproject.org' >> /etc/hosts
+
+#mkdir ~/.ssh &&  chmod 700 ~/.ssh
+#ssh-keygen -f ~/.ssh/id_rsa -N '' -q
+
+vagrant scp ~/.ssh/id_rsa.pub :/tmp/id_rsa.pub.remote
+
+vagrant ssh -c '
+sudo mkdir -p /home/clime/.ssh
+sudo touch /home/clime/.ssh/authorized_keys
+sudo mv /tmp/id_rsa.pub.remote /home/clime/.ssh/authorized_keys
+sudo chown -R clime:clime /home/clime/.ssh
+sudo chmod 700 /home/clime/.ssh
+sudo chmod 600 /home/clime/.ssh/authorized_keys
+' distgit
 
 cd $SCRIPTPATH
