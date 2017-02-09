@@ -36,7 +36,7 @@ Vagrant.configure(2) do |config|
       run: "always"
 
     distgit.vm.provision "file",
-      source: "./tests/pkgs-files/server.pem", destination: "/tmp/server.pem",
+      source: "./beaker-tests/pkgs-files/server.pem", destination: "/tmp/server.pem",
       run: "always"
 
     distgit.vm.provision "shell",
@@ -44,7 +44,7 @@ Vagrant.configure(2) do |config|
       run: "always"
 
     distgit.vm.provision "file",
-      source: "./tests/pkgs-files/ca-bundle.crt", destination: "/tmp/ca-bundle.crt",
+      source: "./beaker-tests/pkgs-files/ca-bundle.crt", destination: "/tmp/ca-bundle.crt",
       run: "always"
 
     distgit.vm.provision "shell",
