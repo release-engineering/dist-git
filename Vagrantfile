@@ -7,9 +7,11 @@ Vagrant.configure(2) do |config|
   config.vm.define "distgit" do |distgit|
     distgit.vm.box = "fedora/25-cloud-base"
 
-    config.vm.network "public_network", ip: "192.168.0.17"
-
     distgit.vm.synced_folder ".", "/vagrant", type: "rsync"
+
+    distgit.vm.provision "shell",
+      inline: "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf",
+      run: "always"
 
     # Update the system
     distgit.vm.provision "shell",

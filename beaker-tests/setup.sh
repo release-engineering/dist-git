@@ -31,12 +31,14 @@ systemctl start virtlogd.socket # this is currently needed in f25 for vagrant to
 cd $DISTGITROOTDIR
 vagrant up distgit
 
-echo '192.168.0.17 pkgs.fedoraproject.org' >> /etc/hosts
+IPADDR=`vagrant ssh -c "ifconfig eth0 | grep -E 'inet\s' | sed 's/\s*inet\s*\([0-9.]*\).*/\1/'"`
+echo "$IPADDR pkgs.fedoraproject.org" >> /etc/hosts
 
 #mkdir ~/.ssh &&  chmod 700 ~/.ssh
 #ssh-keygen -f ~/.ssh/id_rsa -N '' -q
 
-vagrant scp ~/.ssh/id_rsa.pub :/tmp/id_rsa.pub.remote
+PUBKEY=`cat ~/.ssh/id_rsa.pub`
+vagrant ssh -c "echo $PUBKEY > /tmp/id_rsa.pub.remote"
 
 vagrant ssh -c '
 sudo mkdir -p /home/clime/.ssh
