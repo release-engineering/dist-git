@@ -65,5 +65,9 @@ Vagrant.configure(2) do |config|
       inline: "useradd clime -G packager",
       run: "always"
 
+    distgit.vm.provision "shell",
+      inline: "echo 'clime   ALL=(ALL)       NOPASSWD: ALL' >> /etc/sudoers",
+      run: "always"
+
   end
 end
