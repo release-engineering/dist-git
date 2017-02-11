@@ -32,7 +32,7 @@ cd $DISTGITROOTDIR
 vagrant up distgit
 
 IPADDR=`vagrant ssh -c "ifconfig eth0 | grep -E 'inet\s' | sed 's/\s*inet\s*\([0-9.]*\).*/\1/'"`
-echo "$IPADDR pkgs.fedoraproject.org" >> /etc/hosts
+echo "$IPADDR pkgs.example.org" >> /etc/hosts
 
 if ! [ -f ~/.ssh/id_rsa ]; then
     mkdir -p ~/.ssh && chmod 700 ~/.ssh

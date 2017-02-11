@@ -38,11 +38,11 @@ Vagrant.configure(2) do |config|
       run: "always"
 
     distgit.vm.provision "file",
-      source: "./beaker-tests/pkgs-files/server.pem", destination: "/tmp/server.pem",
+      source: "./beaker-tests/pkgs-files/pkgs.example.org.pem", destination: "/tmp/pkgs.example.org.pem",
       run: "always"
 
     distgit.vm.provision "shell",
-      inline: "mv /tmp/server.pem /etc/pki/tls/certs/pkgs.fedoraproject.org.pem && restorecon -R /etc/pki/tls/certs/",
+      inline: "mv /tmp/pkgs.example.org.pem /etc/pki/tls/certs/pkgs.example.org.pem && restorecon -R /etc/pki/tls/certs/",
       run: "always"
 
     distgit.vm.provision "file",

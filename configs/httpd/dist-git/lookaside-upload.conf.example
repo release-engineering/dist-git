@@ -16,13 +16,13 @@ SSLCryptoDevice builtin
     ScriptAlias /repo/pkgs/upload.cgi /srv/web/upload.cgi
 
     Alias /repo/ /srv/cache/lookaside/
-    ServerName pkgs.fedoraproject.org
+    ServerName pkgs.example.org
     ServerAdmin webmaster@fedoraproject.org
 
     SSLEngine on
 
-    SSLCertificateFile    /etc/pki/tls/certs/pkgs.fedoraproject.org.pem
-    SSLCertificateKeyFile /etc/pki/tls/certs/pkgs.fedoraproject.org.pem
+    SSLCertificateFile    /etc/pki/tls/certs/pkgs.example.org.pem
+    SSLCertificateKeyFile /etc/pki/tls/certs/pkgs.example.org.pem
     SSLCACertificateFile  /etc/pki/tls/certs/ca-bundle.crt
     #SSLCARevocationFile   /etc/pki/tls/certs/crl.pem
 
@@ -43,10 +43,10 @@ SSLCryptoDevice builtin
        SSLOptions +StrictRequire +StdEnvVars +OptRenegotiate
         # require that the client auth cert was created by us and signed by us
        SSLRequire ( %{SSL_CIPHER} !~ m/^(EXP|NULL)/ \
-                  and %{SSL_CLIENT_S_DN_O} eq "Fedora Project" \
-                  and %{SSL_CLIENT_S_DN_OU} eq "Fedora User Cert" \
-                  and %{SSL_CLIENT_I_DN_O} eq "Fedora Project" \
-                  and %{SSL_CLIENT_I_DN_OU} eq "Fedora Project CA" )
+                  and %{SSL_CLIENT_S_DN_O} eq "Example Project" \
+                  and %{SSL_CLIENT_S_DN_OU} eq "Example User Cert" \
+                  and %{SSL_CLIENT_I_DN_O} eq "Example Project" \
+                  and %{SSL_CLIENT_I_DN_OU} eq "Example Project CA" )
    </Directory>
 
    <Location /repo/pkgs/upload.cgi>
@@ -61,10 +61,10 @@ SSLCryptoDevice builtin
        # require that the access comes from internal or that
        # the client auth cert was created by us and signed by us
        SSLRequire ( %{SSL_CIPHER} !~ m/^(EXP|NULL)/ \
-                  and %{SSL_CLIENT_S_DN_O} eq "Fedora Project" \
-                  and %{SSL_CLIENT_S_DN_OU} eq "Fedora User Cert" \
-                  and %{SSL_CLIENT_I_DN_O} eq "Fedora Project" \
-                  and %{SSL_CLIENT_I_DN_OU} eq "Fedora Project CA" )
+                  and %{SSL_CLIENT_S_DN_O} eq "Example Project" \
+                  and %{SSL_CLIENT_S_DN_OU} eq "Example User Cert" \
+                  and %{SSL_CLIENT_I_DN_O} eq "Example Project" \
+                  and %{SSL_CLIENT_I_DN_OU} eq "Example Project CA" )
     </Location>
 
 </VirtualHost>

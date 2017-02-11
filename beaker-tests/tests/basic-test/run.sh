@@ -6,7 +6,7 @@
 export TESTPATH="$( builtin cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 function pkgs_cmd {
-	ssh clime@pkgs.fedoraproject.org $1
+	ssh clime@pkgs.example.org $1
 }
 
 rlJournalStart
@@ -30,7 +30,7 @@ rlJournalStart
         rlRun "fedpkg import --skip-diffs ../prunerepo-1.1-1.fc23.src.rpm"
 
         # test of presence of the uploaded file
-        rlRun 'wget http://pkgs.fedoraproject.org/repo/pkgs/prunerepo/prunerepo-1.1.tar.gz/md5/c5af09c7fb2c05e556898c93c62b1e35/prunerepo-1.1.tar.gz'
+        rlRun 'wget http://pkgs.example.org/repo/pkgs/prunerepo/prunerepo-1.1.tar.gz/md5/c5af09c7fb2c05e556898c93c62b1e35/prunerepo-1.1.tar.gz'
 
         # commit of spec and updated sources and push into the git repo
         rlRun "git add -A && git commit -m 'test commit'"
@@ -42,8 +42,8 @@ rlJournalStart
         cd ..
 
         # test git-daemon and git-http-backend by read access
-        rlRun "git clone git://pkgs.fedoraproject.org/prunerepo.git prunerepo-copy"
-        rlRun "git clone http://pkgs.fedoraproject.org/git/prunerepo prunerepo-copy2"
+        rlRun "git clone git://pkgs.example.org/prunerepo.git prunerepo-copy"
+        rlRun "git clone http://pkgs.example.org/git/prunerepo prunerepo-copy2"
 
         cd $CWD
     rlPhaseEnd
