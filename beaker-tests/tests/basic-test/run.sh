@@ -17,6 +17,8 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest BasicTest
+        CWD=`pwd`
+
         cd $TESTPATH
 
         # clone repo using fedpkg
@@ -27,9 +29,15 @@ rlJournalStart
         # upload into lookaside and working tree update
         rlRun "fedpkg import --skip-diffs ../prunerepo-1.1-1.fc23.src.rpm"
 
+        # test of presence of the uploaded file
+        rlRun 'wget http://pkgs.fedoraproject.org/repo/pkgs/prunerepo/prunerepo-1.1.tar.gz/md5/c5af09c7fb2c05e556898c93c62b1e35/prunerepo-1.1.tar.gz'
+
         # commit of spec and updated sources and push into the git repo
         rlRun "git add -A && git commit -m 'test commit'"
         rlRun "git push"
+
+        # get srpm file using fedpkg
+        rlRun 'fedpkg --dist f25 srpm'
 
         cd ..
 
@@ -37,10 +45,7 @@ rlJournalStart
         rlRun "git clone git://pkgs.fedoraproject.org/prunerepo.git prunerepo-copy"
         rlRun "git clone http://pkgs.fedoraproject.org/git/prunerepo prunerepo-copy2"
 
-        # test of presence of the uploaded file
-        rlRun 'wget http://pkgs.fedoraproject.org/repo/pkgs/prunerepo/prunerepo-1.1.tar.gz/sha512/6a6a30c0e8c661176ba0cf7e8f1909a493a298fd5088389f5eb630b577dee157106e5f89dc429bcf2a6fdffe4bc10b498906b9746220882827560bc5f72a1b01/prunerepo-1.1.tar.gz'
-
-        cd -
+        cd $CWD
     rlPhaseEnd
 
     rlPhaseStartCleanup BasicTest
