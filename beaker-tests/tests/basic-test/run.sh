@@ -40,5 +40,6 @@ rlJournalStart
     rlPhaseStartCleanup BasicTest
         rm -rf $TESTPATH/prunerepo $TESTPATH/prunerepo-copy* $TESTPATH/prunerepo-1.1.tar.gz
         ssh clime@pkgs.fedoraproject.org 'rm -rf /srv/git/repositories/prunerepo.git'
+        ssh clime@pkgs.fedoraproject.org 'rm -rf /srv/cache/lookaside/pkgs/prunerepo'
     rlPhaseEnd
 rlJournalEnd &> /dev/null
