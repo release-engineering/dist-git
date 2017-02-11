@@ -21,12 +21,6 @@ Vagrant.configure(2) do |config|
       inline: "dnf install -y tito wget"
 
     distgit.vm.provision "shell",
-      inline: "useradd clime -G packager"
-
-    distgit.vm.provision "shell",
-      inline: "echo 'clime   ALL=(ALL)       NOPASSWD: ALL' >> /etc/sudoers"
-
-    distgit.vm.provision "shell",
       inline: "dnf builddep -y /vagrant/dist-git.spec",
       run: "always"
 
@@ -65,6 +59,12 @@ Vagrant.configure(2) do |config|
     distgit.vm.provision "shell",
       inline: "systemctl enable httpd && systemctl start httpd",
       run: "always"
+
+    distgit.vm.provision "shell",
+      inline: "useradd clime -G packager"
+
+    distgit.vm.provision "shell",
+      inline: "echo 'clime   ALL=(ALL)       NOPASSWD: ALL' >> /etc/sudoers"
 
   end
 end
