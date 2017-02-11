@@ -22,10 +22,16 @@ The project is prepared to be built as an RPM package. You can easily build it o
 #### 1. Build and Install the Package:
 
 To build the current release, use the following command in the repo directory:
-`$ tito build --rpm`
+
+```
+$ tito build --rpm
+```
 
 Install the resulting RPM package:
-`# dnf install /path/to/the-package.rpm`
+
+```
+# dnf install /path/to/the-package.rpm
+```
 
 #### 2. Configuration:
 
@@ -42,6 +48,7 @@ Lookaside Cache uses https communication and client authenticates with ssl clien
 #### 3. Users and Groups:
 
 All DistGit users need to:
+
  1. have an ssh server access with private key authentication
  2. be in a *packager* group on the server
  3. be provided with an ssl client certificate to authenticate with the lookaside cache
@@ -49,9 +56,13 @@ All DistGit users need to:
 #### 4. Install DistGit Web Interface:
 
 Install Cgit, the web interface for Git:
-`# dnf install cgit`
+
+```
+# dnf install cgit
+```
 
 And point it to the DistGit repositories:
+
 ```
 # echo "project-list=/srv/git/pkgs-git-repos-list" >> /etc/cgitrc
 # echo "scan-path=/srv/git/repositories/" >> /etc/cgitrc
