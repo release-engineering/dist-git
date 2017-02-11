@@ -18,11 +18,16 @@ Vagrant.configure(2) do |config|
       inline: "dnf clean all && sudo dnf -y update || true" # || true cause dnf might return non-zero status (probly delta rpm rebuilt failed)
 
     distgit.vm.provision "shell",
-      inline: "dnf builddep -y /vagrant/dist-git.spec",
-      run: "always"
+      inline: "dnf install -y tito wget"
 
     distgit.vm.provision "shell",
-      inline: "dnf install -y tito wget",
+      inline: "useradd clime -G packager"
+
+    distgit.vm.provision "shell",
+      inline: "echo 'clime   ALL=(ALL)       NOPASSWD: ALL' >> /etc/sudoers"
+
+    distgit.vm.provision "shell",
+      inline: "dnf builddep -y /vagrant/dist-git.spec",
       run: "always"
 
     distgit.vm.provision "shell",
@@ -59,14 +64,6 @@ Vagrant.configure(2) do |config|
 
     distgit.vm.provision "shell",
       inline: "systemctl enable httpd && systemctl start httpd",
-      run: "always"
-
-    distgit.vm.provision "shell",
-      inline: "useradd clime -G packager",
-      run: "always"
-
-    distgit.vm.provision "shell",
-      inline: "echo 'clime   ALL=(ALL)       NOPASSWD: ALL' >> /etc/sudoers",
       run: "always"
 
   end
