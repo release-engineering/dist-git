@@ -5,9 +5,15 @@
 
 export TESTPATH="$( builtin cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+function pkgs_cmd {
+	ssh clime@pkgs.fedoraproject.org $1
+}
+
 rlJournalStart
     rlPhaseStartSetup BasicTest
-        ssh clime@pkgs.fedoraproject.org 'setup_git_package prunerepo'
+		pkgs_cmd 'git config --global user.email "clime@redhat.com"' # todo: add this to setup?
+		pkgs_cmd 'git config --global user.name "clime"' # todo: add this to setup?
+        pkgs_cmd 'setup_git_package prunerepo'
     rlPhaseEnd
 
     rlPhaseStartTest BasicTest
@@ -39,7 +45,7 @@ rlJournalStart
 
     rlPhaseStartCleanup BasicTest
         rm -rf $TESTPATH/prunerepo $TESTPATH/prunerepo-copy* $TESTPATH/prunerepo-1.1.tar.gz
-        ssh clime@pkgs.fedoraproject.org 'rm -rf /srv/git/repositories/prunerepo.git'
-        ssh clime@pkgs.fedoraproject.org 'rm -rf /srv/cache/lookaside/pkgs/prunerepo'
+        pkgs_cmd 'rm -rf /srv/git/repositories/prunerepo.git'
+        pkgs_cmd 'rm -rf /srv/cache/lookaside/pkgs/prunerepo'
     rlPhaseEnd
 rlJournalEnd &> /dev/null
