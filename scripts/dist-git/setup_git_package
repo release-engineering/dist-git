@@ -20,7 +20,6 @@ if [ ! -d $GITROOT ] ; then
 fi
 
 # Local variables
-GITOLITE=0
 VERBOSE=0
 TEST=
 IGNORE=
@@ -36,7 +35,6 @@ Usage:
 
 Options:
     -h,--help           This help message
-    -g,--gitolite       Install gitolite's update hook
 EOF
 }
 
@@ -47,9 +45,6 @@ case $key in
     --help|-h)
     Usage
     exit 0
-    ;;
-    --gitolite|-g)
-    GITOLITE=1
     ;;
     *)
     PACKAGE="$1"
@@ -102,9 +97,7 @@ git push -q origin master
 popd >/dev/null
 
 # Place the gitolite update hook in place since we're not using our own
-if [ $GITOLITE -gt 0 ]; then
-    ln -s /etc/gitolite/hooks/common/update $GITROOT/$PACKAGE.git/hooks/update
-fi
+ln -s /etc/gitolite/hooks/common/update $GITROOT/$PACKAGE.git/hooks/update
 
 # Setup our post-receive hooks
 mkdir -p $GITROOT/$PACKAGE.git/hooks/post-receive-chained.d
