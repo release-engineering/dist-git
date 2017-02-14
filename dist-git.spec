@@ -146,14 +146,7 @@ done
 
 %posttrans selinux
 if /usr/sbin/selinuxenabled ; then
-   if [ -f %{file_context_file_pre} ]; then
-      /usr/sbin/fixfiles -C %{file_context_file_pre} restore
-      rm -f %{file_context_file_pre}
-   else
-      %{_sbindir}/restorecon -Rv /srv/git/ || :
-      %{_sbindir}/restorecon -Rv /srv/cache/ || :
-      %{_sbindir}/restorecon -Rv /srv/web/ || :
-   fi
+    %{_sbindir}/restorecon -Rv /srv/web/ || :
 fi
 
 %postun selinux
