@@ -112,6 +112,8 @@ ln -s /usr/share/git-core/mail-hooks/gnome-post-receive-email \
     $GITROOT/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-email
 ln -s /usr/share/git-core/post-receive-fedmsg \
     $GITROOT/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-fedmsg
+ln -s /usr/share/git-core/post-receive-alternativearch \
+    $GITROOT/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-alternativearch
 
 # This one kicks off all the others in post-receive-chained.d
 ln -s /usr/share/git-core/post-receive-chained \
