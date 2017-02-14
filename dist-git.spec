@@ -136,11 +136,12 @@ do
   /usr/sbin/semodule -s ${selinuxvariant} -i \
     %{_datadir}/selinux/${selinuxvariant}/%{modulename}.pp &> /dev/null || :
 done
-
-%posttrans selinux
-if /usr/sbin/selinuxenabled ; then
-    %{_sbindir}/restorecon -Rv /srv/web/ || :
-fi
+%{_sbindir}/restorecon -v %{installdir}/cache || :
+%{_sbindir}/restorecon -v %{installdir}/cache/lookaside || :
+%{_sbindir}/restorecon -v %{installdir}/cache/lookaside/pkgs || :
+%{_sbindir}/restorecon -v %{installdir}/git || :
+%{_sbindir}/restorecon -v %{installdir}/git/repositories || :
+%{_sbindir}/restorecon -Rv %{installdir}/web/ || :
 
 %postun selinux
 if [ $1 -eq 0 ] ; then
