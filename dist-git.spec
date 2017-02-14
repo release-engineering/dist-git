@@ -1,7 +1,5 @@
 %global selinux_variants mls targeted
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
-%global file_context_file %{_sysconfdir}/selinux/targeted/contexts/files/file_contexts
-%global file_context_file_pre %{_localstatedir}/lib/rpm-state/file_contexts.pre
 %global modulename dist_git
 %global installdir /srv
 
@@ -131,11 +129,6 @@ done
 cd -
 
 /usr/sbin/hardlink -cv %{buildroot}%{_datadir}/selinux
-
-%pre selinux
-if /usr/sbin/selinuxenabled ; then
-   [ -f %{file_context_file_pre} ] || cp -f %{file_context_file} %{file_context_file_pre}
-fi
 
 %post selinux
 for selinuxvariant in %{selinux_variants}
