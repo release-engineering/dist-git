@@ -13,9 +13,9 @@ SSLCryptoDevice builtin
 # SSL host
 <VirtualHost _default_:443>
     # This alias must come before the /repo/ one to avoid being overridden.
-    ScriptAlias /repo/pkgs/upload.cgi /srv/web/upload.cgi
+    ScriptAlias /repo/pkgs/upload.cgi /var/lib/dist-git/web/upload.cgi
 
-    Alias /repo/ /srv/cache/lookaside/
+    Alias /repo/ /var/lib/dist-git/cache/lookaside/
     ServerName pkgs.example.org
     ServerAdmin webmaster@fedoraproject.org
 

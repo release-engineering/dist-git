@@ -6,7 +6,7 @@
 # Looking for git repos. 
 #
 
-destination=/srv/git/pkgs-git-repos-list
+destination=/var/lib/dist-git/git/pkgs-git-repos-list
 
 if [ -n "$1" ]
 then
@@ -15,7 +15,7 @@ fi
 
 newfile=`mktemp`
 
-cd /srv/git/repositories
+cd /var/lib/dist-git/git/repositories
 ls > $newfile
 cp -fZ $newfile $destination
 rm $newfile

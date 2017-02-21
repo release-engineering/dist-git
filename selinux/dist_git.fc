@@ -1,4 +1,4 @@
-/srv/git(/.*)? gen_context(system_u:object_r:git_user_content_t,s0)
-/srv/git/pkgs-git-repos-list gen_context(system_u:object_r:git_content_t,s0)
-/srv/cache(/.*)? gen_context(system_u:object_r:git_rw_content_t,s0)
-/srv/web/upload.cgi gen_context(system_u:object_r:git_script_exec_t,s0)
+/var/lib/dist-git/git(/.*)? gen_context(system_u:object_r:git_user_content_t,s0)
+/var/lib/dist-git/git/pkgs-git-repos-list gen_context(system_u:object_r:git_content_t,s0)
+/var/lib/dist-git/cache(/.*)? gen_context(system_u:object_r:git_rw_content_t,s0)
+/var/lib/dist-git/web/upload.cgi gen_context(system_u:object_r:git_script_exec_t,s0)

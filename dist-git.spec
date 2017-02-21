@@ -1,7 +1,7 @@
 %global selinux_variants mls targeted
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 %global modulename dist_git
-%global installdir /srv
+%global installdir /var/lib/dist-git
 
 Name:           dist-git
 Version:        0.13

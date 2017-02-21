@@ -22,10 +22,10 @@ import fedmsg.config
 BUFFER_SIZE = 4096
 
 # We check modules exist from this dircetory
-GITREPO = '/srv/git/repositories'
+GITREPO = '/var/lib/dist-git/git/repositories'
 
 # Lookaside cache directory
-CACHE_DIR = '/srv/cache/lookaside/pkgs'
+CACHE_DIR = '/var/lib/dist-git/cache/lookaside/pkgs'
 
 # Fedora Packager Group
 PACKAGER_GROUP = 'packager'

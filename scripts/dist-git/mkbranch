@@ -10,7 +10,7 @@
 
 # Figure out the environment we're running in
 RUNDIR=$(cd $(dirname $0) && pwd)
-GITROOT=/srv/git/repositories
+GITROOT=/var/lib/dist-git/git/repositories
 
 # check if a moron is driving me
 if [ ! -d $GITROOT ] ; then
