@@ -183,7 +183,7 @@ fi
 %attr (755, apache, apache)       %{installdir}/web/upload.cgi
 %dir                              %{installdir}/cache
 %dir                              %{installdir}/cache/lookaside
-%attr (775, apache, apache)       %{installdir}/cache/lookaside/pkgs
+%attr (2775, apache, apache)       %{installdir}/cache/lookaside/pkgs
 %attr (755, root, root) /usr/local/bin/mkbranch
 %attr (755, root, root) /usr/local/bin/mkbranch_branching
 %attr (755, root, root) /usr/local/bin/cgit_pkg_list
