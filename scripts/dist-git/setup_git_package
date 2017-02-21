@@ -9,10 +9,11 @@
 
 
 # Figure out the environment we're running in
-GITROOT=/var/lib/dist-git/git/repositories
+source <(grep = /etc/dist-git/dist-git.conf)
+REPODIR=$GITROOT_DIR/repositories
 
 # check if a moron is driving me
-if [ ! -d $GITROOT ] ; then
+if [ ! -d $REPODIR ] ; then
     # we're not on the git server (this check is fragile)
     echo "ERROR: This script has to be run on the git server."
     echo "ERROR: Homer sez 'Duh'."
@@ -61,14 +62,14 @@ fi
 
 # Sanity checks before we start doing damage
 [ $VERBOSE -gt 1 ] && echo "Checking package $PACKAGE..."
-if [ -f $GITROOT/$PACKAGE.git/refs/heads/master ] ; then
+if [ -f $REPODIR/$PACKAGE.git/refs/heads/master ] ; then
     echo "ERROR: Package module $PACKAGE already exists!" >&2
     exit -1
 fi
 
 # "global" permissions check
-if [ ! -w $GITROOT ] ; then
-    echo "ERROR: You can not write to $GITROOT"
+if [ ! -w $REPODIR ] ; then
+    echo "ERROR: You can not write to $REPODIR"
     echo "ERROR: You can not create repos"
     exit -1
 fi
@@ -78,8 +79,8 @@ fi
 TMPDIR=$(mktemp -d /tmp/tmpXXXXXX)
 
 # First create the master repo
-mkdir -p $GITROOT/$PACKAGE.git
-pushd $GITROOT/$PACKAGE.git >/dev/null
+mkdir -p $REPODIR/$PACKAGE.git
+pushd $REPODIR/$PACKAGE.git >/dev/null
 git init -q --shared --bare
 echo "$PACKAGE" > description # This is used to figure out who to send mail to.
 git config --add hooks.mailinglist "$PACKAGE-owner@fedoraproject.org,scm-commits@lists.fedoraproject.org"
@@ -92,25 +93,25 @@ pushd $TMPDIR/$PACKAGE >/dev/null
 touch .gitignore sources
 git add .
 git commit -q -m 'Initial setup of the repo' --author "$AUTHOR"
-git remote add origin $GITROOT/$PACKAGE.git
+git remote add origin $REPODIR/$PACKAGE.git
 git push -q origin master
 popd >/dev/null
 
 # Place the gitolite update hook in place since we're not using our own
-ln -s /etc/gitolite/hooks/common/update $GITROOT/$PACKAGE.git/hooks/update
+ln -s /etc/gitolite/hooks/common/update $REPODIR/$PACKAGE.git/hooks/update
 
 # Setup our post-receive hooks
-mkdir -p $GITROOT/$PACKAGE.git/hooks/post-receive-chained.d
+mkdir -p $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d
 ln -s /usr/share/git-core/mail-hooks/gnome-post-receive-email \
-    $GITROOT/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-email
+    $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-email
 ln -s /usr/share/git-core/post-receive-fedmsg \
-    $GITROOT/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-fedmsg
+    $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-fedmsg
 ln -s /usr/share/git-core/post-receive-alternativearch \
-    $GITROOT/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-alternativearch
+    $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-alternativearch
 
 # This one kicks off all the others in post-receive-chained.d
 ln -s /usr/share/git-core/post-receive-chained \
-    $GITROOT/$PACKAGE.git/hooks/post-receive
+    $REPODIR/$PACKAGE.git/hooks/post-receive
 
 rm -rf $TMPDIR
 echo "Done."
