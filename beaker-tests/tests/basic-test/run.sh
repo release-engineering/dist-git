@@ -13,7 +13,7 @@ rlJournalStart
     rlPhaseStartSetup BasicTest
 		pkgs_cmd 'git config --global user.email "clime@redhat.com"' # todo: add this to setup?
 		pkgs_cmd 'git config --global user.name "clime"' # todo: add this to setup?
-        pkgs_cmd 'setup_git_package prunerepo'
+        pkgs_cmd '/usr/share/dist-git/setup_git_package prunerepo'
     rlPhaseEnd
 
     rlPhaseStartTest BasicTest
