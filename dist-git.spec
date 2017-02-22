@@ -96,6 +96,7 @@ cp -a scripts/dist-git/* %{buildroot}/usr/local/bin/
 # /etc/ .......... config files
 # ------------------------------------------------------------------------------
 install -d %{buildroot}%{_sysconfdir}/dist-git
+cp -a configs/dist-git/dist-git.conf %{buildroot}%{_sysconfdir}/dist-git/
 install -d %{buildroot}%{_sysconfdir}/httpd/conf.d/dist-git
 mkdir -p   %{buildroot}%{_unitdir}
 
@@ -163,6 +164,7 @@ fi
 # /etc/ .......... config files
 # ------------------------------------------------------------------------------
 %dir                   %{_sysconfdir}/dist-git
+%config(noreplace)     %{_sysconfdir}/dist-git/dist-git.conf
 %dir                   %{_sysconfdir}/httpd/conf.d/dist-git
 %config(noreplace)     %{_sysconfdir}/httpd/conf.d/dist-git/*
 %config(noreplace)     %{_sysconfdir}/httpd/conf.d/dist-git.conf
