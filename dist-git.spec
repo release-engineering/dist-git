@@ -89,8 +89,8 @@ getent group packager > /dev/null || \
 # ------------------------------------------------------------------------------
 # /usr/local/bin ........... scripts
 # ------------------------------------------------------------------------------
-install -d %{buildroot}/usr/local/bin/
-cp -a scripts/dist-git/* %{buildroot}/usr/local/bin/
+install -d %{buildroot}%{_datadir}/dist-git/
+cp -a scripts/dist-git/* %{buildroot}%{_datadir}/dist-git/
 
 # ------------------------------------------------------------------------------
 # /etc/ .......... config files
@@ -186,10 +186,14 @@ fi
 %dir                              %{installdir}/cache
 %dir                              %{installdir}/cache/lookaside
 %attr (2775, apache, apache)       %{installdir}/cache/lookaside/pkgs
-%attr (755, root, root) /usr/local/bin/mkbranch
-%attr (755, root, root) /usr/local/bin/mkbranch_branching
-%attr (755, root, root) /usr/local/bin/cgit_pkg_list
-%attr (755, root, root) /usr/local/bin/setup_git_package
+
+# ------------------------------------------------------------------------------
+# /usr/share ...... executable files
+# ------------------------------------------------------------------------------
+
+%dir              %{_datadir}/dist-git
+%attr (775, -, -) %{_datadir}/dist-git/*
+
 
 %files selinux
 %defattr(-,root,root,0755)
