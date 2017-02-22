@@ -6,7 +6,9 @@
 # Looking for git repos. 
 #
 
-destination=/var/lib/dist-git/git/pkgs-git-repos-list
+source <(grep = /etc/dist-git/dist-git.conf)
+
+destination=$GITROOT_DIR/pkgs-git-repos-list
 
 if [ -n "$1" ]
 then
@@ -15,7 +17,7 @@ fi
 
 newfile=`mktemp`
 
-cd /var/lib/dist-git/git/rpms
+cd $GITROOT_DIR/repositories
 ls > $newfile
 cp -fZ $newfile $destination
 rm $newfile

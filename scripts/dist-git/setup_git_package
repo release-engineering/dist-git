@@ -1,0 +1,117 @@
+#!/bin/bash
+#
+# Create a new repo.
+# THIS HAS TO BE RUN ON THE GIT SERVER!
+
+# WARNING:
+# This file is maintained within ansible
+# All local changes will be lost.
+
+
+# Figure out the environment we're running in
+source <(grep = /etc/dist-git/dist-git.conf)
+REPODIR=$GITROOT_DIR/repositories
+
+# check if a moron is driving me
+if [ ! -d $REPODIR ] ; then
+    # we're not on the git server (this check is fragile)
+    echo "ERROR: This script has to be run on the git server."
+    echo "ERROR: Homer sez 'Duh'."
+    exit -9
+fi
+
+# Local variables
+VERBOSE=0
+TEST=
+IGNORE=
+AUTHOR="Fedora Release Engineering <rel-eng@lists.fedoraproject.org>"
+GIT_SSH_URL="ssh://localhost"
+
+Usage() {
+    cat <<EOF
+Usage:
+    $0 <package_name>
+
+    Creates a new repo for <package_name>
+
+Options:
+    -h,--help           This help message
+EOF
+}
+
+while [[ $# > 0 ]]
+do
+key="$1"
+case $key in
+    --help|-h)
+    Usage
+    exit 0
+    ;;
+    *)
+    PACKAGE="$1"
+    ;;
+esac
+shift
+done
+
+# check the arguments
+if [ -z "$PACKAGE" ] ; then
+    Usage
+    exit -1
+fi
+
+# Sanity checks before we start doing damage
+[ $VERBOSE -gt 1 ] && echo "Checking package $PACKAGE..."
+if [ -f $REPODIR/$PACKAGE.git/refs/heads/master ] ; then
+    echo "ERROR: Package module $PACKAGE already exists!" >&2
+    exit -1
+fi
+
+# "global" permissions check
+if [ ! -w $REPODIR ] ; then
+    echo "ERROR: You can not write to $REPODIR"
+    echo "ERROR: You can not create repos"
+    exit -1
+fi
+
+# Now start working on creating those branches
+# Create a tmpdir to do some git work in
+TMPDIR=$(mktemp -d /tmp/tmpXXXXXX)
+
+# First create the master repo
+mkdir -p $REPODIR/$PACKAGE.git
+pushd $REPODIR/$PACKAGE.git >/dev/null
+git init -q --shared --bare
+echo "$PACKAGE" > description # This is used to figure out who to send mail to.
+git config --add hooks.mailinglist "$PACKAGE-owner@fedoraproject.org,scm-commits@lists.fedoraproject.org"
+git config --add hooks.maildomain fedoraproject.org
+popd >/dev/null
+
+# Now clone that repo and create the .gitignore and sources file
+git init -q $TMPDIR/$PACKAGE
+pushd $TMPDIR/$PACKAGE >/dev/null
+touch .gitignore sources
+git add .
+git commit -q -m 'Initial setup of the repo' --author "$AUTHOR"
+git remote add origin $REPODIR/$PACKAGE.git
+git push -q origin master
+popd >/dev/null
+
+# Place the gitolite update hook in place since we're not using our own
+ln -s /etc/gitolite/hooks/common/update $REPODIR/$PACKAGE.git/hooks/update
+
+# Setup our post-receive hooks
+mkdir -p $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d
+ln -s /usr/share/git-core/mail-hooks/gnome-post-receive-email \
+    $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-email
+ln -s /usr/share/git-core/post-receive-fedmsg \
+    $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-fedmsg
+ln -s /usr/share/git-core/post-receive-alternativearch \
+    $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-alternativearch
+
+# This one kicks off all the others in post-receive-chained.d
+ln -s /usr/share/git-core/post-receive-chained \
+    $REPODIR/$PACKAGE.git/hooks/post-receive
+
+rm -rf $TMPDIR
+echo "Done."

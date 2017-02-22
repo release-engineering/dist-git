@@ -1,9 +1,12 @@
-policy_module(dist_git,1.0.0)
+policy_module(dist_git,1.0.1)
 
 
 require {
     type httpd_git_script_t;
     type git_script_tmp_t;
+    type git_system_t;
+    type git_user_content_t;
+    type httpd_t;
 }
 
 files_tmp_file(git_script_tmp_t);
@@ -24,3 +27,13 @@ term_getattr_all_ptys(httpd_git_script_t);
 term_getattr_all_ttys(httpd_git_script_t);
 # Do not audit attempts to get the attributes of generic pty devices.
 term_dontaudit_getattr_generic_ptys(httpd_git_script_t);
+
+# For git-daemon
+allow git_system_t git_user_content_t:dir { search getattr open read };
+allow git_system_t git_user_content_t:file { read open getattr };
+allow git_system_t git_user_content_t:lnk_file { read open getattr };
+
+# For git-http-backend
+allow httpd_t git_user_content_t:dir { search getattr open read };
+allow httpd_t git_user_content_t:file { read open getattr };
+allow httpd_t git_user_content_t:lnk_file { read open getattr };

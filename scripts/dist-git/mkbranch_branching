@@ -10,10 +10,12 @@
 
 # Figure out the environment we're running in
 RUNDIR=$(cd $(dirname $0) && pwd)
-GITROOT=/var/lib/dist-git/git/rpms
+
+source <(grep = /etc/dist-git/dist-git.conf)
+REPODIR=$GITROOT_DIR/repositories
 
 # check if a moron is driving me
-if [ ! -d $GITROOT ] ; then
+if [ ! -d $REPODIR ] ; then
     # we're not on the git server (this check is fragile)
     echo "ERROR: This script has to be run on the git server."
     echo "ERROR: Homer sez 'Duh'."
@@ -30,6 +32,7 @@ IGNORE=
 BRANCH=""
 PACKAGES=""
 SRC_BRANCH="master"
+AUTHOR="Fedora Release Engineering <rel-eng@lists.fedoraproject.org>"
 
 Usage() {
     cat <<EOF
@@ -40,9 +43,8 @@ Usage:
     The /master suffix on branch names is assumed.
 
 Options:
-                                /master suffix on other branches assumed
     -n,--test           Don't do nothing, only test
-    -i,--ignore                 Ignore erroneous modules
+    -i,--ignore         Ignore erroneous modules
     -h,--help           This help message
     -v,--verbose        Increase verbosity
 EOF
@@ -74,11 +76,6 @@ while [ -n "$1" ] ; do
         BRANCH=$1/master
         ;;
 
-    --default-branch-author )
-        shift
-        AUTHOR=$1
-        ;;
-
     * )
         if [ -z "$BRANCH" ] ; then
         BRANCH="$1"
@@ -96,20 +93,16 @@ if [ -z "$BRANCH" -o -z "$PACKAGES" ] ; then
     exit -1
 fi
 
-if [ -z $AUTHOR ]; then
-    AUTHOR="Fedora Release Engineering <rel-eng@lists.fedoraproject.org>"
-fi
-
 
 # Sanity checks before we start doing damage
 NEWP=
 for p in $PACKAGES ; do
     [ $VERBOSE -gt 1 ] && echo "Checking package $p..."
-    if [ ! -d $GITROOT/$p.git ] ; then
+    if [ ! -d $REPODIR/$p.git ] ; then
     echo "ERROR: Package module $p is invalid" >&2
     [ "$IGNORE" = "yes" ] && continue || exit -1
     fi
-    $(GIT_DIR=$GITROOT/$p.git git rev-parse -q --verify \
+    $(GIT_DIR=$REPODIR/$p.git git rev-parse -q --verify \
       $BRANCH >/dev/null) && \
     (echo "IGNORING: Package module $p already has a branch $BRANCH" >&2; \
     [ "$IGNORE" = "yes" ] && continue || exit -1)
@@ -127,8 +120,8 @@ if [ -n "$TEST" ] ; then
 fi
 
 # "global" permissions check
-if [ ! -w $GITROOT ] ; then
-    echo "ERROR: You can not write to $GITROOT"
+if [ ! -w $REPODIR ] ; then
+    echo "ERROR: You can not write to $REPODIR"
     echo "ERROR: You can not perform branching operations"
     exit -1
 fi
@@ -141,21 +134,14 @@ for NAME in $PACKAGES ; do
     echo "Creating new module branch '$BRANCH' for '$NAME'..."
 
     # permissions checks for this particular module
-    if [ ! -w $GITROOT/$NAME.git/refs/heads/  ] ; then
+    if [ ! -w $REPODIR/$NAME.git/refs/heads/  ] ; then
         echo "ERROR: You can not write to $d"
         echo "ERROR: $NAME can not be branched by you"
         continue
     fi
-    ####  Replace the above with a gitolite permission check
-    #[ $VERBOSE -gt 0 ] && echo "Creating $BRANCH-split tag for $NAME/$SRC_BRANCH..."
-    # Is the above needed?
-    #cvs -Q rtag -f "$BRANCH-split" $TOPLEVEL/$NAME/$SRC_BRANCH || {
-    #echo "ERROR: Branch split tag for $NAME/$SRC_BRANCH could not be created" >&2
-    #exit -2
-    #}
     [ $VERBOSE -gt 0 ] && echo "Creating $NAME $BRANCH from $NAME ..."
-    $(pushd $GITROOT/$NAME.git >/dev/null && \
-    git branch --no-track $BRANCH `git rev-list --max-parents=0 master | head -1` && \
+    $(pushd $REPODIR/$NAME.git >/dev/null && \
+    git branch --no-track $BRANCH `git rev-list master | head -1` && \
     popd >/dev/null) || {
     echo "ERROR: Branch $NAME $BRANCH could not be created" >&2
         popd >/dev/null
