@@ -29,6 +29,7 @@ Requires:       git-daemon
 Requires:       python-requests
 Requires:       mod_ssl
 Requires:       fedmsg
+Requires:       crudini
 Requires(pre):  shadow-utils
 
 %description

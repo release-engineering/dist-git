@@ -9,10 +9,10 @@
 
 
 # Figure out the environment we're running in
-RUNDIR=$(cd $(dirname $0) && pwd)
+RUNDIR=$(cd "$(dirname "$0")" && pwd)
 
-source <(grep = /etc/dist-git/dist-git.conf)
-REPODIR=$GITROOT_DIR/repositories
+eval "$(crudini --format=sh --get /etc/dist-git/dist-git.conf)"
+REPODIR=$gitroot_dir/repositories
 
 # check if a moron is driving me
 if [ ! -d $REPODIR ] ; then
@@ -32,7 +32,6 @@ IGNORE=
 BRANCH=""
 PACKAGES=""
 SRC_BRANCH="master"
-AUTHOR="Fedora Release Engineering <rel-eng@lists.fedoraproject.org>"
 
 Usage() {
     cat <<EOF
