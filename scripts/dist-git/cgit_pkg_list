@@ -6,9 +6,8 @@
 # Looking for git repos. 
 #
 
-source <(grep = /etc/dist-git/dist-git.conf)
-
-destination=$GITROOT_DIR/pkgs-git-repos-list
+eval "$(crudini --format=sh --get /etc/dist-git/dist-git.conf)"
+destination=$gitroot_dir/pkgs-git-repos-list
 
 if [ -n "$1" ]
 then
@@ -17,7 +16,7 @@ fi
 
 newfile=`mktemp`
 
-cd $GITROOT_DIR/repositories
+cd $gitroot_dir/repositories
 ls > $newfile
 cp -fZ $newfile $destination
 rm $newfile

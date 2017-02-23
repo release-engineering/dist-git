@@ -17,15 +17,10 @@ import tempfile
 import fedmsg
 import fedmsg.config
 
+from configparser import ConfigParser
 
 # Reading buffer size
 BUFFER_SIZE = 4096
-
-# We check modules exist from this dircetory
-GITREPO = '/var/lib/dist-git/git/repositories'
-
-# Lookaside cache directory
-CACHE_DIR = '/var/lib/dist-git/cache/lookaside/pkgs'
 
 # Fedora Packager Group
 PACKAGER_GROUP = 'packager'
@@ -97,6 +92,9 @@ def makedirs(dir_, username, mode=02755):
 
 
 def main():
+    config = ConfigParser()
+    config.read('/etc/dist-git/dist-git.conf')
+
     os.umask(002)
 
     username = os.environ.get('SSL_CLIENT_S_DN_CN', None)
@@ -162,12 +160,12 @@ def main():
                              username, name, filename, hash_type.upper(),
                              checksum))
 
-    module_dir = os.path.join(CACHE_DIR, name)
+    module_dir = os.path.join(config['dist-git']['cache_dir'], "lookaside/pkgs", name)
     hash_dir = os.path.join(module_dir, filename, hash_type, checksum)
     msgpath = os.path.join(name, filename, hash_type, checksum, filename)
 
     # first test if the module really exists
-    git_dir = os.path.join(GITREPO, '%s.git' % name)
+    git_dir = os.path.join(config['dist-git']['gitroot_dir'], 'repositories', '%s.git' % name)
     if not os.path.isdir(git_dir):
         sys.stderr.write('[username=%s] Unknown module: %s' % (username, name))
         send_error('Module "%s" does not exist!' % name,

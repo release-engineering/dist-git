@@ -9,8 +9,9 @@
 
 
 # Figure out the environment we're running in
-source <(grep = /etc/dist-git/dist-git.conf)
-REPODIR=$GITROOT_DIR/repositories
+eval "$(crudini --format=sh --get /etc/dist-git/dist-git.conf)"
+REPODIR=$gitroot_dir/repositories
+: ${git_author="Undefined <undefined@example.com>"}
 
 # check if a moron is driving me
 if [ ! -d $REPODIR ] ; then
@@ -24,7 +25,6 @@ fi
 VERBOSE=0
 TEST=
 IGNORE=
-AUTHOR="Fedora Release Engineering <rel-eng@lists.fedoraproject.org>"
 GIT_SSH_URL="ssh://localhost"
 
 Usage() {
@@ -92,7 +92,7 @@ git init -q $TMPDIR/$PACKAGE
 pushd $TMPDIR/$PACKAGE >/dev/null
 touch .gitignore sources
 git add .
-git commit -q -m 'Initial setup of the repo' --author "$AUTHOR"
+git commit -q -m 'Initial setup of the repo' --author "$git_author"
 git remote add origin $REPODIR/$PACKAGE.git
 git push -q origin master
 popd >/dev/null
