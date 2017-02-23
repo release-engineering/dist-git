@@ -1,1 +1,9 @@
+build_aux/
+install-selinux-module
+configure
+config.*
+Makefile
+*.pp.*
+*.in
 *.swp
+m4

@@ -9,7 +9,7 @@
 
 
 # Figure out the environment we're running in
-eval "$(crudini --format=sh --get /etc/dist-git/dist-git.conf)"
+@SHELL_PARSE_CONFIG@
 REPODIR=$gitroot_dir/repositories
 : ${git_author="Undefined <undefined@example.com>"}
 
