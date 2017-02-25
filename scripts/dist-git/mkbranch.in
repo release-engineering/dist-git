@@ -11,7 +11,7 @@
 # Figure out the environment we're running in
 RUNDIR=$(cd "$(dirname "$0")" && pwd)
 
-eval "$(crudini --format=sh --get /etc/dist-git/dist-git.conf)"
+@SHELL_PARSE_CONFIG@
 REPODIR=$gitroot_dir/repositories
 
 # check if a moron is driving me
@@ -140,7 +140,7 @@ for NAME in $PACKAGES ; do
     fi
     [ $VERBOSE -gt 0 ] && echo "Creating $NAME $BRANCH from $NAME ..."
     $(pushd $REPODIR/$NAME.git >/dev/null && \
-    git branch --no-track $BRANCH `git rev-list master | head -1` && \
+    git branch --no-track $BRANCH `git rev-list --max-parents=0 master | head -1` && \
     popd >/dev/null) || {
     echo "ERROR: Branch $NAME $BRANCH could not be created" >&2
         popd >/dev/null

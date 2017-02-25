@@ -15,7 +15,7 @@ License:        MIT and GPLv1
 URL:            https://github.com/release-engineering/dist-git
 # Source is created by
 # git clone https://github.com/release-engineering/dist-git.git
-# cd dist-git
+# cd dist-git && ./bootstrap && ./configure && make dist
 # tito build --tgz
 Source0:        %{name}-%{version}.tar.gz
 BuildArch:      noarch
@@ -65,17 +65,10 @@ This package includes SELinux support.
 
 
 %build
-# ------------------------------------------------------------------------------
-# SELinux
-# ------------------------------------------------------------------------------
-cd selinux
-for selinuxvariant in %{selinux_variants}
-do
-  make NAME=${selinuxvariant} -f /usr/share/selinux/devel/Makefile
-  mv %{modulename}.pp %{modulename}.pp.${selinuxvariant}
-  make NAME=${selinuxvariant} -f /usr/share/selinux/devel/Makefile clean
-done
-cd -
+%configure \
+    --with-selinux-variants="%selinux_variants"
+
+make %_smp_mflags
 
 
 %pre
@@ -87,48 +80,18 @@ getent group packager > /dev/null || \
 
 
 %install
-# ------------------------------------------------------------------------------
-# /usr/local/bin ........... scripts
-# ------------------------------------------------------------------------------
-install -d %{buildroot}%{_datadir}/dist-git/
-cp -a scripts/dist-git/* %{buildroot}%{_datadir}/dist-git/
-
-# ------------------------------------------------------------------------------
-# /etc/ .......... config files
-# ------------------------------------------------------------------------------
-install -d %{buildroot}%{_sysconfdir}/dist-git
-cp -a configs/dist-git/dist-git.conf %{buildroot}%{_sysconfdir}/dist-git/
-install -d %{buildroot}%{_sysconfdir}/httpd/conf.d/dist-git
-mkdir -p   %{buildroot}%{_unitdir}
-
-cp -a configs/httpd/dist-git.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
-cp -a configs/httpd/dist-git/* %{buildroot}%{_sysconfdir}/httpd/conf.d/dist-git/
-cp -a configs/systemd/*        %{buildroot}%{_unitdir}/
+make install DESTDIR=%{buildroot}
 
 # ------------------------------------------------------------------------------
 # /var/lib/ ...... dynamic persistent files
 # ------------------------------------------------------------------------------
+# TODO: Create those on the fly at runtime?
 install -d %{buildroot}%{installdir}
 install -d %{buildroot}%{installdir}/git
 install -d %{buildroot}%{installdir}/git/repositories
 install -d %{buildroot}%{installdir}/cache
 install -d %{buildroot}%{installdir}/cache/lookaside
 install -d %{buildroot}%{installdir}/cache/lookaside/pkgs
-install -d %{buildroot}%{installdir}/web
-
-cp -a scripts/httpd/upload.cgi %{buildroot}%{installdir}/web/
-
-# ------------------------------------------------------------------------------
-# SELinux
-# ------------------------------------------------------------------------------
-cd selinux
-for selinuxvariant in %{selinux_variants}
-do
-  install -d %{buildroot}%{_datadir}/selinux/${selinuxvariant}
-  install -p -m 644 %{modulename}.pp.${selinuxvariant} \
-    %{buildroot}%{_datadir}/selinux/${selinuxvariant}/%{modulename}.pp
-done
-cd -
 
 /usr/sbin/hardlink -cv %{buildroot}%{_datadir}/selinux
 
@@ -189,16 +152,15 @@ fi
 %attr (2775, apache, apache)       %{installdir}/cache/lookaside/pkgs
 
 # ------------------------------------------------------------------------------
-# /usr/share ...... executable files
+# /usr/share/dist-git ...... executable files
 # ------------------------------------------------------------------------------
 
-%dir              %{_datadir}/dist-git
-%attr (775, -, -) %{_datadir}/dist-git/*
+%{_datadir}/dist-git
 
 
 %files selinux
 %defattr(-,root,root,0755)
-%doc selinux/*
+%doc %{_pkgdocdir}
 %{_datadir}/selinux/*/%{modulename}.pp
 
 

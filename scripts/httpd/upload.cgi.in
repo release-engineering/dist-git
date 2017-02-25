@@ -93,7 +93,7 @@ def makedirs(dir_, username, mode=02755):
 
 def main():
     config = ConfigParser()
-    config.read('/etc/dist-git/dist-git.conf')
+    config.read('@distgit_confdir@/dist-git.conf')
 
     os.umask(002)
 

@@ -1,0 +1,40 @@
+#! /bin/sh
+
+install=:
+DESTDIR=
+selinux_dir=@selinuxmoduledir@
+
+while test "$#" -gt 0
+do
+    case "$1" in
+        --uninstall)
+            install=false
+            shift
+            ;;
+        --destdir)
+            DESTDIR=$2
+            shift 2
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            echo "ignored arg $arg"
+            shift
+            ;;
+    esac
+done
+
+for module
+do
+    variant=`echo "$module" | sed 's|.*\.||'`
+    rawmod=`echo "$module" | sed 's|\.[^\.]*$||'`
+    dir="$DESTDIR$selinux_dir/$variant"
+    mkdir -p "$dir"
+    if $install ; then
+        install -m 644 "$module" "$dir/$rawmod"
+    else
+        rm "$dir/$rawmod"
+    fi
+done

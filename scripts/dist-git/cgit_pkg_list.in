@@ -6,7 +6,7 @@
 # Looking for git repos. 
 #
 
-eval "$(crudini --format=sh --get /etc/dist-git/dist-git.conf)"
+@SHELL_PARSE_CONFIG@
 destination=$gitroot_dir/pkgs-git-repos-list
 
 if [ -n "$1" ]

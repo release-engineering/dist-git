@@ -1,0 +1,9 @@
+#! /bin/sh
+
+module=$1
+target=$2
+where=$3
+variant=`echo "$target" | sed 's|.*\.||'`
+make -j1 -C "$where" NAME="$variant" -f /usr/share/selinux/devel/Makefile \
+&& mv "$where/$module.pp" "$target" \
+&& make -j1 -C "$where" NAME="$variant" -f /usr/share/selinux/devel/Makefile
