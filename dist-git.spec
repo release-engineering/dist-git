@@ -27,6 +27,7 @@ Requires:       perl(Sys::Syslog)
 Requires:       git
 Requires:       git-daemon
 Requires:       python-requests
+Requires:       python-configparser
 Requires:       mod_ssl
 Requires:       fedmsg
 Requires:       crudini
