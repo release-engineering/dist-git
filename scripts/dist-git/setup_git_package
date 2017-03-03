@@ -95,7 +95,9 @@ git push -q origin master
 popd >/dev/null
 
 # Place the gitolite update hook in place since we're not using our own
-ln -s /etc/gitolite/hooks/common/update $REPODIR/$PACKAGE.git/hooks/update
+if [[ $gitolite && $gitolite != "False" ]]; then
+    ln -s /etc/gitolite/hooks/common/update $REPODIR/$PACKAGE.git/hooks/update
+fi
 
 # Setup our post-receive hooks
 mkdir -p $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d
