@@ -23,9 +23,6 @@ fi
 
 # Local variables
 VERBOSE=0
-TEST=
-IGNORE=
-GIT_SSH_URL="ssh://localhost"
 
 Usage() {
     cat <<EOF
