@@ -8,8 +8,6 @@ Version:        0.13
 Release:        1%{?dist}
 Summary:        Package source version control system
 
-Group:          Applications/Productivity
-
 # upload.cgi uses GPLv1
 License:        MIT and GPLv1
 URL:            https://github.com/release-engineering/dist-git
@@ -42,6 +40,7 @@ package sources.
 Summary:        SELinux support for dist-git
 
 BuildRequires:  checkpolicy
+BuildRequires:  /usr/share/selinux/devel/policyhelp
 BuildRequires:  policycoreutils
 BuildRequires:  selinux-policy-devel
 BuildRequires:  hardlink
@@ -85,11 +84,12 @@ cd -
 # ------------------------------------------------------------------------------
 getent group packager > /dev/null || \
     groupadd -r packager
+exit 0
 
 
 %install
 # ------------------------------------------------------------------------------
-# /usr/local/bin ........... scripts
+# /usr/share/ ........... scripts
 # ------------------------------------------------------------------------------
 install -d %{buildroot}%{_datadir}/dist-git/
 cp -a scripts/dist-git/* %{buildroot}%{_datadir}/dist-git/
@@ -146,6 +146,11 @@ done
 %{_sbindir}/restorecon -v %{installdir}/git/repositories || :
 %{_sbindir}/restorecon -Rv %{installdir}/web/ || :
 
+%systemd_post dist-git.socket
+
+%preun
+%systemd_preun dist-git.socket
+
 %postun selinux
 if [ $1 -eq 0 ] ; then
   for selinuxvariant in %{selinux_variants}
@@ -153,6 +158,8 @@ if [ $1 -eq 0 ] ; then
      /usr/sbin/semodule -s ${selinuxvariant} -r %{modulename} &> /dev/null || :
   done
 fi
+
+%systemd_postun dist-git.socket
 
 
 %files
