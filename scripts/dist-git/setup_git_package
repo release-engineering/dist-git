@@ -11,7 +11,8 @@
 # Figure out the environment we're running in
 eval "$(crudini --format=sh --get /etc/dist-git/dist-git.conf dist-git)"
 REPODIR=$gitroot_dir/repositories
-: ${git_author="Undefined <undefined@example.com>"}
+: ${git_author_name="Undefined"}
+: ${git_author_email="undefined@example.com"}
 
 # check if a moron is driving me
 if [ ! -d $REPODIR ] ; then
@@ -88,8 +89,10 @@ popd >/dev/null
 git init -q $TMPDIR/$PACKAGE
 pushd $TMPDIR/$PACKAGE >/dev/null
 touch .gitignore sources
+git config user.email "$git_author_name"
+git config user.name "$git_author_email"
 git add .
-git commit -q -m 'Initial setup of the repo' --author "$git_author"
+git commit -q -m 'Initial setup of the repo'
 git remote add origin $REPODIR/$PACKAGE.git
 git push -q origin master
 popd >/dev/null
