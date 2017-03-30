@@ -1,5 +1,5 @@
 %global selinux_variants mls targeted
-%global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
+%{!?_selinux_policy_version: %global _selinux_policy_version %(sed -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp 2>/dev/null)}
 %global modulename dist_git
 %global installdir /var/lib/dist-git
 
@@ -47,7 +47,7 @@ BuildRequires:  hardlink
 
 Requires:       %name = %version-%release
 %if "%{_selinux_policy_version}" != ""
-Requires:       selinux-policy >= %{selinux_policyver}
+Requires:       selinux-policy >= %{selinux_policy_version}
 %endif
 Requires(post):   /usr/sbin/semodule, /sbin/restorecon
 Requires(postun): /usr/sbin/semodule, /sbin/restorecon
