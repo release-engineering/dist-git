@@ -103,8 +103,8 @@ for p in $PACKAGES ; do
     fi
     $(GIT_DIR=$REPODIR/$p.git git rev-parse -q --verify \
       $BRANCH >/dev/null) && \
-    (echo "IGNORING: Package module $p already has a branch $BRANCH" >&2; \
-    [ "$IGNORE" = "yes" ] && continue || exit 128)
+    echo "IGNORING: Package module $p already has a branch $BRANCH" >&2;
+    [ "$IGNORE" = "yes" ] && continue || exit 128
     NEWP="$NEWP $p"
 done
 PACKAGES="$(echo $NEWP)"
