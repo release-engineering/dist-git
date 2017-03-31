@@ -62,7 +62,7 @@ fi
 [ $VERBOSE -gt 1 ] && echo "Checking package $PACKAGE..."
 if [ -f $REPODIR/$PACKAGE.git/refs/heads/master ] ; then
     echo "ERROR: Package module $PACKAGE already exists!" >&2
-    exit -1
+    exit 128
 fi
 
 # "global" permissions check
