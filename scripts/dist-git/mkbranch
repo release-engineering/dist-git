@@ -101,10 +101,10 @@ for p in $PACKAGES ; do
     echo "ERROR: Package module $p is invalid" >&2
     [ "$IGNORE" = "yes" ] && continue || exit -1
     fi
-    $(GIT_DIR=$REPODIR/$p.git git rev-parse -q --verify \
-      $BRANCH >/dev/null) && \
-    echo "IGNORING: Package module $p already has a branch $BRANCH" >&2;
-    [ "$IGNORE" = "yes" ] && continue || exit 128
+    if GIT_DIR=$REPODIR/$p.git git rev-parse -q --verify $BRANCH >/dev/null; then
+        echo "IGNORING: Package module $p already has a branch $BRANCH" >&2;
+        [ "$IGNORE" = "yes" ] && continue || exit 128
+    fi
     NEWP="$NEWP $p"
 done
 PACKAGES="$(echo $NEWP)"
