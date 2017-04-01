@@ -64,8 +64,7 @@ Install Cgit, the web interface for Git:
 And point it to the DistGit repositories:
 
 ```
-# echo "project-list=/srv/git/pkgs-git-repos-list" >> /etc/cgitrc
-# echo "scan-path=/srv/git/repositories/" >> /etc/cgitrc
+echo "scan-path=/var/lib/dist-git/git/repositories/" >> /etc/cgitrc
 ```
 
 It is useful to comment out `cache-size` entry in /etc/cgitrc (or set it to zero) to always get up-to-date repository state at each page refresh.
