@@ -111,13 +111,15 @@ cp -a configs/systemd/*        %{buildroot}%{_unitdir}/
 # ------------------------------------------------------------------------------
 install -d %{buildroot}%{installdir}
 install -d %{buildroot}%{installdir}/git
-install -d %{buildroot}%{installdir}/git/repositories
+install -d %{buildroot}%{installdir}/git/rpms
 install -d %{buildroot}%{installdir}/cache
 install -d %{buildroot}%{installdir}/cache/lookaside
 install -d %{buildroot}%{installdir}/cache/lookaside/pkgs
 install -d %{buildroot}%{installdir}/web
 
 cp -a scripts/httpd/upload.cgi %{buildroot}%{installdir}/web/
+
+ln -f -s %{installdir}/git/rpms %{buildroot}%{installdir}/git/repositories
 
 # ------------------------------------------------------------------------------
 # SELinux
@@ -143,7 +145,7 @@ done
 %{_sbindir}/restorecon -v %{installdir}/cache/lookaside || :
 %{_sbindir}/restorecon -v %{installdir}/cache/lookaside/pkgs || :
 %{_sbindir}/restorecon -v %{installdir}/git || :
-%{_sbindir}/restorecon -v %{installdir}/git/repositories || :
+%{_sbindir}/restorecon -v %{installdir}/git/rpms || :
 %{_sbindir}/restorecon -Rv %{installdir}/web/ || :
 
 %systemd_post dist-git.socket
@@ -189,12 +191,14 @@ fi
 # - git repositories and their contents must have w permission for their creators
 %dir                              %{installdir}
 %dir                              %{installdir}/git
-%attr (2775, -, packager)         %{installdir}/git/repositories
+%attr (2775, -, packager)         %{installdir}/git/rpms
 %dir                              %{installdir}/web
 %attr (755, apache, apache)       %{installdir}/web/upload.cgi
 %dir                              %{installdir}/cache
 %dir                              %{installdir}/cache/lookaside
-%attr (2775, apache, apache)       %{installdir}/cache/lookaside/pkgs
+%attr (2775, apache, apache)      %{installdir}/cache/lookaside/pkgs
+
+%{installdir}/git/repositories
 
 # ------------------------------------------------------------------------------
 # /usr/share ...... executable files
