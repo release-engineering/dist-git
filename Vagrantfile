@@ -25,10 +25,6 @@ Vagrant.configure(2) do |config|
       run: "always"
 
     distgit.vm.provision "shell",
-      inline: "dnf builddep -y /vagrant/dist-git.spec",
-      run: "always"
-
-    distgit.vm.provision "shell",
       inline: "cd /vagrant/ && tito build -i --test --rpm",
       run: "always"
 
