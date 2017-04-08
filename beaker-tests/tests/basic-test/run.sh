@@ -11,8 +11,8 @@ function pkgs_cmd {
 
 rlJournalStart
     rlPhaseStartSetup BasicTest
-		pkgs_cmd 'git config --global user.email "clime@redhat.com"' # todo: add this to setup?
-		pkgs_cmd 'git config --global user.name "clime"' # todo: add this to setup?
+		pkgs_cmd 'git config --global user.email "clime@redhat.com"'
+		pkgs_cmd 'git config --global user.name "clime"'
         pkgs_cmd '/usr/share/dist-git/setup_git_package prunerepo'
     rlPhaseEnd
 
@@ -25,6 +25,8 @@ rlJournalStart
         rlRun "fedpkg clone /var/lib/dist-git/git/prunerepo"
 
         cd prunerepo
+        git config user.email "somebody@example.com"
+        git config user.name "Some name"
 
         # upload into lookaside and working tree update
         rlRun "fedpkg import --skip-diffs ../prunerepo-1.1-1.fc23.src.rpm"
