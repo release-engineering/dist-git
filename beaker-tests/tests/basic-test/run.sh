@@ -6,13 +6,13 @@
 export TESTPATH="$( builtin cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 function pkgs_cmd {
-	ssh clime@pkgs.example.org $1
+	ssh  -o 'StrictHostKeyChecking no' clime@pkgs.example.org $1
 }
 
 rlJournalStart
     rlPhaseStartSetup BasicTest
-		pkgs_cmd 'git config --global user.email "clime@redhat.com"'
-		pkgs_cmd 'git config --global user.name "clime"'
+        pkgs_cmd 'git config --global user.email "clime@redhat.com"'
+        pkgs_cmd 'git config --global user.name "clime"'
         pkgs_cmd '/usr/share/dist-git/setup_git_package prunerepo'
     rlPhaseEnd
 
