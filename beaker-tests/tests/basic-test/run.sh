@@ -22,7 +22,7 @@ rlJournalStart
         cd $TESTPATH
 
         # clone repo using fedpkg
-        rlRun "fedpkg clone /var/lib/dist-git/git/repositories/prunerepo"
+        rlRun "fedpkg clone /var/lib/dist-git/git/prunerepo"
 
         cd prunerepo
 
@@ -50,7 +50,7 @@ rlJournalStart
 
     rlPhaseStartCleanup BasicTest
         rm -rf $TESTPATH/prunerepo $TESTPATH/prunerepo-copy* $TESTPATH/prunerepo-1.1.tar.gz
-        pkgs_cmd 'rm -rf /var/lib/dist-git/git/repositories/prunerepo.git'
+        pkgs_cmd 'rm -rf /var/lib/dist-git/git/prunerepo.git'
         pkgs_cmd 'sudo rm -rf /var/lib/dist-git/cache/lookaside/pkgs/prunerepo'
     rlPhaseEnd
 rlJournalEnd &> /dev/null

@@ -10,7 +10,7 @@
 
 # Figure out the environment we're running in
 eval "$(crudini --format=sh --get /etc/dist-git/dist-git.conf dist-git)"
-REPODIR=$gitroot_dir/repositories
+REPODIR=$gitroot_dir
 : ${git_author_name="Undefined"}
 : ${git_author_email="undefined@example.com"}
 

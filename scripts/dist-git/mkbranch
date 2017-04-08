@@ -12,7 +12,7 @@
 RUNDIR=$(cd "$(dirname "$0")" && pwd)
 
 eval "$(crudini --format=sh --get /etc/dist-git/dist-git.conf dist-git)"
-REPODIR=$gitroot_dir/repositories
+REPODIR=$gitroot_dir
 
 # check if a moron is driving me
 if [ ! -d $REPODIR ] ; then

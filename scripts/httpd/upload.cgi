@@ -165,7 +165,7 @@ def main():
     msgpath = os.path.join(name, filename, hash_type, checksum, filename)
 
     # first test if the module really exists
-    git_dir = os.path.join(config['dist-git']['gitroot_dir'], 'repositories', '%s.git' % name)
+    git_dir = os.path.join(config['dist-git']['gitroot_dir'], '%s.git' % name)
     if not os.path.isdir(git_dir):
         sys.stderr.write('[username=%s] Unknown module: %s' % (username, name))
         send_error('Module "%s" does not exist!' % name,
