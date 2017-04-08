@@ -23,8 +23,10 @@ logging_send_syslog_msg(httpd_git_script_t);
 
 # Get the attributes of all pty device nodes. 
 term_getattr_all_ptys(httpd_git_script_t);
+
 # Get the attributes of all tty device nodes. 
 term_getattr_all_ttys(httpd_git_script_t);
+
 # Do not audit attempts to get the attributes of generic pty devices.
 term_dontaudit_getattr_generic_ptys(httpd_git_script_t);
 
