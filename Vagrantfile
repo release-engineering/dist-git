@@ -53,11 +53,11 @@ Vagrant.configure(2) do |config|
       run: "always"
 
     distgit.vm.provision "shell",
-      inline: "systemctl enable dist-git.socket && systemctl start dist-git.socket",
+      inline: "systemctl enable dist-git.socket && systemctl restart dist-git.socket",
       run: "always"
 
     distgit.vm.provision "shell",
-      inline: "systemctl enable httpd && systemctl start httpd",
+      inline: "systemctl enable httpd && systemctl restart httpd",
       run: "always"
 
     distgit.vm.provision "shell",
