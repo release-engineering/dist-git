@@ -4,7 +4,7 @@
 %global installdir /var/lib/dist-git
 
 Name:           dist-git
-Version:        0.13
+Version:        1.0
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -208,6 +208,16 @@ fi
 
 
 %changelog
+* Mon Apr 10 2017 clime <clime@redhat.com> 1.0-1
+- big redo of the package
+- gitolite dropped from the package (but can be installed additionally)
+- pkgdb integration dropped
+- upload.cgi updated from FedoraInfra state
+- git repos are stored one level higher in fs hiearchy (default: /var/lib/dist-git/git/)
+- dist-git.conf completely new
+- updated setup_git_package, mkbranch, mkbranch_branching
+- updated SELinux policy
+- configurable paths to cache dir and git repos
 * Wed Aug 05 2015 Adam Samalik <asamalik@redhat.com> 0.13-1
 - optional cgit_pkg_list.sh parameter (asamalik@redhat.com)
 - change mv to cp + rm (asamalik@redhat.com)
