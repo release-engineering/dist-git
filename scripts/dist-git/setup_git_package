@@ -89,8 +89,8 @@ popd >/dev/null
 git init -q $TMPDIR/$PACKAGE
 pushd $TMPDIR/$PACKAGE >/dev/null
 touch .gitignore sources
-git config user.email "$git_author_name"
-git config user.name "$git_author_email"
+git config user.name "$git_author_name"
+git config user.email "$git_author_email"
 git add .
 git commit -q -m 'Initial setup of the repo'
 git remote add origin $REPODIR/$PACKAGE.git
