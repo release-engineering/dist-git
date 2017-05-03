@@ -4,7 +4,7 @@
 %global installdir /var/lib/dist-git
 
 Name:           dist-git
-Version:        1.0
+Version:        1.1
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -208,6 +208,10 @@ fi
 
 
 %changelog
+* Wed May 03 2017 clime <clime@redhat.com> 1.1-1
+- fix default config value for email
+- fix name/email switch
+
 * Mon Apr 10 2017 clime <clime@redhat.com> 1.0-1
 - big redo of the package
 - gitolite dropped from the package (but can be installed additionally)
