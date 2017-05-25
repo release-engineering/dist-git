@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# pee redirects stdin to each of the post-receive hooks in place.
+/usr/bin/pee $GIT_DIR/hooks/post-receive-chained.d/*

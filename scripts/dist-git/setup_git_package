@@ -85,6 +85,20 @@ git config --add hooks.mailinglist "$PACKAGE-owner@fedoraproject.org,scm-commits
 git config --add hooks.maildomain fedoraproject.org
 popd >/dev/null
 
+mkdir -p $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d
+if [[ $grok && $grok != "False" ]]; then
+    if ! [ -f $REPODIR/manifest.js.gz ]; then
+        echo 'Generating initial grok manifest...'
+        /usr/bin/grok-manifest -m $REPODIR/manifest.js.gz -t $REPODIR
+    fi
+    ln -s /usr/share/dist-git/hooks/grok_update \
+        $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d/grok_update
+fi
+
+# This one kicks off all the others in post-receive-chained.d
+ln -s /usr/share/dist-git/hooks/post-receive \
+    $REPODIR/$PACKAGE.git/hooks/post-receive
+
 # Now clone that repo and create the .gitignore and sources file
 git init -q $TMPDIR/$PACKAGE
 pushd $TMPDIR/$PACKAGE >/dev/null
@@ -103,17 +117,12 @@ if [[ $gitolite && $gitolite != "False" ]]; then
 fi
 
 # Setup our post-receive hooks
-mkdir -p $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d
 ln -s /usr/share/git-core/mail-hooks/gnome-post-receive-email \
     $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-email
 ln -s /usr/share/git-core/post-receive-fedmsg \
     $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-fedmsg
 ln -s /usr/share/git-core/post-receive-alternativearch \
     $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-alternativearch
-
-# This one kicks off all the others in post-receive-chained.d
-ln -s /usr/share/git-core/post-receive-chained \
-    $REPODIR/$PACKAGE.git/hooks/post-receive
-
 rm -rf $TMPDIR
+
 echo "Done."

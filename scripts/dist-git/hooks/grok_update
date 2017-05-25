@@ -1,0 +1,4 @@
+#!/bin/bash
+
+eval "$(crudini --format=sh --get /etc/dist-git/dist-git.conf dist-git)"
+/usr/bin/grok-manifest -m $gitroot_dir/manifest.js.gz -t $gitroot_dir -n `pwd`

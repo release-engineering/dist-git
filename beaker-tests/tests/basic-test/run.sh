@@ -39,7 +39,7 @@ rlJournalStart
         rlRun "git push"
 
         # get srpm file using fedpkg
-        rlRun 'fedpkg --dist f25 srpm'
+        rlRun "fedpkg --dist f25 srpm"
 
         cd ..
 
@@ -47,11 +47,37 @@ rlJournalStart
         rlRun "git clone git://pkgs.example.org/prunerepo.git prunerepo-copy"
         rlRun "git clone http://pkgs.example.org/git/prunerepo prunerepo-copy2"
 
+        # test manifest file update
+        rlRun "wget http://pkgs.example.org/manifest.js.gz"
+        gunzip ./manifest.js.gz
+        rlRun "cat manifest.js | grep prunerepo.git"
+        mv ./manifest.js manifest.js.prev
+
+        # clone repo using fedpkg
+        rlRun "fedpkg clone /var/lib/dist-git/git/prunerepo prunerepo2"
+
+        cd prunerepo2
+        echo "manifest test" > sources
+
+        rlRun "git add -A && git commit -m 'test commit 2'"
+        rlRun "git push"
+
+        cd ..
+
+        rlRun "wget http://pkgs.example.org/manifest.js.gz"
+        gunzip ./manifest.js.gz
+        rlRun "cat manifest.js | grep prunerepo.git"
+
+        modified_prev=`jq '.["/prunerepo.git"].modified' manifest.js.prev`
+        modified=`jq '.["/prunerepo.git"].modified' manifest.js`
+
+        rlAssertGreater "Check that 'modifed' timestamp has been updated in the manifest file" $modified $modified_prev
+
         cd $CWD
     rlPhaseEnd
 
     rlPhaseStartCleanup BasicTest
-        rm -rf $TESTPATH/prunerepo $TESTPATH/prunerepo-copy* $TESTPATH/prunerepo-1.1.tar.gz
+        rm -rf $TESTPATH/prunerepo $TESTPATH/prunerepo-copy* $TESTPATH/prunerepo2 $TESTPATH/prunerepo-1.1.tar.gz $TESTPATH/manifest*
         pkgs_cmd 'rm -rf /var/lib/dist-git/git/prunerepo.git'
         pkgs_cmd 'sudo rm -rf /var/lib/dist-git/cache/lookaside/pkgs/prunerepo'
     rlPhaseEnd

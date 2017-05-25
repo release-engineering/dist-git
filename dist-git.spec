@@ -29,7 +29,12 @@ Requires:       python-configparser
 Requires:       mod_ssl
 Requires:       fedmsg
 Requires:       crudini
+Requires:       moreutils
 Requires(pre):  shadow-utils
+
+%if 0%{?fedora}
+Suggests:       python-grokmirror
+%endif
 
 %description
 Dist Git is a remote Git repository specifically designed to hold RPM

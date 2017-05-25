@@ -62,5 +62,8 @@ Vagrant.configure(2) do |config|
     distgit.vm.provision "shell",
       inline: "echo 'clime   ALL=(ALL)       NOPASSWD: ALL' >> /etc/sudoers"
 
+    distgit.vm.provision "shell",
+      inline: "dnf install -y python-grokmirror"
+
   end
 end

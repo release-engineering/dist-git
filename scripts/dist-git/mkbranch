@@ -146,6 +146,9 @@ for NAME in $PACKAGES ; do
         popd >/dev/null
     exit -2
     }
+    if [[ $grok && $grok != "False" ]]; then
+        /usr/bin/grok-manifest -m $REPODIR/manifest.js.gz -t $REPODIR -n $REPODIR/$NAME.git
+    fi
 done
 
 echo
