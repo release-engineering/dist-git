@@ -4,7 +4,7 @@
 %global installdir /var/lib/dist-git
 
 Name:           dist-git
-Version:        1.1
+Version:        1.2
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -213,6 +213,10 @@ fi
 
 
 %changelog
+* Fri May 26 2017 clime <clime@redhat.com> 1.2-1
+- remove mail git hook
+- grokmirror support
+
 * Wed May 03 2017 clime <clime@redhat.com> 1.1-1
 - fix default config value for email
 - fix name/email switch
