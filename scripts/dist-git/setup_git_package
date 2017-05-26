@@ -117,8 +117,6 @@ if [[ $gitolite && $gitolite != "False" ]]; then
 fi
 
 # Setup our post-receive hooks
-ln -s /usr/share/git-core/mail-hooks/gnome-post-receive-email \
-    $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-email
 ln -s /usr/share/git-core/post-receive-fedmsg \
     $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-fedmsg
 ln -s /usr/share/git-core/post-receive-alternativearch \
