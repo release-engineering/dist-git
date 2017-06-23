@@ -81,7 +81,7 @@ mkdir -p $REPODIR/$PACKAGE.git
 pushd $REPODIR/$PACKAGE.git >/dev/null
 git init -q --shared --bare
 echo "$PACKAGE" > description # This is used to figure out who to send mail to.
-git config --add hooks.mailinglist "$PACKAGE-owner@fedoraproject.org,scm-commits@lists.fedoraproject.org"
+git config --add hooks.mailinglist "$(echo $PACKAGE | tr '/' '-')-owner@fedoraproject.org,scm-commits@lists.fedoraproject.org"
 git config --add hooks.maildomain fedoraproject.org
 popd >/dev/null
 
