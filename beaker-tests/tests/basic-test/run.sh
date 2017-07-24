@@ -79,6 +79,6 @@ rlJournalStart
     rlPhaseStartCleanup BasicTest
         rm -rf $TESTPATH/prunerepo $TESTPATH/prunerepo-copy* $TESTPATH/prunerepo2 $TESTPATH/prunerepo-1.1.tar.gz $TESTPATH/manifest*
         pkgs_cmd 'rm -rf /var/lib/dist-git/git/prunerepo.git'
-        pkgs_cmd 'sudo rm -rf /var/lib/dist-git/cache/lookaside/pkgs/prunerepo'
+        #pkgs_cmd 'sudo rm -rf /var/lib/dist-git/cache/lookaside/pkgs/prunerepo'
     rlPhaseEnd
 rlJournalEnd &> /dev/null
