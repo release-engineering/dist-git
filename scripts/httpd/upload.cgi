@@ -194,8 +194,7 @@ def main():
             print 'Missing'
 
         sys.exit(0)
-    # TODO: At a later date, the default should be moved to True
-    elif hash_type == "md5" and config['dist-git'].getboolean('nomd5', fallback=False):
+    elif hash_type == "md5" and config['dist-git'].getboolean('nomd5', fallback=True):
         send_error('Uploads with md5 are no longer allowed.',
                    status='406 Not Acceptable')
 
