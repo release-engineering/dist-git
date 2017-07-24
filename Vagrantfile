@@ -53,6 +53,10 @@ Vagrant.configure(2) do |config|
       run: "always"
 
     distgit.vm.provision "shell",
+      inline: "rm -f /etc/httpd/conf.d/ssl.conf", # remove default ssl config for it conflicts with lookaside-upload.conf
+      run: "always"
+
+    distgit.vm.provision "shell",
       inline: "systemctl enable httpd && systemctl restart httpd",
       run: "always"
 
