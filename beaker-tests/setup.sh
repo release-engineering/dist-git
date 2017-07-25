@@ -24,9 +24,7 @@ dnf -y install vagrant-libvirt
 dnf -y install jq
 dnf -y install git
 dnf -y install wget
-dnf -y --best install fedpkg
-
-dnf -y downgrade fedpkg --allowerasing # FIXME: the dist-git Vagrantfile is not compatible with fedpkg-1.26 due to it not sending server cert
+dnf -y install fedpkg
 
 # enable libvirtd for Vagrant (distgit)
 systemctl enable libvirtd && systemctl start libvirtd

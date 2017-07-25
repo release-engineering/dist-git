@@ -9,9 +9,15 @@ Vagrant.configure(2) do |config|
 
     distgit.vm.synced_folder ".", "/vagrant", type: "rsync"
 
+    # setup test user
     distgit.vm.provision "shell",
-      inline: "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf",
-      run: "always"
+      inline: "useradd clime -G packager"
+
+    distgit.vm.provision "shell",
+      inline: "echo 'clime ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers"
+
+    distgit.vm.provision "shell",
+      inline: "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf"
 
     # Update the system
     distgit.vm.provision "shell",
@@ -28,24 +34,20 @@ Vagrant.configure(2) do |config|
       inline: "cd /vagrant/ && tito build -i --test --rpm",
       run: "always"
 
-    distgit.vm.provision "shell",
-      inline: "cp /etc/httpd/conf.d/dist-git/lookaside-upload.conf.example /etc/httpd/conf.d/dist-git/lookaside-upload.conf",
-      run: "always"
-
     distgit.vm.provision "file",
-      source: "./beaker-tests/pkgs-files/pkgs.example.org.pem", destination: "/tmp/pkgs.example.org.pem",
+      source: "./beaker-tests/pkgs-files/", destination: "/tmp/",
       run: "always"
 
     distgit.vm.provision "shell",
-      inline: "mv /tmp/pkgs.example.org.pem /etc/pki/tls/certs/pkgs.example.org.pem && restorecon -R /etc/pki/tls/certs/",
-      run: "always"
-
-    distgit.vm.provision "file",
-      source: "./beaker-tests/pkgs-files/ca-bundle.crt", destination: "/tmp/ca-bundle.crt",
+      inline: "mv /tmp/pkgs-files/pkgs.example.org.pem /etc/pki/tls/certs/pkgs.example.org.pem && restorecon -R /etc/pki/tls/certs/",
       run: "always"
 
     distgit.vm.provision "shell",
-      inline: "mv /tmp/ca-bundle.crt /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem && restorecon -R /etc/pki/ca-trust/extracted/pem/",
+      inline: "mv /tmp/pkgs-files/ca-bundle.crt /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem && restorecon -R /etc/pki/ca-trust/extracted/pem/",
+      run: "always"
+
+    distgit.vm.provision "shell",
+      inline: "mv /tmp/pkgs-files/lookaside-upload.conf /etc/httpd/conf.d/dist-git/ && restorecon -R /etc/httpd/conf.d/dist-git/",
       run: "always"
 
     distgit.vm.provision "shell",
@@ -53,21 +55,12 @@ Vagrant.configure(2) do |config|
       run: "always"
 
     distgit.vm.provision "shell",
-      inline: "rm -f /etc/httpd/conf.d/ssl.conf", # remove default ssl config for it conflicts with lookaside-upload.conf
-      run: "always"
-
-    distgit.vm.provision "shell",
       inline: "systemctl enable httpd && systemctl restart httpd",
       run: "always"
 
     distgit.vm.provision "shell",
-      inline: "useradd clime -G packager"
-
-    distgit.vm.provision "shell",
-      inline: "echo 'clime   ALL=(ALL)       NOPASSWD: ALL' >> /etc/sudoers"
-
-    distgit.vm.provision "shell",
-      inline: "dnf install -y python-grokmirror"
+      inline: "dnf install -y python-grokmirror",
+      run: "always"
 
   end
 end

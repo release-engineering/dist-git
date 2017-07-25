@@ -32,7 +32,7 @@ rlJournalStart
         rlRun "fedpkg import --skip-diffs ../prunerepo-1.1-1.fc23.src.rpm"
 
         # test of presence of the uploaded file
-        rlRun 'wget http://pkgs.example.org/repo/pkgs/prunerepo/prunerepo-1.1.tar.gz/md5/c5af09c7fb2c05e556898c93c62b1e35/prunerepo-1.1.tar.gz'
+        rlRun 'wget http://pkgs.example.org/repo/pkgs/prunerepo/prunerepo-1.1.tar.gz/sha512/6a6a30c0e8c661176ba0cf7e8f1909a493a298fd5088389f5eb630b577dee157106e5f89dc429bcf2a6fdffe4bc10b498906b9746220882827560bc5f72a1b01/prunerepo-1.1.tar.gz'
 
         # commit of spec and updated sources and push into the git repo
         rlRun "git add -A && git commit -m 'test commit'"
@@ -79,6 +79,6 @@ rlJournalStart
     rlPhaseStartCleanup BasicTest
         rm -rf $TESTPATH/prunerepo $TESTPATH/prunerepo-copy* $TESTPATH/prunerepo2 $TESTPATH/prunerepo-1.1.tar.gz $TESTPATH/manifest*
         pkgs_cmd 'rm -rf /var/lib/dist-git/git/prunerepo.git'
-        #pkgs_cmd 'sudo rm -rf /var/lib/dist-git/cache/lookaside/pkgs/prunerepo'
+        pkgs_cmd 'sudo rm -rf /var/lib/dist-git/cache/lookaside/pkgs/prunerepo'
     rlPhaseEnd
 rlJournalEnd &> /dev/null
