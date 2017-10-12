@@ -82,4 +82,4 @@ The web interface will be available on address like `http://your-server/cgit`.
 
 #### 6. DistGit client tools:
 
-To interact with DistGit server, you can use use rpkg command-line tool or python pyrpkg library.
+To interact with DistGit server, you can use use [rpkg](https://pagure.io/rpkg-client) command-line tool.
