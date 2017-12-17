@@ -9,13 +9,6 @@ Vagrant.configure(2) do |config|
 
     distgit.vm.synced_folder ".", "/vagrant", type: "rsync"
 
-    # setup test user
-    distgit.vm.provision "shell",
-      inline: "useradd clime -G packager"
-
-    distgit.vm.provision "shell",
-      inline: "echo 'clime ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers"
-
     distgit.vm.provision "shell",
       inline: "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf"
 
@@ -34,8 +27,15 @@ Vagrant.configure(2) do |config|
       inline: "cd /vagrant/ && tito build -i --test --rpm",
       run: "always"
 
+    # setup test user
+    distgit.vm.provision "shell",
+      inline: "useradd clime -G packager"
+
+    distgit.vm.provision "shell",
+      inline: "echo 'clime ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers"
+
     distgit.vm.provision "file",
-      source: "./beaker-tests/pkgs-files/", destination: "/tmp/",
+      source: "./beaker-tests/pkgs-files", destination: "/tmp/pkgs-files",
       run: "always"
 
     distgit.vm.provision "shell",
