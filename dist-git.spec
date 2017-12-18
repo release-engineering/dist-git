@@ -3,7 +3,7 @@
 %global installdir /var/lib/dist-git
 
 Name:           dist-git
-Version:        1.4
+Version:        1.5
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -211,6 +211,10 @@ fi
 
 
 %changelog
+* Mon Dec 18 2017 clime <clime@redhat.com> 1.5-1
+- make selinux policy build on f27+
+- add optional map SELinux permission for httpd_t
+
 * Tue Jul 25 2017 clime <clime@redhat.com> 1.4-1
 - disable md5 uploading by default
 
@@ -236,6 +240,7 @@ fi
 - updated setup_git_package, mkbranch, mkbranch_branching
 - updated SELinux policy
 - configurable paths to cache dir and git repos
+
 * Wed Aug 05 2015 Adam Samalik <asamalik@redhat.com> 0.13-1
 - optional cgit_pkg_list.sh parameter (asamalik@redhat.com)
 - change mv to cp + rm (asamalik@redhat.com)
