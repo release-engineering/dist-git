@@ -25,6 +25,7 @@ dnf -y install jq
 dnf -y install git
 dnf -y install wget
 dnf -y install fedpkg
+dnf -y install rpkg
 
 # enable libvirtd for Vagrant (distgit)
 systemctl enable libvirtd && systemctl start libvirtd

@@ -21,25 +21,28 @@ rlJournalStart
 
         cd $TESTPATH
 
-        # clone repo using fedpkg
-        rlRun "fedpkg clone /var/lib/dist-git/git/prunerepo"
+        # clone repo using rpkg
+        rlRun "rpkg clone /var/lib/dist-git/git/prunerepo"
 
-        cd prunerepo
+        cd prunerepo || exit
         git config user.email "somebody@example.com"
         git config user.name "Some name"
 
         # upload into lookaside and working tree update
-        rlRun "fedpkg import --skip-diffs ../prunerepo-1.1-1.fc23.src.rpm"
+        rlRun "rpkg import --skip-diffs ../../../data/prunerepo-1.1-1.fc23.src.rpm"
 
         # test of presence of the uploaded file
         rlRun 'wget http://pkgs.example.org/repo/pkgs/prunerepo/prunerepo-1.1.tar.gz/sha512/6a6a30c0e8c661176ba0cf7e8f1909a493a298fd5088389f5eb630b577dee157106e5f89dc429bcf2a6fdffe4bc10b498906b9746220882827560bc5f72a1b01/prunerepo-1.1.tar.gz'
 
         # commit of spec and updated sources and push into the git repo
         rlRun "git add -A && git commit -m 'test commit'"
-        rlRun "git push"
+        rlRun "rpkg push"
 
-        # get srpm file using fedpkg
-        rlRun "fedpkg --dist f25 srpm"
+        # https://pagure.io/rpkg-client/issue/4
+        rlRun "rpkg clean -x"
+
+        # get srpm file using rpkg
+        rlRun "rpkg srpm"
 
         cd ..
 
@@ -53,8 +56,8 @@ rlJournalStart
         rlRun "cat manifest.js | grep prunerepo.git"
         mv ./manifest.js manifest.js.prev
 
-        # clone repo using fedpkg
-        rlRun "fedpkg clone /var/lib/dist-git/git/prunerepo prunerepo2"
+        # clone repo using rpkg
+        rlRun "rpkg clone /var/lib/dist-git/git/prunerepo prunerepo2"
 
         cd prunerepo2
         echo "manifest test" > sources
