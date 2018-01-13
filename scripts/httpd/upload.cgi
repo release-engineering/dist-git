@@ -238,23 +238,24 @@ def main():
                                                hash_type.upper(), checksum)
 
     # Add the file to the old path, where fedpkg is currently looking for it
-    if hash_type == "md5":
+    if hash_type == "md5" and config['dist-git'].getboolean('old_paths', fallback=True):
         hardlink(dest_file, old_path, username)
 
     # Emit a fedmsg message.  Load the config to talk to the fedmsg-relay.
-    try:
-        config = fedmsg.config.load_config([], None)
-        config['active'] = True
-        config['endpoints']['relay_inbound'] = config['relay_inbound']
-        fedmsg.init(name="relay_inbound", cert_prefix="lookaside", **config)
+    if config['dist-git'].getboolean('fedmsgs', fallback=True):
+        try:
+            config = fedmsg.config.load_config([], None)
+            config['active'] = True
+            config['endpoints']['relay_inbound'] = config['relay_inbound']
+            fedmsg.init(name="relay_inbound", cert_prefix="lookaside", **config)
 
-        topic = "lookaside.new"
-        msg = dict(name=name, md5sum=checksum,
-                   filename=filename.split('/')[-1], agent=username,
-                   path=msgpath)
-        fedmsg.publish(modname="git", topic=topic, msg=msg)
-    except Exception as e:
-        print "Error with fedmsg", str(e)
+            topic = "lookaside.new"
+            msg = dict(name=name, md5sum=checksum,
+                       filename=filename.split('/')[-1], agent=username,
+                       path=msgpath)
+            fedmsg.publish(modname="git", topic=topic, msg=msg)
+        except Exception as e:
+            print "Error with fedmsg", str(e)
 
 if __name__ == '__main__':
     try:
