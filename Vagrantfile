@@ -5,7 +5,7 @@ Vagrant.configure(2) do |config|
 
   ###  distgit  ###################################################
   config.vm.define "distgit" do |distgit|
-    distgit.vm.box = "fedora/25-cloud-base"
+    distgit.vm.box = "fedora/27-cloud-base"
 
     distgit.vm.synced_folder ".", "/vagrant", type: "rsync"
 
@@ -14,7 +14,7 @@ Vagrant.configure(2) do |config|
 
     # Update the system
     distgit.vm.provision "shell",
-      inline: "dnf clean all && sudo dnf -y update || true" # || true cause dnf might return non-zero status (probly delta rpm rebuilt failed)
+      inline: "dnf clean all && dnf -y update || true" # || true cause dnf might return non-zero status (probly delta rpm rebuilt failed)
 
     distgit.vm.provision "shell",
       inline: "dnf install -y tito wget"
@@ -24,7 +24,11 @@ Vagrant.configure(2) do |config|
       run: "always"
 
     distgit.vm.provision "shell",
-      inline: "cd /vagrant/ && tito build -i --test --rpm",
+      inline: "cd /vagrant/ && tito build --test --rpm",
+      run: "always"
+
+    distgit.vm.provision "shell",
+      inline: "dnf install -y /tmp/tito/noarch/*.rpm",
       run: "always"
 
     # setup test user
