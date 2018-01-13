@@ -21,6 +21,7 @@ BuildRequires:  systemd
 
 Requires:       httpd
 Requires:       perl(Sys::Syslog)
+Requires:       dist-git-selinux
 Requires:       git
 Requires:       git-daemon
 Requires:       python-requests
