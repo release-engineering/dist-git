@@ -31,7 +31,7 @@ systemctl enable libvirtd && systemctl start libvirtd
 systemctl start virtlogd.socket # this is currently needed in f25 for vagrant to work with libvirtd
 
 cd $DISTGITROOTDIR
-vagrant up distgit
+vagrant reload distgit || vagrant up distgit
 
 IPADDR=`vagrant ssh -c "ifconfig eth0 | grep -E 'inet\s' | sed 's/\s*inet\s*\([0-9.]*\).*/\1/'"`
 echo "$IPADDR pkgs.example.org" >> /etc/hosts

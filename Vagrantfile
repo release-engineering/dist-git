@@ -24,6 +24,10 @@ Vagrant.configure(2) do |config|
       run: "always"
 
     distgit.vm.provision "shell",
+      inline: "rm -rf /tmp/tito/noarch",
+      run: "always"
+
+    distgit.vm.provision "shell",
       inline: "cd /vagrant/ && tito build --test --rpm",
       run: "always"
 
@@ -37,6 +41,10 @@ Vagrant.configure(2) do |config|
 
     distgit.vm.provision "shell",
       inline: "echo 'clime ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers"
+
+    distgit.vm.provision "shell",
+      inline: "rm -rf /tmp/pkgs-files",
+      run: "always"
 
     distgit.vm.provision "file",
       source: "./beaker-tests/pkgs-files", destination: "/tmp/pkgs-files",
