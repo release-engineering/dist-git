@@ -31,12 +31,15 @@ term_dontaudit_getattr_generic_ptys(httpd_git_script_t);
 allow git_system_t git_user_content_t:dir { search getattr open read };
 allow git_system_t git_user_content_t:file { read open getattr };
 allow git_system_t git_user_content_t:lnk_file { read open getattr };
+optional_policy(`
+gen_require(` class file map; ')
+allow git_system_t git_user_content_t:file map;
+')
 
 # For git-http-backend
 allow httpd_t git_user_content_t:dir { search getattr open read };
 allow httpd_t git_user_content_t:file { read open getattr };
 allow httpd_t git_user_content_t:lnk_file { read open getattr };
-
 optional_policy(`
 gen_require(` class file map; ')
 allow httpd_t git_user_content_t:file map;
