@@ -63,6 +63,10 @@ Vagrant.configure(2) do |config|
       run: "always"
 
     distgit.vm.provision "shell",
+      inline: "mv /tmp/pkgs-files/ssl.conf /etc/httpd/conf.d/ssl.conf && restorecon -R /etc/httpd/conf.d/ssl.conf",
+      run: "always"
+
+    distgit.vm.provision "shell",
       inline: "systemctl enable dist-git.socket && systemctl restart dist-git.socket",
       run: "always"
 
