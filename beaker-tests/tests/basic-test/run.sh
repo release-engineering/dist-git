@@ -23,14 +23,14 @@ rlJournalStart
         echo "Running tests in $TEST_CWD"
 
         # clone repo using rpkg
-        rlRun "rpkg clone rpms/prunerepo"
+        rlRun "rpkg -v clone rpms/prunerepo"
 
         cd prunerepo
         git config user.email "somebody@example.com"
         git config user.name "Some name"
 
         # upload into lookaside and working tree update
-        rlRun "rpkg import --skip-diffs $SCRIPTDIR/../../data/prunerepo-1.1-1.fc23.src.rpm"
+        rlRun "rpkg -v import --skip-diffs $SCRIPTDIR/../../data/prunerepo-1.1-1.fc23.src.rpm"
 
         # test of presence of the uploaded file
         rlRun 'wget http://pkgs.example.org/repo/pkgs/rpms/prunerepo/prunerepo-1.1.tar.gz/sha512/6a6a30c0e8c661176ba0cf7e8f1909a493a298fd5088389f5eb630b577dee157106e5f89dc429bcf2a6fdffe4bc10b498906b9746220882827560bc5f72a1b01/prunerepo-1.1.tar.gz'
