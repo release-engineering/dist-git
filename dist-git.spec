@@ -24,8 +24,8 @@ Requires:       perl(Sys::Syslog)
 Requires:       dist-git-selinux
 Requires:       git
 Requires:       git-daemon
-Requires:       python-requests
-Requires:       python-configparser
+Requires:       python2-requests
+Requires:       python2-configparser
 Requires:       mod_ssl
 Requires:       fedmsg
 Requires:       crudini
