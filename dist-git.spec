@@ -24,8 +24,6 @@ Requires:       perl(Sys::Syslog)
 Requires:       dist-git-selinux
 Requires:       git
 Requires:       git-daemon
-Requires:       python2-requests
-Requires:       python2-configparser
 Requires:       mod_ssl
 Requires:       fedmsg
 Requires:       crudini
@@ -34,6 +32,11 @@ Requires(pre):  shadow-utils
 
 %if 0%{?fedora}
 Suggests:       python-grokmirror
+Requires:       python2-requests
+Requires:       python2-configparser
+%else
+Requires:       python-requests
+Requires:       python-configparser
 %endif
 
 %description
