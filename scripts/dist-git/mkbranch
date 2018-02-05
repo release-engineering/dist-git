@@ -92,6 +92,18 @@ if [ -z "$BRANCH" -o -z "$PACKAGES" ] ; then
     exit -1
 fi
 
+# prefix default namespace if set
+NEWP=
+for PACKAGE in $PACKAGES ; do
+    PACKAGE=`echo $PACKAGE | sed -e "s+^/*\([^/]*\)/*$+\1+"`
+    parts=($(echo $PACKAGE | tr "/" " "))
+    parts_len=${#parts[@]}
+    if [ -n "$default_namespace" ] && [ $parts_len -le 1 ]; then
+        PACKAGE=$default_namespace/$PACKAGE
+    fi
+    NEWP="$NEWP $PACKAGE"
+done
+PACKAGES="$(echo $NEWP)"
 
 # Sanity checks before we start doing damage
 NEWP=
@@ -108,6 +120,7 @@ for p in $PACKAGES ; do
     NEWP="$NEWP $p"
 done
 PACKAGES="$(echo $NEWP)"
+
 if [ -z "$PACKAGES" ] ; then
     echo "NOOP: no valid packages found to process"
     exit -1

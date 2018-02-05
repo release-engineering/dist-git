@@ -91,6 +91,17 @@ def makedirs(dir_, username, mode=02755):
             send_error(str(e))
 
 
+def ensure_namespaced(name, namespace):
+    if not namespace:
+        return name
+
+    name_parts = name.split('/')
+    if len(name_parts) == 1:
+        return os.path.join(namespace, name)
+
+    return name
+
+
 def main():
     config = ConfigParser()
     config.read('/etc/dist-git/dist-git.conf')
@@ -112,7 +123,7 @@ def main():
     assert os.environ['REQUEST_URI'].split('/')[1] == 'repo'
 
     form = cgi.FieldStorage()
-    name = check_form(form, 'name')
+    name = check_form(form, 'name').strip('/')
 
     # Search for the file hash, start with stronger hash functions
     if 'sha512sum' in form:
@@ -163,6 +174,10 @@ def main():
     module_dir = os.path.join(config['dist-git']['cache_dir'], "lookaside/pkgs", name)
     hash_dir = os.path.join(module_dir, filename, hash_type, checksum)
     msgpath = os.path.join(name, filename, hash_type, checksum, filename)
+
+    # prefix name by default namespace if configured
+    if config['dist-git'].get('default_namespace'):
+        name = ensure_namespaced(name, config['dist-git'].get('default_namespace')).strip('/')
 
     # first test if the module really exists
     git_dir = os.path.join(config['dist-git']['gitroot_dir'], '%s.git' % name)

@@ -58,6 +58,13 @@ if [ -z "$PACKAGE" ] ; then
     exit -1
 fi
 
+PACKAGE=`echo $PACKAGE | sed -e "s+^/*\([^/]*\)/*$+\1+"`
+parts=($(echo $PACKAGE | tr "/" " "))
+parts_len=${#parts[@]}
+if [ -n "$default_namespace" ] && [ $parts_len -le 1 ]; then
+    PACKAGE=$default_namespace/$PACKAGE
+fi
+
 # Sanity checks before we start doing damage
 [ $VERBOSE -gt 1 ] && echo "Checking package $PACKAGE..."
 if [ -f $REPODIR/$PACKAGE.git/refs/heads/master ] ; then
