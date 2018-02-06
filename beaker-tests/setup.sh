@@ -55,11 +55,17 @@ vagrant ssh -c "echo $PUBKEY > /tmp/id_rsa.pub.remote"
 
 vagrant ssh -c '
 sudo mkdir -p /home/clime/.ssh
-sudo touch /home/clime/.ssh/authorized_keys
-sudo mv /tmp/id_rsa.pub.remote /home/clime/.ssh/authorized_keys
+sudo cp /tmp/id_rsa.pub.remote /home/clime/.ssh/authorized_keys
 sudo chown -R clime:clime /home/clime/.ssh
 sudo chmod 700 /home/clime/.ssh
 sudo chmod 600 /home/clime/.ssh/authorized_keys
+' distgit
+
+vagrant ssh -c '
+sudo mkdir -p /root/.ssh
+sudo cp /tmp/id_rsa.pub.remote /root/.ssh/authorized_keys
+sudo chmod 700 /root/.ssh
+sudo chmod 600 /root/.ssh/authorized_keys
 ' distgit
 
 cd $SCRIPTPATH
