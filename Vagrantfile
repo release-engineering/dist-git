@@ -51,14 +51,6 @@ Vagrant.configure(2) do |config|
       run: "always"
 
     distgit.vm.provision "shell",
-      inline: "mv /tmp/pkgs-files/pkgs.example.org.pem /etc/pki/tls/certs/pkgs.example.org.pem && restorecon -R /etc/pki/tls/certs/",
-      run: "always"
-
-    distgit.vm.provision "shell",
-      inline: "mv /tmp/pkgs-files/ca-bundle.crt /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem && restorecon -R /etc/pki/ca-trust/extracted/pem/",
-      run: "always"
-
-    distgit.vm.provision "shell",
       inline: "mv /tmp/pkgs-files/lookaside-upload.conf /etc/httpd/conf.d/dist-git/ && restorecon -R /etc/httpd/conf.d/dist-git/",
       run: "always"
 
