@@ -1,12 +1,6 @@
 #!/bin/bash
 #
 # Create a new repo.
-# THIS HAS TO BE RUN ON THE GIT SERVER!
-
-# WARNING:
-# This file is maintained within ansible
-# All local changes will be lost.
-
 
 # Figure out the environment we're running in
 eval "$(crudini --format=sh --get /etc/dist-git/dist-git.conf dist-git)"
@@ -14,9 +8,7 @@ REPODIR=$gitroot_dir
 : ${git_author_name="Undefined"}
 : ${git_author_email="undefined@example.com"}
 
-# check if a moron is driving me
 if [ ! -d $REPODIR ] ; then
-    # we're not on the git server (this check is fragile)
     echo "ERROR: This script has to be run on the git server."
     echo "ERROR: Homer sez 'Duh'."
     exit -9
@@ -58,6 +50,7 @@ if [ -z "$PACKAGE" ] ; then
     exit -1
 fi
 
+# optionally prepend default namespace if $PACKAGE is not namespaced
 PACKAGE=`echo $PACKAGE | sed -e "s+^/*\([^/]*\)/*$+\1+"`
 parts=($(echo $PACKAGE | tr "/" " "))
 parts_len=${#parts[@]}
@@ -87,9 +80,6 @@ TMPDIR=$(mktemp -d /tmp/tmpXXXXXX)
 mkdir -p $REPODIR/$PACKAGE.git
 pushd $REPODIR/$PACKAGE.git >/dev/null
 git init -q --shared --bare
-echo "$PACKAGE" > description # This is used to figure out who to send mail to.
-git config --add hooks.mailinglist "$(echo $PACKAGE | tr '/' '-')-owner@fedoraproject.org,scm-commits@lists.fedoraproject.org"
-git config --add hooks.maildomain fedoraproject.org
 popd >/dev/null
 
 mkdir -p $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d
@@ -101,7 +91,6 @@ if [[ $grok && $grok != "False" ]]; then
     ln -s /usr/share/dist-git/hooks/grok_update \
         $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d/grok_update
 fi
-
 # This one kicks off all the others in post-receive-chained.d
 ln -s /usr/share/dist-git/hooks/post-receive \
     $REPODIR/$PACKAGE.git/hooks/post-receive
@@ -123,11 +112,5 @@ if [[ $gitolite && $gitolite != "False" ]]; then
     ln -s /etc/gitolite/hooks/common/update $REPODIR/$PACKAGE.git/hooks/update
 fi
 
-# Setup our post-receive hooks
-ln -s /usr/share/git-core/post-receive-fedmsg \
-    $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-fedmsg
-ln -s /usr/share/git-core/post-receive-alternativearch \
-    $REPODIR/$PACKAGE.git/hooks/post-receive-chained.d/post-receive-alternativearch
 rm -rf $TMPDIR
-
 echo "Done."

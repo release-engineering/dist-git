@@ -1,12 +1,6 @@
 #!/bin/bash
 #
-# Create a new development branch for a module.
-# THIS HAS TO BE RUN ON THE GIT SERVER!
-
-# WARNING:
-# This file is maintained within puppet?
-# All local changes will be lost.
-
+# Create a new development branch for a package.
 
 # Figure out the environment we're running in
 RUNDIR=$(cd "$(dirname "$0")" && pwd)
@@ -21,9 +15,6 @@ if [ ! -d $REPODIR ] ; then
     echo "ERROR: Homer sez 'Duh'."
     exit -9
 fi
-
-# where are the packages kept
-TOPLEVEL=rpms
 
 # Local variables
 VERBOSE=0
@@ -69,7 +60,6 @@ while [ -n "$1" ] ; do
         TEST="yes"
         ;;
 
-
     -b | --branch )
         shift
         BRANCH=$1/master
@@ -92,7 +82,7 @@ if [ -z "$BRANCH" -o -z "$PACKAGES" ] ; then
     exit -1
 fi
 
-# prefix default namespace if set
+# prepend default namespace if set
 NEWP=
 for PACKAGE in $PACKAGES ; do
     PACKAGE=`echo $PACKAGE | sed -e "s+^/*\([^/]*\)/*$+\1+"`
