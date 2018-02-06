@@ -171,13 +171,13 @@ def main():
                              username, name, filename, hash_type.upper(),
                              checksum))
 
-    module_dir = os.path.join(config['dist-git']['cache_dir'], "lookaside/pkgs", name)
-    hash_dir = os.path.join(module_dir, filename, hash_type, checksum)
-    msgpath = os.path.join(name, filename, hash_type, checksum, filename)
-
     # prefix name by default namespace if configured
     if config['dist-git'].get('default_namespace'):
         name = ensure_namespaced(name, config['dist-git'].get('default_namespace')).strip('/')
+
+    module_dir = os.path.join(config['dist-git']['cache_dir'], "lookaside/pkgs", name)
+    hash_dir = os.path.join(module_dir, filename, hash_type, checksum)
+    msgpath = os.path.join(name, filename, hash_type, checksum, filename)
 
     # first test if the module really exists
     git_dir = os.path.join(config['dist-git']['gitroot_dir'], '%s.git' % name)
