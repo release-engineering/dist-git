@@ -3,7 +3,7 @@
 %global installdir /var/lib/dist-git
 
 Name:           dist-git
-Version:        1.5
+Version:        1.6
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -223,6 +223,14 @@ fi
 
 
 %changelog
+* Mon Feb 19 2018 clime <clime@redhat.com> 1.6-1
+- add 'fedmsgs', 'old_paths', and 'default_namespace' config options
+- remove domain_read_all_domains_state SELinux rule
+- require dist-git-selinux
+- give optional map permission to git_system_t on git_user_content_t
+- update requires to work for all environments
+- make the package completely distribution-agnostic
+
 * Mon Dec 18 2017 clime <clime@redhat.com> 1.5-1
 - make selinux policy build on f27+
 - add optional map SELinux permission for httpd_t
