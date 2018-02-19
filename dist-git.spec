@@ -30,18 +30,21 @@ Requires:       crudini
 Requires:       moreutils
 Requires(pre):  shadow-utils
 
-%if 0%{?fedora} < 28
-Suggests:       python-grokmirror
-%else
-Suggests:       python2-grokmirror
-%endif
-
-%if 0%{?fedora}
-Requires:       python2-requests
-Requires:       python2-configparser
-%else
+%if 0%{?rhel} && 0%{?rhel} < 8
 Requires:       python-requests
 Requires:       python-configparser
+Requires:       python-grokmirror
+
+%else
+Requires:       python2-requests
+Requires:       python2-configparser
+
+%if 0%{?fedora} < 28
+Recommends:     python-grokmirror
+%else
+Recommends:     python2-grokmirror
+%endif
+
 %endif
 
 %description
