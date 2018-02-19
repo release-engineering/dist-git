@@ -33,16 +33,20 @@ systemctl start virtlogd.socket # this is currently needed in f25 for vagrant to
 
 cd $DISTGITROOTDIR
 
+if [ -z $DISTGIT_FLAVOR ]; then
+    DISTGIT_FLAVOR=distgit
+fi
+
 DISTGITSTATUS=`mktemp`
 vagrant status distgit | tee $DISTGITSTATUS
 if grep -q 'not created' $DISTGITSTATUS; then
-    vagrant up distgit
+    vagrant up $DISTGIT_FLAVOR
 else
-    vagrant reload distgit
+    vagrant reload $DISTGIT_FLAVOR
 fi
 rm $DISTGITSTATUS
 
-IPADDR=`vagrant ssh -c "ifconfig eth0 | grep -E 'inet\s' | sed 's/\s*inet\s*\([0-9.]*\).*/\1/'"`
+IPADDR=`vagrant ssh -c "ifconfig eth0 | grep -E 'inet\s' | sed 's/\s*inet\s*\([0-9.]*\).*/\1/'" $DISTGIT_FLAVOR`
 echo "$IPADDR pkgs.example.org" >> /etc/hosts
 
 if ! [ -f ~/.ssh/id_rsa ]; then
@@ -51,7 +55,7 @@ if ! [ -f ~/.ssh/id_rsa ]; then
 fi
 
 PUBKEY=`cat ~/.ssh/id_rsa.pub`
-vagrant ssh -c "echo $PUBKEY > /tmp/id_rsa.pub.remote"
+vagrant ssh -c "echo $PUBKEY > /tmp/id_rsa.pub.remote" $DISTGIT_FLAVOR
 
 vagrant ssh -c '
 sudo mkdir -p /home/clime/.ssh
@@ -59,13 +63,13 @@ sudo cp /tmp/id_rsa.pub.remote /home/clime/.ssh/authorized_keys
 sudo chown -R clime:clime /home/clime/.ssh
 sudo chmod 700 /home/clime/.ssh
 sudo chmod 600 /home/clime/.ssh/authorized_keys
-' distgit
+' $DISTGIT_FLAVOR
 
 vagrant ssh -c '
 sudo mkdir -p /root/.ssh
 sudo cp /tmp/id_rsa.pub.remote /root/.ssh/authorized_keys
 sudo chmod 700 /root/.ssh
 sudo chmod 600 /root/.ssh/authorized_keys
-' distgit
+' $DISTGIT_FLAVOR
 
 cd $SCRIPTPATH
