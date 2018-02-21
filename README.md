@@ -7,7 +7,7 @@ DistGit (Distributed Git) is Git with additional data storage. It is designed to
  2. Lookaside cache to store source tarballs
  3. Scripts to manage both
 
-Read here for information about most recent release: https://github.com/release-engineering/dist-git/wiki
+Read here for information about the most recent release: https://github.com/release-engineering/dist-git/wiki
 
 How Does It Work
 ----------------
