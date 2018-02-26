@@ -3,7 +3,7 @@
 %global installdir /var/lib/dist-git
 
 Name:           dist-git
-Version:        1.6
+Version:        1.7
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -223,6 +223,9 @@ fi
 
 
 %changelog
+* Mon Feb 26 2018 clime <clime@redhat.com> 1.7-1
+- move 'fedmsgs', 'old_paths', 'nomd5' options to optional upload section
+
 * Mon Feb 19 2018 clime <clime@redhat.com> 1.6-1
 - add 'fedmsgs', 'old_paths', and 'default_namespace' config options
 - remove domain_read_all_domains_state SELinux rule
