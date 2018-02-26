@@ -19,8 +19,6 @@ RPM source package typically contains a spec file and the sources (upstream tarb
 User Guide
 ----------
 
-You can follow [this basic workflow](https://clime.github.io/2017/05/20/DistGit-1.0.html#okay-i-want-to-try-the-distgit-package-out-how) before reading the tips below.
-
 #### 1. Build and Install the Package:
 
 The project is prepared to be built as an RPM package. You can easily build it on [Fedora](https://getfedora.org/) or [CentOS](https://www.centos.org/) with EPEL7 enabled using a tool called [rpkg](https://pagure.io/rpkg-client).
