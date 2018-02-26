@@ -23,17 +23,22 @@ You can follow [this basic workflow](https://clime.github.io/2017/05/20/DistGit-
 
 #### 1. Build and Install the Package:
 
-The project is prepared to be built as an RPM package. You can easily build it on [Fedora](https://getfedora.org/) or [CentOS](https://www.centos.org/) using a tool called [Tito](https://github.com/dgoodwin/tito). 
+The project is prepared to be built as an RPM package. You can easily build it on [Fedora](https://getfedora.org/) or [CentOS](https://www.centos.org/) with EPEL7 enabled using a tool called [rpkg](https://pagure.io/rpkg-client).
 To build the current release, use the following command in the repo directory:
 
 ```
-$ tito build --rpm
+$ rpkg srpm && rpkg local
 ```
 
 Install the resulting RPM package:
 
 ```
-# dnf install /path/to/the-package.rpm
+# dnf install ./noarch/*
+```
+
+Clean-up:
+```
+$ rpkg clean -x
 ```
 
 #### 2. Configuration:
