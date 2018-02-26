@@ -209,7 +209,7 @@ def main():
             print 'Missing'
 
         sys.exit(0)
-    elif hash_type == "md5" and config['upload'].getboolean('nomd5', fallback=True):
+    elif hash_type == "md5" and config.getboolean('upload', 'nomd5', fallback=True):
         send_error('Uploads with md5 are no longer allowed.',
                    status='406 Not Acceptable')
 
@@ -253,11 +253,11 @@ def main():
                                                hash_type.upper(), checksum)
 
     # Add the file to the old path, where fedpkg is currently looking for it
-    if hash_type == "md5" and config['upload'].getboolean('old_paths', fallback=True):
+    if hash_type == "md5" and config.getboolean('upload', 'old_paths', fallback=True):
         hardlink(dest_file, old_path, username)
 
     # Emit a fedmsg message.  Load the config to talk to the fedmsg-relay.
-    if config['upload'].getboolean('fedmsgs', fallback=True):
+    if config.getboolean('upload', 'fedmsgs', fallback=True):
         try:
             config = fedmsg.config.load_config([], None)
             config['active'] = True
