@@ -54,7 +54,7 @@ def check_form(form, var):
     return ret
 
 
-def check_auth(username):
+def check_group(username):
     authenticated = False
     try:
         if username in grp.getgrnam(PACKAGER_GROUP)[3]:
@@ -112,7 +112,8 @@ def main():
     gssname = os.environ.get('GSS_NAME', None)
     if gssname and '@' in gssname and not username:
         username = gssname.partition('@')[0]
-    if not check_auth(username):
+    if not config.getboolean('upload', 'disable_group_check', fallback=False) and\
+            not check_group(username):
         send_error('You must connect with a valid certificate and be in the '
                    '%s group to upload.' % PACKAGER_GROUP,
                    status='403 Forbidden')
