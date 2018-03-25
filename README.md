@@ -1,7 +1,7 @@
 DistGit
 =======
 
-DistGit (Distributed Git) is Git with additional data storage. It is designed to hold content of source rpms and consists of these three main components:
+DistGit (Distribution Git) is Git with additional data storage. It is designed to hold content of source rpms and consists of these three main components:
 
  1. Git repositories
  2. Lookaside cache to store source tarballs
