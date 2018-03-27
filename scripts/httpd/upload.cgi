@@ -177,6 +177,10 @@ def main():
         name = ensure_namespaced(name, config['dist-git'].get('default_namespace')).strip('/')
 
     module_dir = os.path.join(config['dist-git']['cache_dir'], "lookaside/pkgs", name)
+
+    if config['dist-git'].get('cache_dir_override'):
+        module_dir = os.path.join(config['dist-git']['cache_dir_override'], name)
+
     hash_dir = os.path.join(module_dir, filename, hash_type, checksum)
     msgpath = os.path.join(name, filename, hash_type, checksum, filename)
 
@@ -272,6 +276,7 @@ def main():
             fedmsg.publish(modname="git", topic=topic, msg=msg)
         except Exception as e:
             print "Error with fedmsg", str(e)
+
 
 if __name__ == '__main__':
     try:
