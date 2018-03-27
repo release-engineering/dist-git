@@ -50,7 +50,7 @@ rlJournalStart
 
     rlPhaseStartCleanup FedpkgTest
         pkgs_cmd 'rm -rf /var/lib/dist-git/git/rpms/prunerepo.git'
-        #pkgs_cmd 'sudo rm -rf /var/lib/dist-git/cache/lookaside/pkgs/pkgs/rpms/prunerepo'
+        pkgs_cmd 'sudo rm -rf /var/lib/dist-git/cache/lookaside/pkgs/ns/rpms/prunerepo'
         rm -rf $TEST_CWD
     rlPhaseEnd
 rlJournalEnd &> /dev/null
