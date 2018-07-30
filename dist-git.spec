@@ -217,7 +217,6 @@ fi
 
 
 %files selinux
-%defattr(-,root,root,0755)
 %doc selinux/*
 %{_datadir}/selinux/*/%{modulename}.pp
 
