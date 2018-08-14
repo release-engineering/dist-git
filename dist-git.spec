@@ -34,17 +34,10 @@ Requires(pre):  shadow-utils
 Requires:       python-requests
 Requires:       python-configparser
 Requires:       python-grokmirror
-
 %else
 Requires:       python2-requests
 Requires:       python2-configparser
-
-%if 0%{?fedora} < 28
-Recommends:     python-grokmirror
-%else
-Recommends:     python2-grokmirror
-%endif
-
+Recommends:     python3-grokmirror
 %endif
 
 %description
