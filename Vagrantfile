@@ -44,10 +44,6 @@ Vagrant.configure(2) do |config|
       inline: "dnf install -y /tmp/tito/noarch/*.rpm",
       run: "always"
 
-    distgit.vm.provision "shell",
-      inline: "dnf install -y python-grokmirror",
-      run: "always"
-
     # setup config files
     distgit.vm.provision "shell",
       inline: "mv /tmp/pkgs-files/ssl.conf /etc/httpd/conf.d/ssl.conf && restorecon -R /etc/httpd/conf.d/ssl.conf",
