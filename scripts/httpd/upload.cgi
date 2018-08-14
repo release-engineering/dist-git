@@ -176,10 +176,12 @@ def main():
     if config['dist-git'].get('default_namespace'):
         name = ensure_namespaced(name, config['dist-git'].get('default_namespace')).strip('/')
 
-    module_dir = os.path.join(config['dist-git']['cache_dir'], "lookaside/pkgs", name)
-
-    if config['dist-git'].get('cache_dir_override'):
-        module_dir = os.path.join(config['dist-git']['cache_dir_override'], name)
+    if config['dist-git'].get('lookaside_dir'):
+        module_dir = os.path.join(config['dist-git']['lookaside_dir'], name)
+    elif config['dist-git'].get('cache_dir'): # deprecated
+        module_dir = os.path.join(config['dist-git']['cache_dir'], 'lookaside/pkgs', name)
+    else:
+        raise Exception('Please, set lookaside_dir config option.')
 
     hash_dir = os.path.join(module_dir, filename, hash_type, checksum)
     msgpath = os.path.join(name, filename, hash_type, checksum, filename)
