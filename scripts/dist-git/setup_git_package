@@ -98,7 +98,7 @@ ln -s /usr/share/dist-git/hooks/post-receive \
 # Now clone that repo and create the .gitignore and sources file
 git init -q $TMPDIR/$PACKAGE
 pushd $TMPDIR/$PACKAGE >/dev/null
-touch .gitignore sources
+touch .gitignore
 git config user.name "$git_author_name"
 git config user.email "$git_author_email"
 git add .
