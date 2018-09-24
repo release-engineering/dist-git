@@ -2,6 +2,8 @@
 #
 # Create a new repo.
 
+umask 0002
+
 # Figure out the environment we're running in
 eval "$(crudini --format=sh --get /etc/dist-git/dist-git.conf dist-git)"
 REPODIR=$gitroot_dir

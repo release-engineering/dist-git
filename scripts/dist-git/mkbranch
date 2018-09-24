@@ -2,6 +2,8 @@
 #
 # Create a new development branch for a package.
 
+umask 0002
+
 # Figure out the environment we're running in
 RUNDIR=$(cd "$(dirname "$0")" && pwd)
 
