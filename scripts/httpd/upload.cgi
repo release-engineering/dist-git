@@ -109,7 +109,7 @@ def main():
     os.umask(002)
 
     username = os.environ.get('SSL_CLIENT_S_DN_CN', None)
-    gssname = os.environ.get('GSS_NAME', None)
+    gssname = os.environ.get('GSS_NAME', os.environ.get('REMOTE_USER', None))
     if gssname and '@' in gssname and not username:
         username = gssname.partition('@')[0]
     if not config.getboolean('upload', 'disable_group_check', fallback=False) and\
