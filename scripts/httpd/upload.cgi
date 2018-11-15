@@ -13,6 +13,7 @@ import hashlib
 import os
 import sys
 import tempfile
+import time
 
 import fedmsg
 import fedmsg.config
@@ -252,6 +253,17 @@ def main():
     makedirs(hash_dir, username)
     os.rename(tmpfile, dest_file)
     os.chmod(dest_file, 0644)
+
+    # set mtime of the uploaded file if provided
+    if 'mtime' in form:
+        mtime_str = form.getvalue('mtime')
+        try:
+            mtime = int(mtime_str)
+        except ValueError:
+            send_error('Invalid value sent for mtime "%s". Aborting.' % mtime_str,
+                       status='400 Bad Request')
+
+        os.utime(dest_file, (time.time(), mtime))
 
     sys.stderr.write('[username=%s] Stored %s (%d bytes)' % (username,
                                                              dest_file,
