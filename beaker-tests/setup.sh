@@ -38,7 +38,7 @@ if [ -z $DISTGIT_FLAVOR ]; then
 fi
 
 DISTGITSTATUS=`mktemp`
-vagrant status distgit | tee $DISTGITSTATUS
+vagrant status $DISTGIT_FLAVOR | tee $DISTGITSTATUS
 if grep -q 'not created' $DISTGITSTATUS; then
     vagrant up $DISTGIT_FLAVOR
 else
