@@ -59,6 +59,22 @@ rlJournalStart
         resp=`curl --silent -X POST http://pkgs.example.org/repo/pkgs/upload.cgi -F name=foo -F md5sum=80e541f050d558424d62743195481595 -F file=@"$SCRIPTDIR/../../data/prunerepo-1.1-1.fc23.src.rpm"`
         rlRun "grep -q 'Module \"foo\" does not exist!' <<< '$resp'"
 
+        # test that mtime timestamp is preserved if sent
+        pkgs_cmd 'sudo rm -rf /var/lib/dist-git/cache/lookaside/pkgs/prunerepo'
+
+        resp=`curl --silent -X POST http://pkgs.example.org/repo/pkgs/upload.cgi -F name=prunerepo -F sha512sum=a5f31ae7586dae8dc1ca9a91df208893a0c3ab0032ab153c12eb4255f7219e4baec4c7581f353295c52522fee155c64f1649319044fd1bbb40451f123496b6b3 -F file=@"$SCRIPTDIR/../../data/prunerepo-1.1-1.fc23.src.rpm" -F mtime=1234`
+        rlRun "grep -q 'stored OK' <<< '$resp'"
+
+        mtime_verbose=`curl -s --head http://pkgs.example.org/repo/pkgs/prunerepo/prunerepo-1.1-1.fc23.src.rpm/sha512/a5f31ae7586dae8dc1ca9a91df208893a0c3ab0032ab153c12eb4255f7219e4baec4c7581f353295c52522fee155c64f1649319044fd1bbb40451f123496b6b3/prunerepo-1.1-1.fc23.src.rpm | grep 'Last-Modified:' | sed -E 's/^Last-Modified:\s*(.*)/\1/'`
+        mtime=`date +%s --date="$mtime_verbose"`
+        rlAssertEquals "Verify that we got the correct timestamp back" $mtime 1234
+
+        pkgs_cmd 'sudo rm -rf /var/lib/dist-git/cache/lookaside/pkgs/prunerepo'
+
+        # Invalid mtime value returns 400 Bad Request
+        resp=`curl -w '%{response_code}' --silent -X POST http://pkgs.example.org/repo/pkgs/upload.cgi -F name=prunerepo -F sha512sum=a5f31ae7586dae8dc1ca9a91df208893a0c3ab0032ab153c12eb4255f7219e4baec4c7581f353295c52522fee155c64f1649319044fd1bbb40451f123496b6b3 -F file=@"$SCRIPTDIR/../../data/prunerepo-1.1-1.fc23.src.rpm" -F mtime=invalid`
+        rlRun "grep -q '400 Bad Request' <<< '$resp'"
+
         cd $CWD
     rlPhaseEnd
 
