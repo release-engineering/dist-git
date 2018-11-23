@@ -3,7 +3,7 @@
 %global installdir /var/lib/dist-git
 
 Name:           dist-git
-Version:        1.8
+Version:        1.9
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -215,6 +215,18 @@ fi
 
 
 %changelog
+* Fri Nov 23 2018 clime <clime@redhat.com> 1.9-1
+- do not create sources file when creating a repo
+- set umask 0002 in all available dist-git scripts
+- Use REMOTE_USER as fallback for GSS_NAME
+- add support for setting mtime for an uploaded file
+
+* Tue Aug 14 2018 clime <clime@redhat.com> 1.8-1
+- add disable group check option
+- add lookaside_dir option
+- deprecate cache_dir
+- fix python-grokmirror dep
+
 * Mon Feb 26 2018 clime <clime@redhat.com> 1.7-1
 - move 'fedmsgs', 'old_paths', 'nomd5' options to optional upload section
 
