@@ -87,4 +87,4 @@ The web interface will be available on address like `http://your-server/cgit`.
 
 #### 6. DistGit client tools:
 
-To interact with DistGit server, you can use use [rpkg](https://pagure.io/rpkg-util) command-line tool.
+To interact with DistGit server, you can use use [rpkg](https://pagure.io/rpkg-util) or [fedpkg](https://pagure.io/fedpkg) command-line tools.
