@@ -1,4 +1,9 @@
 #!/bin/bash
 
+dirpath="$GIT_DIR/hooks/post-receive-chained.d"
+files=( "$dirpath"/* )
+
 # pee redirects stdin to each of the post-receive hooks in place.
-/usr/bin/pee $GIT_DIR/hooks/post-receive-chained.d/*
+if [[ -e "$files" || -L "$files" ]]; then
+    /usr/bin/pee "$dirpath"/*
+fi

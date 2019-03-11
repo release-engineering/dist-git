@@ -76,7 +76,7 @@ rlJournalStart
         modified_prev=`jq '.["/rpms/prunerepo.git"].modified' manifest.js.prev`
         modified=`jq '.["/rpms/prunerepo.git"].modified' manifest.js`
 
-        rlAssertGreater "Check that 'modifed' timestamp has been updated in the manifest file" $modified $modified_prev
+        rlAssertGreater "Check that 'modified' timestamp has been updated in the manifest file" $modified $modified_prev
 
         cd $CWD
     rlPhaseEnd
