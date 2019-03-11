@@ -16,11 +16,11 @@ function pkgs_root_cmd {
 }
 
 rlJournalStart
-    rlPhaseStartSetup DirectTest
+    rlPhaseStartSetup GroupCheckTest
         pkgs_root_cmd "gpasswd -a clime packager"
     rlPhaseEnd
 
-    rlPhaseStartTest DirectTest
+    rlPhaseStartTest GroupCheckTest
         cd $TEST_CWD
         echo "Running tests in $TEST_CWD"
 
@@ -63,7 +63,7 @@ rlJournalStart
         cd $CWD
     rlPhaseEnd
 
-    rlPhaseStartCleanup DirectTest
+    rlPhaseStartCleanup GroupCheckTest
         rm -rf $TEST_CWD
     rlPhaseEnd
 rlJournalEnd &> /dev/null
