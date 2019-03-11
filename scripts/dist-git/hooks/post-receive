@@ -1,7 +1,9 @@
 #!/bin/bash
 
+readarray revs
+
 dirpath="$GIT_DIR/hooks/post-receive-chained.d"
-files=( "$dirpath"/* )
+files=("$dirpath"/*)
 
 # pee redirects stdin to each of the post-receive hooks in place.
 if [[ -e "$files" || -L "$files" ]]; then
