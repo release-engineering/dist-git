@@ -25,7 +25,6 @@ Requires:       dist-git-selinux
 Requires:       git
 Requires:       git-daemon
 Requires:       mod_ssl
-Requires:       fedmsg
 Requires:       crudini
 Requires:       moreutils
 Requires(pre):  shadow-utils
@@ -34,10 +33,12 @@ Requires(pre):  shadow-utils
 Requires:       python-requests
 Requires:       python-configparser
 Requires:       python-grokmirror
+Requires:       fedmsg
 %else
-Requires:       python2-requests
-Requires:       python2-configparser
+Requires:       python3-requests
+Requires:       python3-configparser
 Recommends:     python3-grokmirror
+Requires:       python3-fedmsg
 %endif
 
 %description
@@ -125,6 +126,10 @@ install -d %{buildroot}%{installdir}/cache/lookaside/pkgs
 install -d %{buildroot}%{installdir}/web
 
 cp -a scripts/httpd/upload.cgi %{buildroot}%{installdir}/web/
+
+%if 0%{?rhel} && 0%{?rhel} < 8
+    sed -i '1 s|#.*|#!/usr/bin/python2|' %{buildroot}%{installdir}/web/upload.cgi
+%endif
 
 # ------------------------------------------------------------------------------
 # SELinux

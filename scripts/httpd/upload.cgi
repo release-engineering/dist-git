@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # CGI script to handle file updates for the rpms git repository. There
 # is nothing really complex here other than tedious checking of our
@@ -37,18 +37,19 @@ def send_error(text, status='500 Internal Server Error'):
         text (str): The error message to send the client
         status (str, optional): The HTTP status code to return to the client.
     """
-    print 'Status: %s' % status
-    print 'Content-type: text/plain'
-    print
-    print text
+    print('Status: %s' % status)
+    print('Content-type: text/plain\n')
+    print(text)
     sys.exit(0)
 
 
 def check_form(form, var):
     ret = form.getvalue(var, None)
+
     if ret is None:
         send_error('Required field "%s" is not present.' % var,
                    status='400 Bad Request')
+
     if isinstance(ret, list):
         send_error('Multiple values given for "%s". Aborting.' % var,
                    status='400 Bad Request')
@@ -57,11 +58,13 @@ def check_form(form, var):
 
 def check_group(username):
     authenticated = False
+
     try:
         if username in grp.getgrnam(PACKAGER_GROUP)[3]:
             authenticated = True
     except KeyError:
         pass
+
     return authenticated
 
 
@@ -70,7 +73,6 @@ def hardlink(src, dest, username):
 
     try:
         os.link(src, dest)
-
     except OSError as e:
         if e.errno != errno.EEXIST:
             send_error(str(e))
@@ -82,11 +84,10 @@ def hardlink(src, dest, username):
     sys.stderr.write("[username=%s] ln %s %s\n" % (username, src, dest))
 
 
-def makedirs(dir_, username, mode=02755):
+def makedirs(dir_, username, mode=0o2755):
     try:
         os.makedirs(dir_, mode=mode)
         sys.stderr.write('[username=%s] mkdir %s\n' % (username, dir_))
-
     except OSError as e:
         if e.errno != errno.EEXIST:
             send_error(str(e))
@@ -107,23 +108,22 @@ def main():
     config = ConfigParser()
     config.read('/etc/dist-git/dist-git.conf')
 
-    os.umask(002)
+    os.umask(0o002)
 
     username = os.environ.get('SSL_CLIENT_S_DN_CN', None)
     gssname = os.environ.get('GSS_NAME', os.environ.get('REMOTE_USER', None))
     if gssname and '@' in gssname and not username:
         username = gssname.partition('@')[0]
+
     if not config.getboolean('upload', 'disable_group_check', fallback=False) and\
             not check_group(username):
         send_error('You must connect with a valid certificate and be in the '
                    '%s group to upload.' % PACKAGER_GROUP,
                    status='403 Forbidden')
 
-    print 'Content-Type: text/plain'
-    print
-
     assert os.environ['REQUEST_URI'].split('/')[1] == 'repo'
 
+    print('Content-Type: text/plain\n')
     form = cgi.FieldStorage()
     name = check_form(form, 'name').strip('/')
 
@@ -147,7 +147,7 @@ def main():
 
     # Is this a submission or a test?
     # in a test, we don't get a file, just a filename.
-    # In a submission, we don;t get a filename, just the file.
+    # In a submission, we don't get a filename, just the file.
     if 'filename' in form:
         action = 'check'
         filename = check_form(form, 'filename')
@@ -201,20 +201,21 @@ def main():
 
     if os.path.exists(dest_file):
         if action == 'check':
-            print 'Available'
+            print('Available')
         else:
             upload_file.file.close()
             dest_file_stat = os.stat(dest_file)
-            print 'File %s already exists' % filename
-            print 'File: %s Size: %d' % (dest_file, dest_file_stat.st_size)
+            print('File %s already exists' % filename)
+            print('File: %s Size: %d' % (dest_file, dest_file_stat.st_size))
+
         sys.exit(0)
     elif action == 'check':
         if os.path.exists(old_path):
             # The file had been uploaded at the old path
             hardlink(old_path, dest_file, username)
-            print 'Available'
+            print('Available')
         else:
-            print 'Missing'
+            print('Missing')
 
         sys.exit(0)
     elif hash_type == "md5" and config.getboolean('upload', 'nomd5', fallback=True):
@@ -227,7 +228,7 @@ def main():
     # grab a temporary filename and dump our file in there
     tempfile.tempdir = module_dir
     tmpfile = tempfile.mkstemp(checksum)[1]
-    tmpfd = open(tmpfile, 'w')
+    tmpfd = open(tmpfile, 'wb')
 
     # now read the whole file in
     m = getattr(hashlib, hash_type)()
@@ -252,7 +253,7 @@ def main():
     # wow, even the checksum matches. make sure full path is valid now
     makedirs(hash_dir, username)
     os.rename(tmpfile, dest_file)
-    os.chmod(dest_file, 0644)
+    os.chmod(dest_file, 0o644)
 
     # set mtime of the uploaded file if provided
     if 'mtime' in form:
@@ -268,10 +269,10 @@ def main():
     sys.stderr.write('[username=%s] Stored %s (%d bytes)' % (username,
                                                              dest_file,
                                                              filesize))
-    print 'File %s size %d %s %s stored OK' % (filename, filesize,
-                                               hash_type.upper(), checksum)
+    print('File %s size %d %s %s stored OK' % (filename, filesize,
+                                               hash_type.upper(), checksum))
 
-    # Add the file to the old path, where fedpkg is currently looking for it
+    # Add the file to the old path, where fedpkg used to look for
     if hash_type == "md5" and config.getboolean('upload', 'old_paths', fallback=True):
         hardlink(dest_file, old_path, username)
 
@@ -289,13 +290,12 @@ def main():
                        path=msgpath)
             fedmsg.publish(modname="git", topic=topic, msg=msg)
         except Exception as e:
-            print "Error with fedmsg", str(e)
+            print("Error with fedmsg", str(e))
 
 
 if __name__ == '__main__':
     try:
         main()
-
     except Exception as e:
         import traceback
         sys.stderr.write('%s\n' % traceback.format_exc())
