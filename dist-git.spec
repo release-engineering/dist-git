@@ -3,7 +3,7 @@
 %global installdir /var/lib/dist-git
 
 Name:           dist-git
-Version:        1.9
+Version:        1.10
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -220,6 +220,10 @@ fi
 
 
 %changelog
+* Mon Mar 11 2019 clime <clime@redhat.com> 1.10-1
+- python3 support
+- fix post-receive hook in case post.receive.d is empty
+
 * Fri Nov 23 2018 clime <clime@redhat.com> 1.9-1
 - do not create sources file when creating a repo
 - set umask 0002 in all available dist-git scripts
