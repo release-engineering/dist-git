@@ -13,10 +13,10 @@ function pkgs_cmd {
 
 rlJournalStart
     rlPhaseStartSetup FedpkgTest
+        scp  -o 'StrictHostKeyChecking no' $SCRIPTDIR/dist-git.conf root@pkgs.example.org:/etc/dist-git/dist-git.conf
         pkgs_cmd 'git config --global user.email "clime@redhat.com"'
         pkgs_cmd 'git config --global user.name "clime"'
         pkgs_cmd '/usr/share/dist-git/setup_git_package rpms/prunerepo'
-        scp  -o 'StrictHostKeyChecking no' $SCRIPTDIR/dist-git.conf root@pkgs.example.org:/etc/dist-git/dist-git.conf
     rlPhaseEnd
 
     rlPhaseStartTest FedpkgTest
