@@ -132,6 +132,14 @@ cp -a scripts/httpd/upload.cgi %{buildroot}%{installdir}/web/
 %endif
 
 # ------------------------------------------------------------------------------
+# /usr/bin/ ...... links to executable files
+# ------------------------------------------------------------------------------
+install -d %{buildroot}%{_bindir}
+ln -s %{_datadir}/dist-git/setup_git_package %{buildroot}%{_bindir}/setup_git_package
+ln -s %{_datadir}/dist-git/mkbranch %{buildroot}%{_bindir}/mkbranch
+ln -s %{_datadir}/dist-git/mkbranch_branching %{buildroot}%{_bindir}/mkbranch_branching
+
+# ------------------------------------------------------------------------------
 # SELinux
 # ------------------------------------------------------------------------------
 cd selinux
@@ -217,7 +225,7 @@ fi
 %files selinux
 %doc selinux/*
 %{_datadir}/selinux/*/%{modulename}.pp
-
+%{_bindir}/*
 
 %changelog
 * Mon Mar 11 2019 clime <clime@redhat.com> 1.10-1
