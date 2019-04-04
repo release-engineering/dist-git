@@ -88,3 +88,7 @@ The web interface will be available on address like `http://your-server/cgit`.
 #### 6. DistGit client tools:
 
 To interact with DistGit server, you can use use [rpkg](https://pagure.io/rpkg-util) or [fedpkg](https://pagure.io/fedpkg) command-line tools.
+
+#### 7. Deployment
+
+You can see example of deployement in [Fedora Infastructure](https://infrastructure.fedoraproject.org/cgit/ansible.git/tree/roles/distgit) and in [Copr](https://infrastructure.fedoraproject.org/cgit/ansible.git/tree/roles/copr/dist_git).
