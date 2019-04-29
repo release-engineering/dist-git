@@ -36,7 +36,6 @@ Requires:       python-grokmirror
 Requires:       fedmsg
 %else
 Requires:       python3-requests
-Requires:       python3-configparser
 Recommends:     python3-grokmirror
 Requires:       python3-fedmsg
 %endif
