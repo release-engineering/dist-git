@@ -3,7 +3,7 @@
 %global installdir /var/lib/dist-git
 
 Name:           dist-git
-Version:        1.10
+Version:        1.11
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -227,6 +227,10 @@ fi
 %{_bindir}/*
 
 %changelog
+* Tue Apr 30 2019 clime <clime@redhat.com> 1.11-1
+- remove python3-configparser require
+- move scripts to bindir
+
 * Mon Mar 11 2019 clime <clime@redhat.com> 1.10-1
 - python3 support
 - fix post-receive hook in case post.receive.d is empty
