@@ -3,7 +3,7 @@
 %global installdir /var/lib/dist-git
 
 Name:           dist-git
-Version:        1.11
+Version:        1.12
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -228,6 +228,11 @@ fi
 %{_bindir}/*
 
 %changelog
+* Tue May 28 2019 Miroslav Suchy <msuchy@redhat.com> - 1.12-1
+- remove old changelog entries
+- do not specify full path for hardlink [RHBZ#1714637]
+- add script for removing unused source tarballs in lookaside cache
+
 * Tue Apr 30 2019 clime <clime@redhat.com> 1.11-1
 - remove python3-configparser require
 - move scripts to bindir
