@@ -151,7 +151,7 @@ do
 done
 cd -
 
-/usr/sbin/hardlink -cv %{buildroot}%{_datadir}/selinux
+hardlink -cv %{buildroot}%{_datadir}/selinux
 
 %post selinux
 for selinuxvariant in %{selinux_variants}
