@@ -72,8 +72,8 @@ rlJournalStart
         pkgs_cmd 'sudo rm -rf /var/lib/dist-git/cache/lookaside/pkgs/prunerepo'
 
         # Invalid mtime value returns 400 Bad Request
-        resp=`curl -w '%{response_code}' --silent -X POST http://pkgs.example.org/repo/pkgs/upload.cgi -F name=prunerepo -F sha512sum=a5f31ae7586dae8dc1ca9a91df208893a0c3ab0032ab153c12eb4255f7219e4baec4c7581f353295c52522fee155c64f1649319044fd1bbb40451f123496b6b3 -F file=@"$SCRIPTDIR/../../data/prunerepo-1.1-1.fc23.src.rpm" -F mtime=invalid`
-        rlRun "grep -q '400 Bad Request' <<< '$resp'"
+        code=`curl -w '%{response_code}' --output /dev/null --silent -X POST http://pkgs.example.org/repo/pkgs/upload.cgi -F name=prunerepo -F sha512sum=a5f31ae7586dae8dc1ca9a91df208893a0c3ab0032ab153c12eb4255f7219e4baec4c7581f353295c52522fee155c64f1649319044fd1bbb40451f123496b6b3 -F file=@"$SCRIPTDIR/../../data/prunerepo-1.1-1.fc23.src.rpm" -F mtime=invalid`
+        rlAssertEquals "Verify that we got 400 error on invalid mtime value" $code 400
 
         cd $CWD
     rlPhaseEnd

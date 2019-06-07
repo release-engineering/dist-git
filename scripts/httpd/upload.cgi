@@ -40,7 +40,25 @@ def send_error(text, status='500 Internal Server Error'):
     print('Status: %s' % status)
     print('Content-type: text/plain\n')
     print(text)
+
     sys.exit(0)
+
+
+def send(text, exit=True):
+    """Send a success message back to the client
+
+    Args:
+        text (str): The message to send the client
+        exit (bool, optional): If we should exit immediatelly or not.
+            Use this if you want to additionally print out more content
+            into response.
+    """
+    print('Status: 200 OK')
+    print('Content-type: text/plain\n')
+    print(text)
+
+    if exit:
+        sys.exit(0)
 
 
 def check_form(form, var):
@@ -123,7 +141,6 @@ def main():
 
     assert os.environ['REQUEST_URI'].split('/')[1] == 'repo'
 
-    print('Content-Type: text/plain\n')
     form = cgi.FieldStorage()
     name = check_form(form, 'name').strip('/')
 
@@ -201,23 +218,22 @@ def main():
 
     if os.path.exists(dest_file):
         if action == 'check':
-            print('Available')
+            send('Available')
         else:
             upload_file.file.close()
             dest_file_stat = os.stat(dest_file)
-            print('File %s already exists' % filename)
-            print('File: %s Size: %d' % (dest_file, dest_file_stat.st_size))
+            msg = 'File %s already exists\n' % filename
+            msg += 'File: %s Size: %d' % (dest_file, dest_file_stat.st_size)
+            send(msg)
 
-        sys.exit(0)
     elif action == 'check':
         if os.path.exists(old_path):
             # The file had been uploaded at the old path
             hardlink(old_path, dest_file, username)
-            print('Available')
+            send('Available')
         else:
-            print('Missing')
+            send('Missing')
 
-        sys.exit(0)
     elif hash_type == "md5" and config.getboolean('upload', 'nomd5', fallback=True):
         send_error('Uploads with md5 are no longer allowed.',
                    status='406 Not Acceptable')
@@ -269,8 +285,8 @@ def main():
     sys.stderr.write('[username=%s] Stored %s (%d bytes)' % (username,
                                                              dest_file,
                                                              filesize))
-    print('File %s size %d %s %s stored OK' % (filename, filesize,
-                                               hash_type.upper(), checksum))
+    send('File %s size %d %s %s stored OK' % (filename, filesize,
+                                              hash_type.upper(), checksum), exit=False)
 
     # Add the file to the old path, where fedpkg used to look for
     if hash_type == "md5" and config.getboolean('upload', 'old_paths', fallback=True):
