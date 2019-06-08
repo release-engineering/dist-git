@@ -275,7 +275,7 @@ def main():
     if 'mtime' in form:
         mtime_str = form.getvalue('mtime')
         try:
-            mtime = int(mtime_str)
+            mtime = float(mtime_str)
         except ValueError:
             send_error('Invalid value sent for mtime "%s". Aborting.' % mtime_str,
                        status='400 Bad Request')
