@@ -13,6 +13,12 @@ EOF
 
 die() { echo "$*" 1>&2 ; exit 1; }
 
+logcmd ()
+{
+    echo >&2 "$*"
+    "$@"
+}
+
 if [[ $# != 2 ]]; then
     Usage
     exit 1
@@ -74,5 +80,5 @@ while read -r file; do
     done
 
     "$keep" && continue
-    unlink "$pkg_lookaside_dir/$file"
+    logcmd unlink "$pkg_lookaside_dir/$file"
 done < <( cd "$pkg_lookaside_dir" || exit 1 ; find . -mindepth 3 -maxdepth 3 -type f  -printf '%P\n' )
