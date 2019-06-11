@@ -123,9 +123,10 @@ def ensure_namespaced(name, namespace):
 
 
 def main():
+    form = cgi.FieldStorage()
+
     config = ConfigParser()
     config.read('/etc/dist-git/dist-git.conf')
-
     os.umask(0o002)
 
     username = os.environ.get('SSL_CLIENT_S_DN_CN', None)
@@ -141,7 +142,6 @@ def main():
 
     assert os.environ['REQUEST_URI'].split('/')[1] == 'repo'
 
-    form = cgi.FieldStorage()
     name = check_form(form, 'name').strip('/')
 
     # Search for the file hash, start with stronger hash functions
