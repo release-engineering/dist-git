@@ -5,7 +5,7 @@ Vagrant.configure(2) do |config|
 
   ###  distgit Fedora ###################################################
   config.vm.define "distgit" do |distgit|
-    distgit.vm.box = "fedora/29-cloud-base"
+    distgit.vm.box = "fedora/31-cloud-base"
 
     distgit.vm.synced_folder ".", "/vagrant", type: "rsync"
 
