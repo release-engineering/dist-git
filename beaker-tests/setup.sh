@@ -34,7 +34,7 @@ systemctl start virtlogd.socket # this is currently needed in f25 for vagrant to
 cd $DISTGITROOTDIR
 
 if [ -z $DISTGIT_FLAVOR ]; then
-    DISTGIT_FLAVOR=distgit
+    DISTGIT_FLAVOR=dist-git
 fi
 
 DISTGITSTATUS=`mktemp`
