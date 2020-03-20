@@ -159,11 +159,14 @@ do
   /usr/sbin/semodule -s ${selinuxvariant} -i \
     %{_datadir}/selinux/${selinuxvariant}/%{modulename}.pp &> /dev/null || :
 done
-%{_sbindir}/restorecon -v %{installdir}/cache || :
-%{_sbindir}/restorecon -v %{installdir}/cache/lookaside || :
-%{_sbindir}/restorecon -v %{installdir}/cache/lookaside/pkgs || :
-%{_sbindir}/restorecon -v %{installdir}/git || :
-%{_sbindir}/restorecon -Rv %{installdir}/web/ || :
+
+if [ -d %{installdir} ]; then
+  %{_sbindir}/restorecon -v %{installdir}/cache || :
+  %{_sbindir}/restorecon -v %{installdir}/cache/lookaside || :
+  %{_sbindir}/restorecon -v %{installdir}/cache/lookaside/pkgs || :
+  %{_sbindir}/restorecon -v %{installdir}/git || :
+  %{_sbindir}/restorecon -Rv %{installdir}/web/ || :
+fi
 
 %systemd_post dist-git.socket
 
