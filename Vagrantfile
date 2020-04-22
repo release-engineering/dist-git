@@ -175,22 +175,30 @@ Vagrant.configure(2) do |config|
       inline: "yum clean all && yum -y update || true"
 
     distgit.vm.provision "shell",
-      inline: "yum install -y tito wget net-tools"
+      inline: "yum install -y wget net-tools"
 
     distgit.vm.provision "shell",
       inline: "yum-builddep -y /vagrant/dist-git.spec",
       run: "always"
 
     distgit.vm.provision "shell",
-      inline: "rm -rf /tmp/tito/noarch",
+      inline: "curl https://copr.fedorainfracloud.org/coprs/clime/rpkg-util/repo/epel-8/clime-rpkg-util-epel-8.repo > /etc/yum.repos.d/clime-rpkg-util-epel-8.repo",
       run: "always"
 
     distgit.vm.provision "shell",
-      inline: "cd /vagrant/ && tito build --test --rpm",
+      inline: "yum install -y rpkg",
       run: "always"
 
     distgit.vm.provision "shell",
-      inline: "yum install -y /tmp/tito/noarch/*.rpm || true",
+      inline: "rm -rf /tmp/rpkg",
+      run: "always"
+
+    distgit.vm.provision "shell",
+      inline: "cd /vagrant/ && rpkg local",
+      run: "always"
+
+    distgit.vm.provision "shell",
+      inline: "yum install -y /tmp/rpkg/dist-git-*/noarch/*.rpm || true",
       run: "always"
 
     distgit.vm.provision "shell",
