@@ -18,6 +18,7 @@ Source0:        %{name}-%{version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  systemd
+BuildRequires:  python3-devel
 
 Requires:       httpd
 Requires:       perl(Sys::Syslog)
@@ -115,6 +116,12 @@ cp -a configs/httpd/dist-git/* %{buildroot}%{_sysconfdir}/httpd/conf.d/dist-git/
 cp -a configs/systemd/*        %{buildroot}%{_unitdir}/
 
 # ------------------------------------------------------------------------------
+# python package
+# ------------------------------------------------------------------------------
+mkdir -p %{buildroot}%{python3_sitelib}
+cp -ar distgit %{buildroot}%{python3_sitelib}
+
+# ------------------------------------------------------------------------------
 # /var/lib/ ...... dynamic persistent files
 # ------------------------------------------------------------------------------
 install -d %{buildroot}%{installdir}
@@ -199,6 +206,11 @@ fi
 
 %{_unitdir}/dist-git@.service
 %{_unitdir}/dist-git.socket
+
+# ------------------------------------------------------------------------------
+# python package
+# ------------------------------------------------------------------------------
+%{python3_sitelib}/distgit
 
 # ------------------------------------------------------------------------------
 # /var/lib/ ...... dynamic persistent files
