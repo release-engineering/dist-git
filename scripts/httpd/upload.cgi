@@ -122,6 +122,24 @@ def ensure_namespaced(name, namespace):
     return name
 
 
+def get_checksum_and_hash_type(form):
+    # Search for the file hash, start with stronger hash functions
+    if 'sha512sum' in form:
+        checksum = check_form(form, 'sha512sum')
+        hash_type = "sha512"
+
+    elif 'md5sum' in form:
+        # Fallback on md5
+        checksum = check_form(form, 'md5sum')
+        hash_type = "md5"
+
+    else:
+        send_error('Required checksum is not present',
+                   status='400 Bad Request')
+
+    return checksum, hash_type
+
+
 def emit_fedmsg(config, name, checksum, filename, username, msgpath):
     # Emit a fedmsg message.  Load the config to talk to the fedmsg-relay.
     if config.getboolean('upload', 'fedmsgs', fallback=True):
@@ -168,20 +186,7 @@ def main():
     assert os.environ['REQUEST_URI'].split('/')[1] == 'repo'
 
     name = check_form(form, 'name').strip('/')
-
-    # Search for the file hash, start with stronger hash functions
-    if 'sha512sum' in form:
-        checksum = check_form(form, 'sha512sum')
-        hash_type = "sha512"
-
-    elif 'md5sum' in form:
-        # Fallback on md5, as it's what we currently use
-        checksum = check_form(form, 'md5sum')
-        hash_type = "md5"
-
-    else:
-        send_error('Required checksum is not present.',
-                   status='400 Bad Request')
+    checksum, hash_type = get_checksum_and_hash_type(form)
 
     action = None
     upload_file = None
