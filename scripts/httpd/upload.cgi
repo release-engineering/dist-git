@@ -26,6 +26,9 @@ BUFFER_SIZE = 4096
 # Fedora Packager Group
 PACKAGER_GROUP = 'packager'
 
+# Path to a config file
+CONFIG = os.environ.get('DISTGIT_CONFIG', '/etc/dist-git/dist-git.conf')
+
 
 def send_error(text, status='500 Internal Server Error'):
     """Send an error back to the client
@@ -122,11 +125,15 @@ def ensure_namespaced(name, namespace):
     return name
 
 
+def get_config():
+    config = ConfigParser()
+    config.read(CONFIG)
+    return config
+
+
 def main():
     form = cgi.FieldStorage()
-
-    config = ConfigParser()
-    config.read('/etc/dist-git/dist-git.conf')
+    config = get_config()
     os.umask(0o002)
 
     username = os.environ.get('SSL_CLIENT_S_DN_CN', None)
