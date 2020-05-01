@@ -15,9 +15,6 @@ import sys
 import tempfile
 import time
 
-import fedmsg
-import fedmsg.config
-
 from configparser import ConfigParser
 
 # Reading buffer size
@@ -123,6 +120,27 @@ def ensure_namespaced(name, namespace):
         return os.path.join(namespace, name)
 
     return name
+
+
+def emit_fedmsg(config, name, checksum, filename, username, msgpath):
+    # Emit a fedmsg message.  Load the config to talk to the fedmsg-relay.
+    if config.getboolean('upload', 'fedmsgs', fallback=True):
+        try:
+            import fedmsg
+            import fedmsg.config
+
+            config = fedmsg.config.load_config([], None)
+            config['active'] = True
+            config['endpoints']['relay_inbound'] = config['relay_inbound']
+            fedmsg.init(name="relay_inbound", cert_prefix="lookaside", **config)
+
+            topic = "lookaside.new"
+            msg = dict(name=name, md5sum=checksum,
+                       filename=filename.split('/')[-1], agent=username,
+                       path=msgpath)
+            fedmsg.publish(modname="git", topic=topic, msg=msg)
+        except Exception as e:
+            sys.stderr.write("Error with fedmsg", str(e))
 
 
 def get_config():
@@ -299,21 +317,7 @@ def main():
     if hash_type == "md5" and config.getboolean('upload', 'old_paths', fallback=True):
         hardlink(dest_file, old_path, username)
 
-    # Emit a fedmsg message.  Load the config to talk to the fedmsg-relay.
-    if config.getboolean('upload', 'fedmsgs', fallback=True):
-        try:
-            config = fedmsg.config.load_config([], None)
-            config['active'] = True
-            config['endpoints']['relay_inbound'] = config['relay_inbound']
-            fedmsg.init(name="relay_inbound", cert_prefix="lookaside", **config)
-
-            topic = "lookaside.new"
-            msg = dict(name=name, md5sum=checksum,
-                       filename=filename.split('/')[-1], agent=username,
-                       path=msgpath)
-            fedmsg.publish(modname="git", topic=topic, msg=msg)
-        except Exception as e:
-            print("Error with fedmsg", str(e))
+    emit_fedmsg(config, name, checksum, filename, username, msgpath)
 
 
 if __name__ == '__main__':
