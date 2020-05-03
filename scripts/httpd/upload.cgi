@@ -15,9 +15,6 @@ import sys
 import tempfile
 import time
 
-import fedmsg
-import fedmsg.config
-
 from configparser import ConfigParser
 
 # Reading buffer size
@@ -25,6 +22,9 @@ BUFFER_SIZE = 4096
 
 # Fedora Packager Group
 PACKAGER_GROUP = 'packager'
+
+# Path to a config file
+CONFIG = os.environ.get('DISTGIT_CONFIG', '/etc/dist-git/dist-git.conf')
 
 
 def send_error(text, status='500 Internal Server Error'):
@@ -122,11 +122,54 @@ def ensure_namespaced(name, namespace):
     return name
 
 
+def get_checksum_and_hash_type(form):
+    # Search for the file hash, start with stronger hash functions
+    if 'sha512sum' in form:
+        checksum = check_form(form, 'sha512sum')
+        hash_type = "sha512"
+
+    elif 'md5sum' in form:
+        # Fallback on md5
+        checksum = check_form(form, 'md5sum')
+        hash_type = "md5"
+
+    else:
+        send_error('Required checksum is not present',
+                   status='400 Bad Request')
+
+    return checksum, hash_type
+
+
+def emit_fedmsg(config, name, checksum, filename, username, msgpath):
+    # Emit a fedmsg message.  Load the config to talk to the fedmsg-relay.
+    if config.getboolean('upload', 'fedmsgs', fallback=True):
+        try:
+            import fedmsg
+            import fedmsg.config
+
+            config = fedmsg.config.load_config([], None)
+            config['active'] = True
+            config['endpoints']['relay_inbound'] = config['relay_inbound']
+            fedmsg.init(name="relay_inbound", cert_prefix="lookaside", **config)
+
+            topic = "lookaside.new"
+            msg = dict(name=name, md5sum=checksum,
+                       filename=filename.split('/')[-1], agent=username,
+                       path=msgpath)
+            fedmsg.publish(modname="git", topic=topic, msg=msg)
+        except Exception as e:
+            sys.stderr.write("Error with fedmsg", str(e))
+
+
+def get_config():
+    config = ConfigParser()
+    config.read(CONFIG)
+    return config
+
+
 def main():
     form = cgi.FieldStorage()
-
-    config = ConfigParser()
-    config.read('/etc/dist-git/dist-git.conf')
+    config = get_config()
     os.umask(0o002)
 
     username = os.environ.get('SSL_CLIENT_S_DN_CN', None)
@@ -143,20 +186,7 @@ def main():
     assert os.environ['REQUEST_URI'].split('/')[1] == 'repo'
 
     name = check_form(form, 'name').strip('/')
-
-    # Search for the file hash, start with stronger hash functions
-    if 'sha512sum' in form:
-        checksum = check_form(form, 'sha512sum')
-        hash_type = "sha512"
-
-    elif 'md5sum' in form:
-        # Fallback on md5, as it's what we currently use
-        checksum = check_form(form, 'md5sum')
-        hash_type = "md5"
-
-    else:
-        send_error('Required checksum is not present.',
-                   status='400 Bad Request')
+    checksum, hash_type = get_checksum_and_hash_type(form)
 
     action = None
     upload_file = None
@@ -292,21 +322,7 @@ def main():
     if hash_type == "md5" and config.getboolean('upload', 'old_paths', fallback=True):
         hardlink(dest_file, old_path, username)
 
-    # Emit a fedmsg message.  Load the config to talk to the fedmsg-relay.
-    if config.getboolean('upload', 'fedmsgs', fallback=True):
-        try:
-            config = fedmsg.config.load_config([], None)
-            config['active'] = True
-            config['endpoints']['relay_inbound'] = config['relay_inbound']
-            fedmsg.init(name="relay_inbound", cert_prefix="lookaside", **config)
-
-            topic = "lookaside.new"
-            msg = dict(name=name, md5sum=checksum,
-                       filename=filename.split('/')[-1], agent=username,
-                       path=msgpath)
-            fedmsg.publish(modname="git", topic=topic, msg=msg)
-        except Exception as e:
-            print("Error with fedmsg", str(e))
+    emit_fedmsg(config, name, checksum, filename, username, msgpath)
 
 
 if __name__ == '__main__':
