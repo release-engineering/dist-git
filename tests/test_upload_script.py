@@ -121,7 +121,8 @@ class UploadTest(unittest.TestCase):
                                        stdout=self.output,
                                        stderr=subprocess.STDOUT,
                                        env={'SCRIPT_FILENAME': 'foo',
-                                            'DISTGIT_CONFIG': self.config})
+                                            'DISTGIT_CONFIG': self.config,
+                                            'REQUEST_URI': '/repo/foo/bar/upload.cgi'})
         time.sleep(0.1)     # Wait for server to be up.
         self.url = 'http://%s:%s/cgi-bin/upload.cgi' % (self.hostname, self.port)
 
