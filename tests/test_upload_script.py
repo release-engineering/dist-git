@@ -15,6 +15,7 @@ import subprocess
 import requests
 import time
 import random
+from configparser import ConfigParser
 from parameterized import parameterized
 
 # Path to the actual CGI script that should be tested
@@ -71,6 +72,8 @@ class UploadTest(unittest.TestCase):
         os.mkdir(os.path.join(self.topdir, 'cgi-bin'))
         _copy_tweak(CGI_SCRIPT, cgi, self.topdir)
         shutil.copystat(CGI_SCRIPT, cgi)
+        # Generate temporary distgit config for this test run
+        self.config = _dump_config_file(self.topdir)
 
         self._run_server()
 
@@ -114,7 +117,8 @@ class UploadTest(unittest.TestCase):
         self.server = subprocess.Popen(script, cwd=self.topdir,
                                        stdout=self.output,
                                        stderr=subprocess.STDOUT,
-                                       env={'SCRIPT_FILENAME': 'foo'})
+                                       env={'SCRIPT_FILENAME': 'foo',
+                                            'DISTGIT_CONFIG': self.config})
         time.sleep(0.1)     # Wait for server to be up.
         self.url = 'http://%s:%s/cgi-bin/upload.cgi' % (self.hostname, self.port)
 
@@ -257,3 +261,28 @@ def _copy_tweak(source_file, dest_file, topdir):
                 if m:
                     line = "%s = '%s%s'\n" % (m.group(1), topdir, m.group(2))
                 dest.write(line)
+
+def _dump_config_file(topdir):
+    config = ConfigParser()
+    config["dist-git"] = {
+        "git_author_name": "Fedora Release Engineering",
+        "git_author_email": "rel-eng@lists.fedoraproject.org",
+        "cache_dir": CACHE_DIR,
+        "lookaside_dir": CACHE_DIR,
+        "gitroot_dir": GIT_DIR,
+        "gitolite": True,
+        "grok": True,
+        "default_namespace": "rpms",
+    }
+
+    config["upload"] = {
+        "fedmsgs": False,
+        "old_paths": True,
+        "nomd5": False,
+        "disable_group_check": True,
+    }
+
+    tmp = os.path.join(topdir, "dist-git-test.conf")
+    with open(tmp, "w") as configfile:
+        config.write(configfile)
+    return tmp
