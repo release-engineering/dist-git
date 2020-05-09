@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 
+import sys
 import errno
 import os
 try:
@@ -17,6 +18,8 @@ import time
 import random
 from configparser import ConfigParser
 from parameterized import parameterized
+
+PY2 = sys.version_info.major == 2
 
 # Path to the actual CGI script that should be tested
 CGI_SCRIPT = os.path.join(os.path.dirname(__file__), '../src/web/upload.cgi')
@@ -257,6 +260,9 @@ def _copy_tweak(source_file, dest_file, topdir):
     with open(source_file) as source:
         with open(dest_file, 'w') as dest:
             for line in source:
+                if PY2 and line == "#!/usr/bin/python3\n":
+                    line = line.replace("python3", "python2")
+
                 m = regex.match(line)
                 if m:
                     line = "%s = '%s%s'\n" % (m.group(1), topdir, m.group(2))
