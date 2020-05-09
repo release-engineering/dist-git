@@ -194,7 +194,7 @@ class UploadTest(unittest.TestCase):
     def test_upload_file(self, module, ns_module):
         test_file = self.touch('new.txt')
         resp = self.upload(module, hash=NEW_HASH, filepath=test_file)
-        self.assertEqual(resp, 'File new.txt Size 7 STORED OK\n')
+        self.assertEqual(resp, 'File new.txt size 7 MD5 %s stored OK\n' % NEW_HASH)
         self.assertFileExists(ns_module, 'new.txt', NEW_HASH)
         self.assertFileExists(ns_module, 'new.txt', 'md5/' + NEW_HASH)
 
@@ -202,13 +202,13 @@ class UploadTest(unittest.TestCase):
     def test_upload_file_bad_checksum(self, module, ns_module):
         test_file = self.touch('hello.txt')
         resp = self.upload(module, hash='ABC', filepath=test_file)
-        self.assertEqual(resp, 'MD5 check failed. Received %s instead of ABC\n' % HASH)
+        self.assertEqual(resp, 'MD5 check failed. Received %s instead of ABC.\n' % HASH)
 
     @parameterized.expand(NON_EXISTING_MODULES)
     def test_upload_to_non_existing_module(self, module, ns_module):
         test_file = self.touch('hello.txt')
         resp = self.upload(module, hash=HASH, filepath=test_file)
-        self.assertEqual(resp, "Module '%s' does not exist!\n" % ns_module)
+        self.assertEqual(resp, 'Module "%s" does not exist!\n' % ns_module)
 
     @parameterized.expand(EXISTING_MODULES)
     def test_rejects_unknown_hash(self, module, ns_module):
@@ -220,14 +220,14 @@ class UploadTest(unittest.TestCase):
     def test_accepts_sha_512_hash(self, module, ns_module):
         test_file = self.touch('new.txt')
         resp = self.upload(module, hash=NEW_SHA512, hashtype='sha512', filepath=test_file)
-        self.assertEqual(resp, 'File new.txt Size 7 STORED OK\n')
+        self.assertEqual(resp, 'File new.txt size 7 SHA512 %s stored OK\n' % NEW_SHA512)
         self.assertFileExists(ns_module, 'new.txt', 'sha512/' + NEW_SHA512)
 
     @parameterized.expand(EXISTING_MODULES)
     def test_bad_sha512_hash(self, module, ns_module):
         test_file = self.touch('hello.txt')
         resp = self.upload(module, hash='ABC', hashtype='sha512', filepath=test_file)
-        self.assertEqual(resp, 'SHA512 check failed. Received %s instead of ABC\n' % SHA512)
+        self.assertEqual(resp, 'SHA512 check failed. Received %s instead of ABC.\n' % SHA512)
 
     @parameterized.expand(EXISTING_MODULES)
     def test_check_existing_sha512_correct(self, module, ns_module):
@@ -249,7 +249,7 @@ class UploadTest(unittest.TestCase):
     def test_upload_invalid_mtime(self, module, ns_module):
         test_file = self.touch('new.txt')
         resp = self.upload(module, hash=NEW_HASH, filepath=test_file, mtime="abc")
-        self.assertEqual(resp, "Invalid value sent for mtime 'abc'\n")
+        self.assertEqual(resp, 'Invalid value sent for mtime "abc". Aborting.\n')
 
 
 def _copy_tweak(source_file, dest_file, topdir):
