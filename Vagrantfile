@@ -5,7 +5,7 @@ Vagrant.configure(2) do |config|
 
   ###  DistGit Fedora ###################################################
   config.vm.define "dist-git" do |distgit|
-    distgit.vm.box = "fedora/31-cloud-base"
+    distgit.vm.box = "fedora/32-cloud-base"
 
     distgit.vm.synced_folder ".", "/vagrant", type: "rsync"
 
@@ -72,8 +72,8 @@ Vagrant.configure(2) do |config|
   end
 
   ###  DistGit CentOS 7 ###################################################
-  config.vm.define "dist-git-centos" do |distgit|
-    distgit.vm.box = "centos/8"
+  config.vm.define "dist-git-centos-7" do |distgit|
+    distgit.vm.box = "centos/7"
 
     distgit.vm.synced_folder ".", "/vagrant", type: "rsync"
 
