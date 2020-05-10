@@ -3,7 +3,14 @@
 
 Vagrant.configure(2) do |config|
 
+  # increase memory because default 512MB
+  # doesn't seem to be enough for dnf these days
+  config.vm.provider :libvirt do |v|
+    v.memory = 1024
+  end
+
   ###  DistGit Fedora ###################################################
+  # we would like to say dist-git in |...| but that is invalid syntax
   config.vm.define "dist-git" do |distgit|
     distgit.vm.box = "fedora/32-cloud-base"
 
