@@ -189,28 +189,35 @@ Vagrant.configure(2) do |config|
       run: "always"
 
     distgit.vm.provision "shell",
-      inline: "curl https://copr.fedorainfracloud.org/coprs/clime/rpkg-util/repo/epel-8/clime-rpkg-util-epel-8.repo > /etc/yum.repos.d/clime-rpkg-util-epel-8.repo",
+      inline: "curl https://copr.fedorainfracloud.org/coprs/clime/rpkg-util-v2/repo/epel-8/clime-rpkg-util-v2-epel-8.repo > /etc/yum.repos.d/clime-rpkg-util-epel-8.repo",
       run: "always"
 
     distgit.vm.provision "shell",
       inline: "yum install -y rpkg",
       run: "always"
 
+    # enable auto-packing for rpkg
+    distgit.vm.provision "shell",
+      inline: "sed -i 's/^auto_pack = False$/auto_pack = True/' /etc/rpkg.conf",
+      run: "always"
+
     distgit.vm.provision "shell",
       inline: "rm -rf /tmp/rpkg",
       run: "always"
 
+    # build by using auto-packing
     distgit.vm.provision "shell",
-      inline: "cd /vagrant/ && rpkg local",
+      inline: "cd /vagrant/ && rpkg srpm && rpkg local --outdir /tmp/rpkg/dist-git-*/",
       run: "always"
 
     distgit.vm.provision "shell",
       inline: "yum install -y /tmp/rpkg/dist-git-*/noarch/*.rpm || true",
       run: "always"
 
-    distgit.vm.provision "shell",
-      inline: "yum install -y python-grokmirror",
-      run: "always"
+    # https://bugzilla.redhat.com/show_bug.cgi?id=1833810
+    #distgit.vm.provision "shell",
+    #  inline: "yum install -y python3-grokmirror",
+    #  run: "always"
 
     # setup config files
     distgit.vm.provision "shell",
