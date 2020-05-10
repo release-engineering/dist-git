@@ -141,7 +141,7 @@ def get_checksum_and_hash_type(form):
 
 
 def emit_fedmsg(config, name, checksum, filename, username, msgpath):
-    # Emit a fedmsg message.  Load the config to talk to the fedmsg-relay.
+    # Emit a fedmsg message. Load the config to talk to the fedmsg-relay.
     if config.getboolean('upload', 'fedmsgs', fallback=True):
         try:
             import fedmsg
