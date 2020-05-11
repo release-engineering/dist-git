@@ -93,6 +93,16 @@ To interact with DistGit server, you can use use [rpkg](https://pagure.io/rpkg-u
 
 You can see example of deployement in [Fedora Infastructure](https://infrastructure.fedoraproject.org/cgit/ansible.git/tree/roles/distgit) and in [Copr](https://infrastructure.fedoraproject.org/cgit/ansible.git/tree/roles/copr/dist_git).
 
+
+Developer Guide
+---------------
+
+#### Tests
+
+```
+nosetests -vs .
+```
+
 LICENSE
 -------
 
