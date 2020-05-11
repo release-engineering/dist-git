@@ -17,9 +17,15 @@ import requests
 import time
 import random
 from configparser import ConfigParser
-from parameterized import parameterized
 
 PY2 = sys.version_info.major == 2
+
+if PY2:
+    NOSE_PARAMETERIZED_NO_WARN=1
+    from nose_parameterized import parameterized
+else:
+    from parameterized import parameterized
+
 
 # Path to the actual CGI script that should be tested
 CGI_SCRIPT = os.path.join(os.path.dirname(__file__), '../scripts/httpd/upload.cgi')

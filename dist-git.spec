@@ -34,10 +34,17 @@ Requires:       python-requests
 Requires:       python-configparser
 Requires:       python-grokmirror
 Requires:       fedmsg
+BuildRequires:  python-nose
+BuildRequires:  python-nose-parameterized
+BuildRequires:  python-requests
+BuildRequires:  python-configparser
 %else
 Requires:       python3-requests
 Recommends:     python3-grokmirror
 Requires:       python3-fedmsg
+BuildRequires:  python3-nose
+BuildRequires:  python3-parameterized
+BuildRequires:  python3-requests
 %endif
 
 %description
@@ -93,6 +100,10 @@ cd -
 getent group packager > /dev/null || \
     groupadd -r packager
 exit 0
+
+
+%check
+nosetests .
 
 
 %install
