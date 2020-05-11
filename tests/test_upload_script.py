@@ -27,12 +27,14 @@ CGI_SCRIPT = os.path.join(os.path.dirname(__file__), '../scripts/httpd/upload.cg
 # A snippet for creating the server in a temporary location. We need to write a
 # separate script as it needs to run with working directory set to the
 # temporary directory.
-SERVER = """#!/usr/bin/env python
-import BaseHTTPServer
-import CGIHTTPServer
-s = BaseHTTPServer.HTTPServer(('%s', %s), CGIHTTPServer.CGIHTTPRequestHandler)
+SERVER = """#!/usr/bin/{python}
+from {http_package} import HTTPServer
+from {cgi_package} import CGIHTTPRequestHandler
+s = HTTPServer(('%s', %s), CGIHTTPRequestHandler)
 s.handle_request()
-"""
+""".format(python="python2" if PY2 else "python3",
+           http_package="BaseHTTPServer" if PY2 else "http.server",
+           cgi_package="CGIHTTPServer" if PY2 else "http.server")
 
 # MD5 hash of "hello.txt" and "new.txt" strings used in a few tests
 HASH = '2e54144ba487ae25d03a3caba233da71'
