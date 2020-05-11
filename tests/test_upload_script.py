@@ -22,7 +22,7 @@ from parameterized import parameterized
 PY2 = sys.version_info.major == 2
 
 # Path to the actual CGI script that should be tested
-CGI_SCRIPT = os.path.join(os.path.dirname(__file__), '../src/web/upload.cgi')
+CGI_SCRIPT = os.path.join(os.path.dirname(__file__), '../scripts/httpd/upload.cgi')
 
 # A snippet for creating the server in a temporary location. We need to write a
 # separate script as it needs to run with working directory set to the
