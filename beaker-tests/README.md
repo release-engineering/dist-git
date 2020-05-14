@@ -29,7 +29,7 @@ To do the same for CentOS-8 (with epel-8 repos enabled), you can use:
 
 Between each run, you need to remove `pkgs.example.org` record from `/root/.ssh/known_hosts` and you should also clean-up `/etc/hosts` from stale `pkgs.example.org` records.
 
-Once the virtual machine, you want to test, exists and once it is correctly pointed to by `pkgs.example.org` IP record in `/etc/hosts`, you can again run just `./run.sh -x` to skip the `./setup.sh` invocation.
+Once the virtual machine you want to test exists and once it is correctly pointed to by `pkgs.example.org` IP record in `/etc/hosts`, you can again run just `./run.sh -x` to skip the `./setup.sh` invocation.
 
 At this point, you can also run just a specific test by switching into `./tests/<testname>` subdirectory and invoking `./run.sh` there. Alternatively, you can pass `-r <testname>` together with `-x` switch to the master `./run.sh` script (the one next to this README):
 
