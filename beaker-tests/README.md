@@ -19,7 +19,7 @@ To run the tests for CentOS-7 (with epel-7 repos enabled) instead of Fedora, you
 # DISTGIT_FLAVOR=dist-git-centos-7 ./run.sh
 ```
 
-This will spawn a new CentOS-7/opel-7 virtual machine.
+This will spawn a new CentOS-7/epel-7 virtual machine.
 
 To do the same for CentOS-8 (with epel-8 repos enabled), you can use:
 
