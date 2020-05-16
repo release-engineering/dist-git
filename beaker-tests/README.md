@@ -52,3 +52,12 @@ Or
 ```
 
 to switch to CentOS-8/epel-8 virtual machine.
+
+NOTES:
+
+If you encounter vagrant error like: `Call to virDomainCreateWithFlags failed: Cannot access storage file '/root/.local/share/libvirt/images/dist-git_dist-git.img' (as uid:107, gid:107): Permission denied`, add the following into `/etc/libvirt/qemu.conf`.
+
+```
+user=root
+group=root
+```
