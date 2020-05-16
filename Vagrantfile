@@ -118,6 +118,7 @@ Vagrant.configure(2) do |config|
       run: "always"
 
     distgit.vm.provision "shell",
+      privileged: false,
       inline: "cd /vagrant/ && tito build --test --rpm",
       run: "always"
 
@@ -208,6 +209,7 @@ Vagrant.configure(2) do |config|
 
     # build by using auto-packing
     distgit.vm.provision "shell",
+      privileged: false,
       inline: "cd /vagrant/ && rpkg srpm && rpkg local --outdir /tmp/rpkg/dist-git-*/",
       run: "always"
 
