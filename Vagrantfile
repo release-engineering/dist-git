@@ -44,6 +44,7 @@ Vagrant.configure(2) do |config|
       run: "always"
 
     distgit.vm.provision "shell",
+      privileged: false,
       inline: "cd /vagrant/ && tito build --test --rpm",
       run: "always"
 
