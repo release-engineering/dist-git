@@ -19,13 +19,7 @@ fi
 cp -rT $SCRIPTPATH/files /
 
 # install stuff needed for the test
-dnf -y install vagrant
-dnf -y install vagrant-libvirt
-dnf -y install jq
-dnf -y install git
-dnf -y install wget
-dnf -y install fedpkg
-dnf -y install rpkg
+dnf -y install vagrant vagrant-libvirt rsync jq git wget fedpkg rpkg
 
 # enable libvirtd for Vagrant (distgit)
 systemctl enable libvirtd && systemctl start libvirtd
