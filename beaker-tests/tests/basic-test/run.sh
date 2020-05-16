@@ -52,31 +52,37 @@ rlJournalStart
         rlRun "git clone git://pkgs.example.org/rpms/prunerepo.git prunerepo-copy"
         rlRun "git clone http://pkgs.example.org/git/rpms/prunerepo prunerepo-copy2"
 
-        # test manifest file update
-        rlRun "wget http://pkgs.example.org/manifest.js.gz"
-        gunzip ./manifest.js.gz
-        rlRun "cat manifest.js | grep prunerepo.git"
-        mv ./manifest.js manifest.js.prev
+	# GROK-MIRROR related tests
+	# The following tests are run only if grok-manifest command is present in the virtual machine
+        if `pkgs_cmd 'command -v grok-manifest > /dev/null'`; then
+		# test manifest file update
+		rlRun "wget http://pkgs.example.org/manifest.js.gz"
+		gunzip ./manifest.js.gz
+		rlRun "cat manifest.js | grep prunerepo.git"
+		mv ./manifest.js manifest.js.prev
 
-        # clone repo using rpkg
-        rlRun "rpkg clone rpms/prunerepo prunerepo2"
+		# clone repo using rpkg
+		rlRun "rpkg clone rpms/prunerepo prunerepo2"
 
-        cd prunerepo2
-        echo "manifest test" > sources
+		cd prunerepo2
+		echo "manifest test" > sources
 
-        rlRun "git add -A && git commit -m 'test commit 2'"
-        rlRun "git push"
+		rlRun "git add -A && git commit -m 'test commit 2'"
+		rlRun "git push"
 
-        cd ..
+		cd ..
 
-        rlRun "wget http://pkgs.example.org/manifest.js.gz"
-        gunzip ./manifest.js.gz
-        rlRun "cat manifest.js | grep prunerepo.git"
+		rlRun "wget http://pkgs.example.org/manifest.js.gz"
+		gunzip ./manifest.js.gz
+		rlRun "cat manifest.js | grep prunerepo.git"
 
-        modified_prev=`jq '.["/rpms/prunerepo.git"].modified' manifest.js.prev`
-        modified=`jq '.["/rpms/prunerepo.git"].modified' manifest.js`
+		modified_prev=`jq '.["/rpms/prunerepo.git"].modified' manifest.js.prev`
+		modified=`jq '.["/rpms/prunerepo.git"].modified' manifest.js`
 
-        rlAssertGreater "Check that 'modified' timestamp has been updated in the manifest file" $modified $modified_prev
+		rlAssertGreater "Check that 'modified' timestamp has been updated in the manifest file" $modified $modified_prev
+	else
+		echo -e "\e[93mgrok-manifest not present on the target machine. Skipping grok-mirror related tests!\e[39m"
+	fi
 
         cd $CWD
     rlPhaseEnd

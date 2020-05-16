@@ -97,11 +97,15 @@ You can see example of deployement in [Fedora Infastructure](https://infrastruct
 Developer Guide
 ---------------
 
-#### Tests
+#### Unit tests
 
 ```
 nosetests -vs .
 ```
+
+#### Integration tests
+
+Please, see beaker-tests/README.md.
 
 LICENSE
 -------

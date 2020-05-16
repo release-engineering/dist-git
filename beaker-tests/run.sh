@@ -59,6 +59,8 @@ PACKAGE="dist-git"
 
 export TESTPATH="$( builtin cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+shopt -s extglob
+
 rlJournalStart
     rlPhaseStartSetup
         if [[ ! $nosetup ]]; then
@@ -67,7 +69,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest Tests
-        for t in $TESTPATH/tests/*; do
+        for t in $TESTPATH/tests/!(*.disable); do
             if [[ ! $runonly ]] || echo $runonly | grep `basename $t` &> /dev/null; then
                 $t/run.sh
             fi

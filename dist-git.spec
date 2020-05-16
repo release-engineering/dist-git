@@ -26,7 +26,6 @@ Requires:       git
 Requires:       git-daemon
 Requires:       mod_ssl
 Requires:       crudini
-Requires:       moreutils
 Requires(pre):  shadow-utils
 
 %if 0%{?rhel} && 0%{?rhel} < 8
@@ -38,17 +37,25 @@ BuildRequires:  python-nose
 BuildRequires:  python-nose-parameterized
 BuildRequires:  python-requests
 BuildRequires:  python-configparser
+
+# temporary because global Requires doesn't work right now, see the comment below
+Requires:       moreutils
+
 %else
 Requires:       python3-requests
 Recommends:     python3-grokmirror
-Requires:       python3-fedmsg
+Recommends:     python3-fedmsg
 BuildRequires:  python3-nose
 BuildRequires:  python3-parameterized
 BuildRequires:  python3-requests
+
+# this should be Requires but see https://bugzilla.redhat.com/show_bug.cgi?id=1833810
+Recommends: moreutils
+
 %endif
 
 %description
-Dist Git is a remote Git repository specifically designed to hold RPM
+DistGit is a Git repository specifically designed to hold RPM
 package sources.
 
 
@@ -103,7 +110,11 @@ exit 0
 
 
 %check
+%if 0%{?rhel} && 0%{?rhel} < 8
 nosetests .
+%else
+nosetests-3 .
+%endif
 
 
 %install
