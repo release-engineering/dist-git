@@ -1,7 +1,7 @@
 How to run tests
 ================
 
-The following command will setup your system, setup a Fedora virtual machine and run tests from the `./tests/` subdirectory. You need to be root and the command will modify your system, i.e. install some packages, overwrite `/etc/rpkg/*.conf` configs and `/etc/rpkg.conf`, write an entry into `/etc/hosts`, and generates root ssh public key if not generated yet. It might be therefore a good idea to run this command inside another virtual machine (try with nested virtualization enabled) or a container:
+The following command will setup your system, setup a Fedora virtual machine and run tests from the `./tests/` subdirectory. You need to be root and the command will modify your system, i.e. install some packages, overwrite `/etc/rpkg/*.conf` configs and `/etc/rpkg.conf`, write an entry into `/etc/hosts`, and generates root ssh public key if not generated yet.
 
 ```
 # ./run.sh
