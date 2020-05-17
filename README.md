@@ -105,7 +105,7 @@ nosetests -vs .
 
 #### Integration tests
 
-Please, see beaker-tests/README.md.
+Please, see `beaker-tests/README.md`.
 
 LICENSE
 -------
