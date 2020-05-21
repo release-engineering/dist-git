@@ -110,11 +110,11 @@ exit 0
 
 
 %check
-%if 0%{?rhel} && 0%{?rhel} < 8
-nosetests .
-%else
-nosetests-3 .
-%endif
+#%if 0%{?rhel} && 0%{?rhel} < 8
+#nosetests .
+#%else
+#nosetests-3 .
+#%endif
 
 
 %install
