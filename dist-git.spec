@@ -3,7 +3,7 @@
 %global installdir /var/lib/dist-git
 
 Name:           dist-git
-Version:        1.12
+Version:        1.13
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -250,6 +250,11 @@ fi
 %{_bindir}/*
 
 %changelog
+* Thu May 21 2020 clime <clime@fedoraproject.com> - 1.13-1
+- fedmsg made an optional (recommnended) dependency
+- slight refactoring of upload.cgi script
+- tests added and documented
+
 * Tue May 28 2019 Miroslav Suchy <msuchy@redhat.com> - 1.12-1
 - remove old changelog entries
 - do not specify full path for hardlink [RHBZ#1714637]
