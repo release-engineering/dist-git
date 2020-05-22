@@ -74,7 +74,7 @@ class UploadTest(unittest.TestCase):
 
     def setUp(self):
         self.hostname = 'localhost'
-        self.port = random.randrange(59898, 65534)
+        self.port = 8888
         # Create temporary filesystem tree
         self.topdir = tempfile.mkdtemp()
         os.chmod(self.topdir, 0o0777)
