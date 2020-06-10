@@ -45,6 +45,7 @@ Requires:       moreutils
 Requires:       python3-requests
 Recommends:     python3-grokmirror
 Recommends:     python3-fedmsg
+Suggests:       fedora-messaging
 BuildRequires:  python3-nose
 BuildRequires:  python3-parameterized
 BuildRequires:  python3-requests
