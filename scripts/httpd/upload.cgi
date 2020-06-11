@@ -140,6 +140,11 @@ def get_checksum_and_hash_type(form):
     return checksum, hash_type
 
 
+def emit_message(config, name, checksum, filename, username, msgpath):
+    emit_fedmsg(config, name, checksum, filename, username, msgpath)
+    emit_fedora_message(config, name, checksum, filename, username, msgpath)
+
+
 def emit_fedmsg(config, name, checksum, filename, username, msgpath):
     # Emit a fedmsg message. Load the config to talk to the fedmsg-relay.
     if config.getboolean('upload', 'fedmsgs', fallback=True):
@@ -159,6 +164,47 @@ def emit_fedmsg(config, name, checksum, filename, username, msgpath):
             fedmsg.publish(modname="git", topic=topic, msg=msg)
         except Exception as e:
             sys.stderr.write("Error with fedmsg", str(e))
+
+
+def emit_fedora_message(config, name, checksum, filename, username, msgpath):
+    # Emit a fedmsg-messaging message
+    if not config.getboolean('upload', 'fedora_messaging', fallback=True):
+        return
+    try:
+        import fedora_messaging.api
+        import fedora_messaging.config
+        import fedora_messaging.exceptions
+    except ImportError:
+        sys.stderr.write(
+            "fedora-messaging must be installed for the notifications to work.")
+        return
+
+    try:
+        if config['upload'].get('fedora_messaging_config'):
+            fedora_messaging.config.conf.load_config(
+                config['upload']['fedora_messaging_config'])
+
+        message = dict(
+            name=name,
+            md5sum=checksum,
+            filename=filename.split('/')[-1],
+            agent=username,
+            path=msgpath
+        )
+
+        msg = fedora_messaging.api.Message(
+            topic="lookaside.new",
+            body=message
+        )
+        fedora_messaging.api.publish(msg)
+    except fedora_messaging.exceptions.PublishReturned as e:
+        sys.stderr.write(
+            "Fedora Messaging broker rejected message %s: %s", msg.id, e
+        )
+    except fedora_messaging.exceptions.ConnectionException as e:
+        sys.stderr.write("Error sending message %s: %s", msg.id, e)
+    except Exception:
+        sys.stderr.write("Error sending fedora-messaging message.")
 
 
 def get_config():
@@ -322,7 +368,7 @@ def main():
     if hash_type == "md5" and config.getboolean('upload', 'old_paths', fallback=True):
         hardlink(dest_file, old_path, username)
 
-    emit_fedmsg(config, name, checksum, filename, username, msgpath)
+    emit_message(config, name, checksum, filename, username, msgpath)
 
 
 if __name__ == '__main__':
