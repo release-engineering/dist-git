@@ -193,7 +193,7 @@ def emit_fedora_message(config, name, checksum, filename, username, msgpath):
         )
 
         msg = fedora_messaging.api.Message(
-            topic="lookaside.new",
+            topic="git.lookaside.new",
             body=message
         )
         fedora_messaging.api.publish(msg)
