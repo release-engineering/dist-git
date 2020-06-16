@@ -201,8 +201,9 @@ def emit_fedora_message(config, name, checksum, filename, username, msgpath):
         sys.stderr.write("Fedora Messaging broker rejected message %s: %s" % (msg.id, e))
     except fedora_messaging.exceptions.ConnectionException as e:
         sys.stderr.write("Error sending message %s: %s" % (msg.id, e))
-    except Exception:
+    except Exception as e:
         sys.stderr.write("Error sending fedora-messaging message.")
+        sys.stderr.write("ERROR: %s\n" % e)
 
 
 def get_config():
