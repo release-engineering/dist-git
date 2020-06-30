@@ -91,7 +91,8 @@ To interact with DistGit server, you can use use [rpkg](https://pagure.io/rpkg-u
 
 #### 7. Deployment
 
-You can see example of deployement in [Fedora Infastructure](https://infrastructure.fedoraproject.org/cgit/ansible.git/tree/roles/distgit) and in [Copr](https://infrastructure.fedoraproject.org/cgit/ansible.git/tree/roles/copr/dist_git).
+You can see examples of Ansible deployment scripts in
+[Fedora Infastructure dist-git role] and [Copr dist-git role].
 
 
 Developer Guide
@@ -111,3 +112,7 @@ LICENSE
 -------
 
 Whole project use MIT license. File upload.cgi uses GPLv1.
+
+
+[Fedora Infastructure dist-git role]: https://pagure.io/fedora-infra/ansible/blob/master/f/roles/distgit
+[Copr dist-git role]: https://pagure.io/fedora-infra/ansible/blob/master/f/roles/copr/dist_git
