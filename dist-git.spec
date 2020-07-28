@@ -3,7 +3,7 @@
 %global installdir /var/lib/dist-git
 
 Name:           dist-git
-Version:        1.14
+Version:        1.15.1
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -255,6 +255,12 @@ fi
 %{_bindir}/*
 
 %changelog
+* Tue Jul 28 2020 Pavel Raiskup <praiskup@redhat.com> 1.15.1-1
+- new package built with tito
+
+* Tue Jul 28 2020 Pavel Raiskup <praiskup@redhat.com>
+- new package built with tito
+
 * Thu May 21 2020 clime <clime@fedoraproject.com> - 1.14-1
 - disable unit tests temporarily as they do not pass
   with network disabled during build
