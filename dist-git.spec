@@ -21,7 +21,11 @@ BuildRequires:  systemd
 
 Requires:       httpd
 Requires:       perl(Sys::Syslog)
+%if 0%{?fedora} || 0%{?rhel} > 7
+Requires:       (dist-git-selinux if selinux-policy-targeted)
+%else
 Requires:       dist-git-selinux
+%endif
 Requires:       git
 Requires:       git-daemon
 Requires:       mod_ssl
