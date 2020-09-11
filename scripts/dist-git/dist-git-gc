@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+# Cleanup unnecessary files
+# The default DEPTH is 2 because the directory path is /var/lib/dist-git/git/rpms/<package>
+
+REPODIR=$(crudini --get dist-git.conf dist-git gitroot_dir)
+DEPTH=$(crudini --get dist-git.conf dist-git git_gc_depth)
+
+find "$REPODIR" -mindepth "$DEPTH" -maxdepth "$DEPTH" -type d |
+  while read -r DIRECTORY; do
+    (cd "$DIRECTORY" && git gc)
+  done
