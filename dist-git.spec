@@ -165,6 +165,7 @@ ln -s %{_datadir}/dist-git/setup_git_package %{buildroot}%{_bindir}/setup_git_pa
 ln -s %{_datadir}/dist-git/mkbranch %{buildroot}%{_bindir}/mkbranch
 ln -s %{_datadir}/dist-git/mkbranch_branching %{buildroot}%{_bindir}/mkbranch_branching
 ln -s %{_datadir}/dist-git/remove_unused_sources %{buildroot}%{_bindir}/remove_unused_sources
+mv %{buildroot}%{_datadir}/dist-git/dist-git-gc %{buildroot}%{_bindir}/dist-git-gc
 
 # ------------------------------------------------------------------------------
 # SELinux
@@ -226,6 +227,8 @@ fi
 
 %{_unitdir}/dist-git@.service
 %{_unitdir}/dist-git.socket
+%{_unitdir}/dist-git-gc.service
+%{_unitdir}/dist-git-gc.timer
 
 # ------------------------------------------------------------------------------
 # /var/lib/ ...... dynamic persistent files

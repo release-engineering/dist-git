@@ -1,0 +1,8 @@
+[Unit]
+Description=Git Repositories Clean Up Timer
+
+[Timer]
+OnCalendar=monthly
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,9 @@
+[Unit]
+Description=Git Repositories Clean Up
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/dist-git-gc
+
+[Install]
+WantedBy=multi-user.target
