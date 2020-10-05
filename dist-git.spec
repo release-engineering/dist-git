@@ -3,7 +3,7 @@
 %global installdir /var/lib/dist-git
 
 Name:           dist-git
-Version:        1.14
+Version:        1.16
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -258,6 +258,17 @@ fi
 %{_bindir}/*
 
 %changelog
+* Mon Oct 5 2020 clime <clime@fedoraproject.com> - 1.16-1
+- fixed exceptions for fedora-messaging
+- fixed topic for fedora-messaging (to git.lookaside.new)
+- spec tweak not to require distgit-selinux in containers
+- only Suggests fedmsg
+- garbage collection (git gc) script and systemd timer
+  for its periodic run added
+
+* Fri Jun 12 2020 clime <clime@fedoraproject.com> - 1.15-1
+- added support for fedora-messaging
+
 * Thu May 21 2020 clime <clime@fedoraproject.com> - 1.14-1
 - disable unit tests temporarily as they do not pass
   with network disabled during build
