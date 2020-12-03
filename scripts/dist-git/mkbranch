@@ -9,6 +9,7 @@ RUNDIR=$(cd "$(dirname "$0")" && pwd)
 
 eval "$(crudini --format=sh --get /etc/dist-git/dist-git.conf dist-git)"
 REPODIR=$gitroot_dir
+SRC_BRANCH="$default_branch"
 
 # check if a moron is driving me
 if [ ! -d $REPODIR ] ; then
@@ -24,7 +25,6 @@ TEST=
 IGNORE=
 BRANCH=""
 PACKAGES=""
-SRC_BRANCH="master"
 
 Usage() {
     cat <<EOF
@@ -32,7 +32,7 @@ Usage:
     $0 [ -s <src_branch>] <branch> <package_name>...
 
     Creates a new branch <branch> for the list of <package_name>s.
-    The /master suffix on branch names is assumed.
+    The /$SRC_BRANCH suffix on branch names is assumed.
 
 Options:
     -n,--test           Don't do nothing, only test
@@ -62,10 +62,9 @@ while [ -n "$1" ] ; do
         TEST="yes"
         ;;
 
-
     -b | --branch )
         shift
-        BRANCH=$1/master
+        BRANCH=$1/$SRC_BRANCH
         ;;
 
     * )
@@ -146,7 +145,7 @@ for NAME in $PACKAGES ; do
     fi
     [ $VERBOSE -gt 0 ] && echo "Creating $NAME $BRANCH from $NAME ..."
     $(pushd $REPODIR/$NAME.git >/dev/null && \
-    git branch --no-track $BRANCH `git rev-list --max-parents=0 master | head -1` && \
+    git branch --no-track $BRANCH `git rev-list --max-parents=0 "$SRC_BRANCH" | head -1` && \
     popd >/dev/null) || {
     echo "ERROR: Branch $NAME $BRANCH could not be created" >&2
         popd >/dev/null
