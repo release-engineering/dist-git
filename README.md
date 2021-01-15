@@ -95,6 +95,9 @@ You can see examples of Ansible deployment scripts in
 [Fedora Infastructure dist-git role] and [Copr dist-git role].
 
 
+### Related
+
+* [Source-git](https://packit.dev/docs/source-git/) - project started in 2020. Intended as layer on top of dist-git.
 Developer Guide
 ---------------
 
