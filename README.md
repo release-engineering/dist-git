@@ -25,7 +25,7 @@ The project is prepared to be built as an RPM package. You can easily build it o
 To build the current release, use the following command in the repo directory:
 
 ```
-$ rpkg srpm && rpkg local
+$ mkdir -p /tmp/rpkg/dist-git-build && rpkg srpm --outdir /tmp/rpkg/dist-git-build && rpkg local --outdir /tmp/rpkg/dist-git-build
 ```
 
 Install the resulting RPM package:
