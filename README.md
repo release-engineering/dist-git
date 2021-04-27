@@ -117,5 +117,5 @@ LICENSE
 Whole project use MIT license. File upload.cgi uses GPLv1.
 
 
-[Fedora Infastructure dist-git role]: https://pagure.io/fedora-infra/ansible/blob/master/f/roles/distgit
-[Copr dist-git role]: https://pagure.io/fedora-infra/ansible/blob/master/f/roles/copr/dist_git
+[Fedora Infastructure dist-git role]: https://pagure.io/fedora-infra/ansible/blob/main/f/roles/distgit
+[Copr dist-git role]: https://pagure.io/fedora-infra/ansible/blob/main/f/roles/copr/dist_git
