@@ -16,6 +16,11 @@ RPM source package typically contains a spec file and the sources (upstream tarb
 
 ![storage](/images/storage.png)
 
+Video Tutorial
+--------------
+
+[![DistGit video tutorial](images/tutorial.png)](https://www.youtube.com/watch?v=VsnJymZRQOM "DistGit video tutorial")
+
 User Guide
 ----------
 
