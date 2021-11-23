@@ -7,7 +7,7 @@ umask 0002
 # Figure out the environment we're running in
 eval "$(crudini --format=sh --get /etc/dist-git/dist-git.conf dist-git)"
 REPODIR=$gitroot_dir
-DEFAULT_MAIN=$default_branch
+DEFAULT_BRANCH=$default_branch
 : ${git_author_name="Undefined"}
 : ${git_author_email="undefined@example.com"}
 
@@ -63,7 +63,7 @@ fi
 
 # Sanity checks before we start doing damage
 [ $VERBOSE -gt 1 ] && echo "Checking package $PACKAGE..."
-if [ -f $REPODIR/$PACKAGE.git/refs/heads/$DEFAULT_MAIN ] ; then
+if [ -f $REPODIR/$PACKAGE.git/refs/heads/$DEFAULT_BRANCH ] ; then
     echo "ERROR: Package module $PACKAGE already exists!" >&2
     exit 128
 fi
@@ -107,7 +107,7 @@ git config user.email "$git_author_email"
 git add .
 git commit -q -m 'Initial setup of the repo'
 git remote add origin $REPODIR/$PACKAGE.git
-git push -q origin "$DEFAULT_MAIN"
+git push -q origin "$DEFAULT_BRANCH"
 popd >/dev/null
 
 # Place the gitolite update hook in place since we're not using our own
