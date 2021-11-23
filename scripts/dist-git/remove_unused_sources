@@ -15,7 +15,7 @@ die() { echo "$*" 1>&2 ; exit 1; }
 
 logcmd ()
 {
-    echo >&2 "$*"
+    echo >&2 "[PID$$:DATE:$(date +"%Y%m%d_%H%M%S")] $*"
     "$@"
 }
 
