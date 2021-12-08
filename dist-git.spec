@@ -50,7 +50,7 @@ Requires:       python3-requests
 Recommends:     python3-grokmirror
 Suggests:       python3-fedmsg
 Suggests:       fedora-messaging
-BuildRequires:  python3-nose
+BuildRequires:  python3-pytest
 BuildRequires:  python3-parameterized
 BuildRequires:  python3-requests
 
@@ -118,7 +118,7 @@ exit 0
 %if 0%{?rhel} && 0%{?rhel} < 8
 nosetests .
 %else
-nosetests-3 .
+pytest
 %endif
 
 
