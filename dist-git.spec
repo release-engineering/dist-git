@@ -8,7 +8,7 @@ Release:        1%{?dist}
 Summary:        Package source version control system
 
 # upload.cgi uses GPLv1
-License:        MIT and GPLv1
+License:        MIT AND GPL-1.0-only
 URL:            https://github.com/release-engineering/dist-git
 # Source is created by
 # git clone https://github.com/release-engineering/dist-git.git
