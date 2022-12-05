@@ -1,6 +1,5 @@
 This project is licensed under MIT license with the following exceptions:
 
 scripts/httpd/upload.cgi is under GPLv1
-scripts/dist-git/pkgdb_sync_git_branches.py is under GPLv2+
 
 Copies of all the licenses above are distributed with the project.
