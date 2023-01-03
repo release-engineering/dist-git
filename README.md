@@ -26,22 +26,17 @@ User Guide
 
 #### 1. Build and Install the Package:
 
-The project is prepared to be built as an RPM package. You can easily build it on [Fedora](https://getfedora.org/) or [CentOS](https://www.centos.org/) with EPEL7 enabled using a tool called [rpkg](https://pagure.io/rpkg-util).
+The project is prepared to be built as an RPM package. You can easily build it on [Fedora](https://getfedora.org/) or [CentOS](https://www.centos.org/) with EPEL7 enabled using a tool called [tito](https://github.com/rpm-software-management/tito).
 To build the current release, use the following command in the repo directory:
 
 ```
-$ mkdir -p /tmp/rpkg/dist-git-build && rpkg srpm --outdir /tmp/rpkg/dist-git-build && rpkg local --outdir /tmp/rpkg/dist-git-build
+$ tito build --rpm 
 ```
 
 Install the resulting RPM package:
 
 ```
-# dnf install ./noarch/*
-```
-
-Clean-up:
-```
-$ rpkg clean -x
+# tito build --rpm -i
 ```
 
 #### 2. Configuration:
@@ -103,6 +98,7 @@ You can see examples of Ansible deployment scripts in
 ### Related
 
 * [Source-git](https://packit.dev/docs/source-git/) - project started in 2020. Intended as layer on top of dist-git.
+
 Developer Guide
 ---------------
 
