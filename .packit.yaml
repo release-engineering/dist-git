@@ -1,0 +1,33 @@
+# See the documentation for more information:
+# https://packit.dev/docs/configuration/
+---
+specfile_path: dist-git.spec
+upstream_package_name: dist-git
+downstream_package_name: dist-git
+upstream_tag_template: 'dist-git-{version}'
+srpm_build_deps:
+  - tito
+  - git
+actions:
+  create-archive:
+    - bash -c "tito build --tgz --test -o ."
+    - bash -c "ls -1t ./*.tar.gz | head -n 1"
+  get-current-version:
+    - bash -c "git describe --match dist-git-[0-9]* --abbrev=0 HEAD | egrep -o [0-9]+\.[0-9]+"
+
+jobs:
+  - &copr
+    job: copr_build
+    trigger: pull_request
+    metadata:
+      targets:
+        - fedora-all
+        - epel-8
+        - epel-9
+
+  - <<: *copr
+    trigger: commit
+    metadata:
+      owner: "@copr"
+      project: "copr-dev"
+      branch: main
