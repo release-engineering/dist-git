@@ -50,7 +50,11 @@ Requires:       python3-requests
 Recommends:     python3-grokmirror
 Suggests:       python3-fedmsg
 Suggests:       fedora-messaging
+%if 0%{?rhel} == 8
+BuildRequires:  python3-nose
+%else
 BuildRequires:  python3-pytest
+%endif
 BuildRequires:  python3-parameterized
 BuildRequires:  python3-requests
 
@@ -115,10 +119,14 @@ exit 0
 
 
 %check
-%if 0%{?rhel} && 0%{?rhel} < 8
-nosetests .
+%if 0%{?rhel} && 0%{?rhel} <= 8
+%if 0%{?rhel} < 8
+nosetests -v .
 %else
-pytest
+nosetests-3 -v .
+%endif
+%else
+pytest -vv .
 %endif
 
 
