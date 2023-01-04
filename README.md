@@ -105,7 +105,7 @@ Developer Guide
 #### Unit tests
 
 ```
-nosetests -vs .
+$ pytest -v .
 ```
 
 #### Integration tests
