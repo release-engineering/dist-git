@@ -3,7 +3,7 @@
 %global installdir /var/lib/dist-git
 
 Name:           dist-git
-Version:        1.16
+Version:        1.17
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -266,6 +266,10 @@ fi
 %{_bindir}/*
 
 %changelog
+* Wed Jan 04 2023 Miroslav Suchý <msuchy@redhat.com> 1.17-1
+- use spdx license
+- use pytest instead of nose test
+
 * Mon Oct 5 2020 clime <clime@fedoraproject.com> - 1.16-1
 - fixed exceptions for fedora-messaging
 - fixed topic for fedora-messaging (to git.lookaside.new)
