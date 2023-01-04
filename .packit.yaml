@@ -20,6 +20,7 @@ jobs:
     job: copr_build
     trigger: pull_request
     metadata:
+      enable_net: False
       targets:
         - fedora-all-x86_64
         - epel-7-x86_64
@@ -32,3 +33,4 @@ jobs:
       owner: "@copr"
       project: "copr-dev"
       branch: main
+      enable_net: False
