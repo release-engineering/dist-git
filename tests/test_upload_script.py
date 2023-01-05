@@ -74,7 +74,8 @@ class UploadTest(unittest.TestCase):
 
     def setUp(self):
         self.hostname = 'localhost'
-        self.port = 8888
+        # Koji can run multiple builds on the same host in parallel
+        self.port = random.randrange(10000, 20000, step=1)
         # Create temporary filesystem tree
         self.topdir = tempfile.mkdtemp()
         os.chmod(self.topdir, 0o0777)
