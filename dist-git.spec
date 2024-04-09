@@ -258,12 +258,18 @@ fi
 
 %dir              %{_datadir}/dist-git
 %attr (775, -, -) %{_datadir}/dist-git/*
+%{_bindir}/dist-git-gc
+# TODO: shall we drop those links?
+%{_bindir}/mkbranch
+%{_bindir}/mkbranch_branching
+%{_bindir}/remove_unused_sources
+%{_bindir}/setup_git_package
 
 
 %files selinux
 %doc selinux/*
 %{_datadir}/selinux/*/%{modulename}.pp
-%{_bindir}/*
+
 
 %changelog
 * Wed Jan 04 2023 Miroslav Suchý <msuchy@redhat.com> 1.17-1
