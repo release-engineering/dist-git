@@ -22,12 +22,19 @@ packages:
     upstream_tag_template: 'dist-git-{version}'
     paths:
       - dist-git
-
+  dist-git-client:
+    specfile_path: dist-git-client.spec
+    upstream_package_name: dist-git-client
+    downstream_package_name: dist-git-client
+    upstream_tag_template: 'dist-git-client-{version}'
+    paths:
+      - dist-git-client
 jobs:
   - &copr
     job: copr_build
     packages:
       - dist-git
+      - dist-git-client
     trigger: pull_request
     metadata:
       targets:
