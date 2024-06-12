@@ -1,0 +1,9 @@
+The server part (the dist-git sub-directory) is licensed under the MIT license
+with the following exceptions:
+
+    scripts/httpd/upload.cgi is under GPLv1
+
+The client part (the dist-git-client sub-directory) is GPLv2+.
+
+Copies of all the licenses mentioned here are distributed with the project
+release tarballs.
