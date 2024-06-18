@@ -67,6 +67,7 @@ PYTHON=python3 ./run_tests.sh -vv --no-coverage
 
 %files
 %license LICENSE
+%doc README.md
 %_bindir/dist-git-client
 %_mandir/man1/dist-git-client.1*
 %dir %_sysconfdir/dist-git-client
