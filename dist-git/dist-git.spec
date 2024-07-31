@@ -64,7 +64,7 @@ BuildRequires:  selinux-policy-devel
 BuildRequires:  hardlink
 
 Requires:       %name = %version-%release
-%if "%{_selinux_policy_version}" != ""
+%if "%{?_selinux_policy_version}" != ""
 Requires:       selinux-policy >= %{_selinux_policy_version}
 %endif
 Requires(post):   /usr/sbin/semodule, /sbin/restorecon
