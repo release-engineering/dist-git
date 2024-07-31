@@ -21,31 +21,13 @@ BuildRequires:  systemd
 
 Requires:       httpd
 Requires:       perl(Sys::Syslog)
-%if 0%{?fedora} || 0%{?rhel} > 7
 Requires:       (dist-git-selinux if selinux-policy-targeted)
-%else
-Requires:       dist-git-selinux
-%endif
 Requires:       git
 Requires:       git-daemon
 Requires:       mod_ssl
 Requires:       crudini
 Requires(pre):  shadow-utils
 
-%if 0%{?rhel} && 0%{?rhel} < 8
-Requires:       python-requests
-Requires:       python-configparser
-Requires:       python-grokmirror
-Requires:       fedmsg
-BuildRequires:  python-nose
-BuildRequires:  python-nose-parameterized
-BuildRequires:  python-requests
-BuildRequires:  python-configparser
-
-# temporary because global Requires doesn't work right now, see the comment below
-Requires:       moreutils
-
-%else
 Requires:       python3-requests
 Recommends:     python3-grokmirror
 Suggests:       python3-fedmsg
@@ -60,7 +42,6 @@ BuildRequires:  python3-requests
 
 # this should be Requires but see https://bugzilla.redhat.com/show_bug.cgi?id=1833810
 Recommends: moreutils
-%endif
 
 %if 0%{?fedora} && 0%{?fedora} >= 41
 # The `cgi` module was removed from the Python 3.13 standard library
