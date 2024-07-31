@@ -18,13 +18,7 @@ import time
 import random
 from configparser import ConfigParser
 
-PY2 = sys.version_info.major == 2
-
-if PY2:
-    NOSE_PARAMETERIZED_NO_WARN=1
-    from nose_parameterized import parameterized
-else:
-    from parameterized import parameterized
+from parameterized import parameterized
 
 
 # Path to the actual CGI script that should be tested
@@ -38,9 +32,9 @@ from {http_package} import HTTPServer
 from {cgi_package} import CGIHTTPRequestHandler
 s = HTTPServer(('%s', %s), CGIHTTPRequestHandler)
 s.handle_request()
-""".format(python="python2" if PY2 else "python3",
-           http_package="BaseHTTPServer" if PY2 else "http.server",
-           cgi_package="CGIHTTPServer" if PY2 else "http.server")
+""".format(python="python3",
+           http_package="http.server",
+           cgi_package="http.server")
 
 # MD5 hash of "hello.txt" and "new.txt" strings used in a few tests
 HASH = '2e54144ba487ae25d03a3caba233da71'
@@ -270,8 +264,6 @@ def _copy_tweak(source_file, dest_file, topdir):
     with open(source_file) as source:
         with open(dest_file, 'w') as dest:
             for line in source:
-                if PY2 and line == "#!/usr/bin/python3\n":
-                    line = line.replace("python3", "python2")
 
                 m = regex.match(line)
                 if m:
