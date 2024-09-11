@@ -59,16 +59,11 @@ package sources.
 Summary:        SELinux support for dist-git
 
 BuildRequires:  checkpolicy
-BuildRequires:  policycoreutils
-BuildRequires:  selinux-policy-devel
 BuildRequires:  hardlink
 
 Requires:       %name = %version-%release
-%if "%{?_selinux_policy_version}" != ""
-Requires:       selinux-policy >= %{_selinux_policy_version}
-%endif
-Requires(post):   /usr/sbin/semodule, /sbin/restorecon
-Requires(postun): /usr/sbin/semodule, /sbin/restorecon
+BuildRequires:  selinux-policy-devel
+%{?selinux_requires}
 
 
 %description selinux
