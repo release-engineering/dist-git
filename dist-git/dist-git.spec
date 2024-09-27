@@ -3,7 +3,7 @@
 %global installdir /var/lib/dist-git
 
 Name:           dist-git
-Version:        1.17
+Version:        1.18
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -254,6 +254,16 @@ fi
 
 
 %changelog
+* Fri Sep 27 2024 Pavel Raiskup <praiskup@redhat.com> 1.18-1
+- replace test on _selinux_policy_version by macro that does it all
+- handle situation when _selinux_policy_version is not defined
+- silence pylint
+- remove rhel7 specific code
+- Move %%_bindir symlinks out from dist-git-selinux
+- Depend on python3-legacy-cgi for F41+
+- licensing: update the project's COPYING file
+- dist-git: move the code into sub-directory
+
 * Wed Jan 04 2023 Miroslav Suchý <msuchy@redhat.com> 1.17-1
 - use spdx license
 - use pytest instead of nose test
