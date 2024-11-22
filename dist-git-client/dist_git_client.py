@@ -223,6 +223,7 @@ def parse_sources(args, config):
     Locate the sources, and download them from the appropriate dist-git
     lookaside cache.
     """
+    # pylint: disable=too-many-locals
     parsed_url, distgit_config = get_distgit_config(config, args.forked_from)
     namespace = parsed_url.path.strip('/').split('/')
     # drop the last {name}.git part
@@ -245,7 +246,7 @@ def parse_sources(args, config):
         return
 
     logging.info("Reading sources specification file: %s", sources_file)
-    with open(sources_file, 'r') as sfd:
+    with open(sources_file, 'r', encoding="utf8") as sfd:
         while True:
             line = sfd.readline()
             if not line:
@@ -274,7 +275,7 @@ def parse_sources(args, config):
                 filename = os.path.basename(source_spec[1])
                 kwargs["filename"] = filename.strip('()')
             else:
-                msg = "Weird sources line: {0}".format(line)
+                msg = f"Weird sources line: {line}"
                 raise RuntimeError(msg)
 
             url_file = '/'.join([
