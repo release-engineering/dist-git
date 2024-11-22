@@ -12,6 +12,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 from urllib.parse import urlparse
 
 try:
@@ -217,7 +218,7 @@ def get_spec(distgit_config):
     return specfile
 
 
-def sources(args, config):
+def parse_sources(args, config):
     """
     Locate the sources, and download them from the appropriate dist-git
     lookaside cache.
@@ -281,7 +282,15 @@ def sources(args, config):
                 distgit_config["lookaside_uri_pattern"].format(**kwargs)
             ])
 
-            download_file_and_check(url_file, kwargs, distgit_config)
+            yield url_file, kwargs, distgit_config
+
+
+def sources(args, config):
+    """
+    Go through all the dist-git files, and download them.
+    """
+    for url, metadata, distgit_config in parse_sources(args, config):
+        download_file_and_check(url, metadata, distgit_config)
 
 
 def handle_autospec(spec_abspath, spec_basename, args):
@@ -308,22 +317,26 @@ def handle_autospec(spec_abspath, spec_basename, args):
     return result
 
 
+def _prepare_outputdir(args):
+    mkdir_p(args.outputdir)
+
+
+def _get_preprocessed_specfile(distgit_config, args):
+    specs = os.path.join(os.getcwd(), distgit_config["specs"])
+    spec = get_spec(distgit_config)
+    spec_abspath = os.path.join(specs, spec)
+    return handle_autospec(spec_abspath, spec, args)
+
+
 def srpm(args, config):
     """
     Using the appropriate dist-git configuration, generate source RPM
     file.  This requires running 'def sources()' first.
     """
     _, distgit_config = get_distgit_config(config, args.forked_from)
-
-    cwd = os.getcwd()
-    sources_dir = os.path.join(cwd, distgit_config["sources"])
-    specs = os.path.join(cwd, distgit_config["specs"])
-    spec = get_spec(distgit_config)
-
-    mkdir_p(args.outputdir)
-
-    spec_abspath = os.path.join(specs, spec)
-    spec_abspath = handle_autospec(spec_abspath, spec, args)
+    _prepare_outputdir(args)
+    spec_abspath = _get_preprocessed_specfile(distgit_config, args)
+    sources_dir = os.path.join(os.getcwd(), distgit_config["sources"])
 
     if args.mock_chroot:
         command = [
@@ -346,6 +359,59 @@ def srpm(args, config):
         log_cmd(command, comment="Dry run")
     else:
         check_call(command)
+
+
+def _list_git_sources(subdir):
+    directory = os.path.normpath(subdir) + "/"
+    cmd = ["git", "ls-tree", "HEAD", directory]
+    git_output = subprocess.check_output(cmd, encoding="utf-8")
+    for line in git_output.splitlines():
+        _, objtype, _, name = line.split()
+        if objtype == "blob":
+            yield name
+
+
+def snapshot(args, config):
+    """
+    Generate a tarball snapshot for given checkout.
+    """
+    _, distgit_instance_config = get_distgit_config(config, args.forked_from)
+    spec = _get_preprocessed_specfile(distgit_instance_config, args)
+
+    with tempfile.TemporaryDirectory(prefix="copr-test-walk") as workdir:
+        tar_name = os.path.basename(spec)[:-5]
+        tar_dir = os.path.join(workdir, tar_name)
+        os.makedirs(tar_dir)
+
+        # We insert every file top-level, while git in general may store them in
+        # the sources subdir.  Bomb early if double should be added.
+        basenames_added = set()
+        def _prepare_file(file):
+            basename = os.path.basename(file)
+            if basename in basenames_added:
+                raise RuntimeError(f"{basename} added twice")
+            basenames_added.add(basename)
+            shutil.copy(file, tar_dir)
+
+        _prepare_file(spec)
+
+        for _, metadata, _ in parse_sources(args, config):
+            print("..")
+            _prepare_file(metadata["filename"])
+
+        for file in _list_git_sources(distgit_instance_config["sources"]):
+            if os.path.basename(file) == os.path.basename(spec):
+                # spec file added separately
+                continue
+            # Shall we filter-out files that are not related to RPM
+            # building?
+            _prepare_file(file)
+
+        tarball = os.path.join(args.outputdir, tar_name + ".tar.gz")
+        logging.info("Generating tarball %s", tarball)
+        tar_cmd = ["tar", "--owner=root", "--group=root", "--format=pax",
+                   "-czf", tarball, "-C", workdir, tar_name]
+        subprocess.check_call(tar_cmd)
 
 
 def clone(args, config):
@@ -454,6 +520,15 @@ configured in /etc/dist-git-client directory.
               "'@copr/copr-dev/copr-cli'."),
     )
 
+    snapshot_parser = subparsers.add_parser(
+        "snapshot",
+        help=("Generate a snapshot for given dist-git checkout"),
+    )
+    snapshot_parser.add_argument(
+        "--outputdir",
+        default="/tmp",
+        help="Where to store the resulting tarball")
+
     return parser
 
 
@@ -494,6 +569,8 @@ def main():
             srpm(args, config)
         elif args.action == "clone":
             clone(args, config)
+        elif args.action == "snapshot":
+            snapshot(args, config)
         else:
             sources(args, config)
     except RuntimeError as err:
