@@ -14,12 +14,12 @@ How Does It Work
 
 RPM source package typically contains a spec file and the sources (upstream tarball + additional patches). Source tarballs, being binary and potentially large, are not very well suited to be placed in a Git repository. On each their update, Git would produce a huge, meaningless diff. That's why DistGit was introduced as it employs an efficient lookaside cache where the tarballs can be stored. The Git repo itself can then be left to do what it does best: keep track of changes on the spec file, downstream patches, and an additional text file called `sources` that contains link to the source tarball in the lookaside cache.
 
-![storage](/images/storage.png)
+![storage](/dist-git/images/storage.png)
 
 Video Tutorial
 --------------
 
-[![DistGit video tutorial](images/tutorial.png)](https://www.youtube.com/watch?v=VsnJymZRQOM "DistGit video tutorial")
+[![DistGit video tutorial](/dist-git/images/tutorial.png)](https://www.youtube.com/watch?v=VsnJymZRQOM "DistGit video tutorial")
 
 User Guide
 ----------
