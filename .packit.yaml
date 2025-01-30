@@ -36,16 +36,14 @@ jobs:
       - dist-git
       - dist-git-client
     trigger: pull_request
-    metadata:
-      targets:
-        - fedora-all-x86_64
-        - epel-8-x86_64
-        - epel-9-x86_64
-        - epel-10-x86_64
+    targets:
+      - fedora-all-x86_64
+      - epel-8-x86_64
+      - epel-9-x86_64
+      - epel-10-x86_64
 
   - <<: *copr
     trigger: commit
-    metadata:
-      owner: "@copr"
-      project: "copr-dev"
-      branch: main
+    owner: "@copr"
+    project: "copr-dev"
+    branch: main
