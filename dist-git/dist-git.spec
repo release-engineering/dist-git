@@ -26,7 +26,9 @@ Requires:       git
 Requires:       git-daemon
 Requires:       mod_ssl
 Requires:       crudini
+%if (%{?fedora} && 0%{?fedora} <= 41) || (0%{?rhel} && 0%{?rhel} < 10)
 Requires(pre):  shadow-utils
+%endif
 
 Requires:       python3-requests
 Recommends:     python3-grokmirror
@@ -92,13 +94,14 @@ cd -
 
 
 %pre
+%if (0%{?fedora} && 0%{?fedora} <= 41) || (0%{?rhel} && 0%{?rhel} < 10)
 # ------------------------------------------------------------------------------
 # Users and Groups
 # ------------------------------------------------------------------------------
 getent group packager > /dev/null || \
     groupadd -r packager
 exit 0
-
+%endif
 
 %check
 %if 0%{?rhel} && 0%{?rhel} <= 8
@@ -130,6 +133,10 @@ mkdir -p   %{buildroot}%{_unitdir}
 cp -a configs/httpd/dist-git.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 cp -a configs/httpd/dist-git/* %{buildroot}%{_sysconfdir}/httpd/conf.d/dist-git/
 cp -a configs/systemd/*        %{buildroot}%{_unitdir}/
+
+%if (0%{?fedora} && 0%{?fedora} > 41) || (0%{?rhel} && 0%{?rhel} > 9)
+install -m0644 -D configs/sysusers.d/dist-git.conf %{buildroot}%{_sysusersdir}/dist-git.conf
+%endif
 
 # ------------------------------------------------------------------------------
 # /var/lib/ ...... dynamic persistent files
@@ -247,6 +254,9 @@ fi
 %{_bindir}/remove_unused_sources
 %{_bindir}/setup_git_package
 
+%if (0%{?fedora} && 0%{?fedora} > 41) || (0%{?rhel} && 0%{?rhel} > 9)
+%{_sysusersdir}/dist-git.conf
+%endif
 
 %files selinux
 %doc selinux/*
