@@ -3,6 +3,7 @@ dist-git-client code, moved to a python module to simplify unit-testing
 """
 
 import argparse
+from collections import namedtuple
 import configparser
 import errno
 import glob
@@ -169,6 +170,28 @@ def _detect_clone_url():
     return git_conf_reader['remote "origin"']["url"]
 
 
+def parse_clone_url(url):
+    """
+    Given Git clone url, return a named tuple with "hostname" and "path"
+    parameters.
+    """
+    Parsed = namedtuple('_ParsedUrl', ['hostname', 'path'])
+
+    autoparsed = urlparse(url)
+    if autoparsed.scheme:
+        hostname = autoparsed.hostname or "localhost"
+        return Parsed(hostname, autoparsed.path)
+
+    if ':' in url and '@' in url:
+        # user@hostname:/path format
+        no_user = url.split("@", 1)[1]
+        host, path = no_user.split(":", 1)
+        return Parsed(host, path)
+
+    # local pathname, like /home/tester/test.git
+    return Parsed("localhost", url)
+
+
 def get_distgit_config(config, forked_from=None):
     """
     Given the '.git/config' file from current directory, return the
@@ -178,7 +201,7 @@ def get_distgit_config(config, forked_from=None):
     url = forked_from
     if not url:
         url = _detect_clone_url()
-    parsed_url = urlparse(url)
+    parsed_url = parse_clone_url(url)
     if parsed_url.hostname is None:
         hostname = "localhost"
     else:
