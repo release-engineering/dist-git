@@ -207,7 +207,12 @@ def get_distgit_config(config, forked_from=None):
     else:
         hostname = parsed_url.hostname
 
-    prefixes = config["clone_host_map"][hostname]
+    try:
+        prefixes = config["clone_host_map"][hostname]
+    except KeyError as err:
+        raise RuntimeError(f"{hostname} (detected from clone URL) not "
+                           "found in dist-git-client configuration") from err
+
     prefix_found = None
     for prefix in prefixes.keys():
         if not parsed_url.path.startswith(prefix):
