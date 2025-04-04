@@ -1,6 +1,6 @@
 Name:      dist-git-client
-Version:   1.0
-Release:   2%{?dist}
+Version:   1.1
+Release:   1%{?dist}
 Summary:   Get sources for RPM builds from DistGit repositories
 BuildArch: noarch
 
@@ -78,6 +78,11 @@ PYTHON=python3 ./run_tests.sh -vv --no-coverage
 
 
 %changelog
+* Fri Apr 04 2025 Pavel Raiskup <praiskup@redhat.com> 1.1-1
+- more powerful parsing for ssh clone urls
+- nicer error output for not-matched origin.url hostnames
+- apply Fedora Review fixes
+
 * Fri Jun 21 2024 Pavel Raiskup <praiskup@redhat.com> - 1.0-2
 - Fedora Review fixes (rhbz#2293067)
 
