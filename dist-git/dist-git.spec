@@ -22,7 +22,7 @@ BuildRequires:  systemd
 Requires:       httpd
 Requires:       perl(Sys::Syslog)
 Requires:       (dist-git-selinux if selinux-policy-targeted)
-Requires:       git
+Requires:       git-core
 Requires:       git-daemon
 Requires:       mod_ssl
 Requires:       crudini
