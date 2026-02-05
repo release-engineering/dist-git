@@ -4,10 +4,7 @@ from __future__ import print_function
 
 import errno
 import os
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
+import unittest
 import tempfile
 import shutil
 import re
@@ -17,7 +14,7 @@ import time
 import random
 from configparser import ConfigParser
 
-from parameterized import parameterized
+import pytest
 
 
 # Path to the actual CGI script that should be tested
@@ -63,9 +60,9 @@ GIT_DIR = 'srv/git'
 CACHE_DIR = 'srv/cache/lookaside'
 
 
-class UploadTest(unittest.TestCase):
+class TestUpload:
 
-    def setUp(self):
+    def setup_method(self):
         self.hostname = 'localhost'
         # Koji can run multiple builds on the same host in parallel
         self.port = random.randrange(10000, 20000, step=1)
@@ -93,7 +90,7 @@ class UploadTest(unittest.TestCase):
             self.setup_module(module)
             self.touch('%s/%s/hello.txt/%s/hello.txt' % (CACHE_DIR, module, HASH))
 
-    def tearDown(self):
+    def teardown_method(self):
         shutil.rmtree(self.topdir)
         if not self.server.poll():
             # The server did not exit yet, so let's kill it.
@@ -152,7 +149,7 @@ class UploadTest(unittest.TestCase):
 
         response = requests.post(self.url, data=args, files=files)
         self._log_output()
-        self.assertEqual(response.status_code, 200)
+        assert response.status_code == 200
         return response.text
 
     def touch(self, filename, contents=None):
@@ -174,85 +171,85 @@ class UploadTest(unittest.TestCase):
 
     def assertFileExists(self, module_name, filename, hash, mtime=None):
         path = os.path.join(self.topdir, CACHE_DIR, module_name, filename, hash, filename)
-        self.assertTrue(os.path.exists(path), '%s should exist' % path)
+        assert os.path.exists(path), '%s should exist' % path
         if mtime:
-            self.assertEqual(os.stat(path).st_mtime, mtime)
+            assert os.stat(path).st_mtime == mtime
 
-    @parameterized.expand(EXISTING_MODULES + OLD_FILE_MODULES)
+    @pytest.mark.parametrize("module,ns_module", EXISTING_MODULES + OLD_FILE_MODULES)
     def test_check_existing_file(self, module, ns_module):
         resp = self.upload(module, hash=HASH, filename='hello.txt')
-        self.assertEqual(resp, 'Available\n')
+        assert resp == 'Available\n'
 
-    @parameterized.expand(EXISTING_MODULES)
+    @pytest.mark.parametrize("module,ns_module", EXISTING_MODULES)
     def test_check_existing_file_with_bad_hash(self, module, ns_module):
         resp = self.upload(module, hash='abc', filename='hello.txt')
-        self.assertEqual(resp, 'Missing\n')
+        assert resp == 'Missing\n'
 
-    @parameterized.expand(EXISTING_MODULES)
+    @pytest.mark.parametrize("module,ns_module", EXISTING_MODULES)
     def test_check_missing_file(self, module, ns_module):
         resp = self.upload(module, hash='abc', filename='foo.txt')
-        self.assertEqual(resp, 'Missing\n')
+        assert resp == 'Missing\n'
 
-    @parameterized.expand(EXISTING_MODULES)
+    @pytest.mark.parametrize("module,ns_module", EXISTING_MODULES)
     def test_upload_file(self, module, ns_module):
         test_file = self.touch('new.txt')
         resp = self.upload(module, hash=NEW_HASH, filepath=test_file)
-        self.assertEqual(resp, 'File new.txt size 7 MD5 %s stored OK\n' % NEW_HASH)
+        assert resp == 'File new.txt size 7 MD5 %s stored OK\n' % NEW_HASH
         self.assertFileExists(ns_module, 'new.txt', NEW_HASH)
         self.assertFileExists(ns_module, 'new.txt', 'md5/' + NEW_HASH)
 
-    @parameterized.expand(EXISTING_MODULES)
+    @pytest.mark.parametrize("module,ns_module", EXISTING_MODULES)
     def test_upload_file_bad_checksum(self, module, ns_module):
         test_file = self.touch('hello.txt')
         resp = self.upload(module, hash='ABC', filepath=test_file)
-        self.assertEqual(resp, 'MD5 check failed. Received %s instead of ABC.\n' % HASH)
+        assert resp == 'MD5 check failed. Received %s instead of ABC.\n' % HASH
 
-    @parameterized.expand(NON_EXISTING_MODULES)
+    @pytest.mark.parametrize("module,ns_module", NON_EXISTING_MODULES)
     def test_upload_to_non_existing_module(self, module, ns_module):
         test_file = self.touch('hello.txt')
         resp = self.upload(module, hash=HASH, filepath=test_file)
-        self.assertEqual(resp, 'Module "%s" does not exist!\n' % ns_module)
+        assert resp == 'Module "%s" does not exist!\n' % ns_module
 
-    @parameterized.expand(EXISTING_MODULES)
+    @pytest.mark.parametrize("module,ns_module", EXISTING_MODULES)
     def test_rejects_unknown_hash(self, module, ns_module):
         test_file = self.touch('hello.txt')
         resp = self.upload(module, hash='deadbeef', hashtype='crc32', filepath=test_file)
-        self.assertEqual(resp, "Required checksum is not present\n")
+        assert resp == "Required checksum is not present\n"
 
-    @parameterized.expand(EXISTING_MODULES)
+    @pytest.mark.parametrize("module,ns_module", EXISTING_MODULES)
     def test_accepts_sha_512_hash(self, module, ns_module):
         test_file = self.touch('new.txt')
         resp = self.upload(module, hash=NEW_SHA512, hashtype='sha512', filepath=test_file)
-        self.assertEqual(resp, 'File new.txt size 7 SHA512 %s stored OK\n' % NEW_SHA512)
+        assert resp == 'File new.txt size 7 SHA512 %s stored OK\n' % NEW_SHA512
         self.assertFileExists(ns_module, 'new.txt', 'sha512/' + NEW_SHA512)
 
-    @parameterized.expand(EXISTING_MODULES)
+    @pytest.mark.parametrize("module,ns_module", EXISTING_MODULES)
     def test_bad_sha512_hash(self, module, ns_module):
         test_file = self.touch('hello.txt')
         resp = self.upload(module, hash='ABC', hashtype='sha512', filepath=test_file)
-        self.assertEqual(resp, 'SHA512 check failed. Received %s instead of ABC.\n' % SHA512)
+        assert resp == 'SHA512 check failed. Received %s instead of ABC.\n' % SHA512
 
-    @parameterized.expand(EXISTING_MODULES)
+    @pytest.mark.parametrize("module,ns_module", EXISTING_MODULES)
     def test_check_existing_sha512_correct(self, module, ns_module):
         resp = self.upload(module, hash=SHA512, hashtype='sha512', filename='hello.txt')
-        self.assertEqual(resp, 'Available\n')
+        assert resp == 'Available\n'
 
-    @parameterized.expand(EXISTING_MODULES)
+    @pytest.mark.parametrize("module,ns_module", EXISTING_MODULES)
     def test_check_existing_sha512_mismatch(self, module, ns_module):
         resp = self.upload(module, hash='abc', hashtype='sha512', filename='hello.txt')
-        self.assertEqual(resp, 'Missing\n')
+        assert resp == 'Missing\n'
 
-    @parameterized.expand(EXISTING_MODULES)
+    @pytest.mark.parametrize("module,ns_module", EXISTING_MODULES)
     def test_upload_mtime(self, module, ns_module):
         test_file = self.touch('new.txt')
         resp = self.upload(module, hash=NEW_HASH, filepath=test_file, mtime="1234")
         self.assertFileExists(ns_module, 'new.txt', NEW_HASH, mtime=1234)
 
-    @parameterized.expand(EXISTING_MODULES)
+    @pytest.mark.parametrize("module,ns_module", EXISTING_MODULES)
     def test_upload_invalid_mtime(self, module, ns_module):
         test_file = self.touch('new.txt')
         resp = self.upload(module, hash=NEW_HASH, filepath=test_file, mtime="abc")
-        self.assertEqual(resp, 'Invalid value sent for mtime "abc". Aborting.\n')
+        assert resp == 'Invalid value sent for mtime "abc". Aborting.\n'
 
 
 def _copy_tweak(source_file, dest_file, topdir):
