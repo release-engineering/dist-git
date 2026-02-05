@@ -111,6 +111,7 @@ def download(url, filename):
     command = [
         "curl",
         "-H", "Pragma:",
+        "-H", "Accept-Encoding: identity",
         "-o", filename,
         "--location",
         "--connect-timeout", "60",
