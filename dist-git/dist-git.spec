@@ -34,12 +34,9 @@ Requires:       python3-requests
 Recommends:     python3-grokmirror
 Suggests:       python3-fedmsg
 Suggests:       fedora-messaging
-%if 0%{?rhel} == 8
-BuildRequires:  python3-nose
-%else
+
+BuildRequires:  python3-devel
 BuildRequires:  python3-pytest
-%endif
-BuildRequires:  python3-parameterized
 BuildRequires:  python3-requests
 
 # this should be Requires but see https://bugzilla.redhat.com/show_bug.cgi?id=1833810
@@ -104,15 +101,7 @@ exit 0
 %endif
 
 %check
-%if 0%{?rhel} && 0%{?rhel} <= 8
-%if 0%{?rhel} < 8
-nosetests -v .
-%else
-nosetests-3 -v .
-%endif
-%else
-pytest -vv .
-%endif
+%pytest -vv .
 
 
 %install
