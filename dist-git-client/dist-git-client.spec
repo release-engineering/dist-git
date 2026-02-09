@@ -1,5 +1,5 @@
 Name:      dist-git-client
-Version:   1.2
+Version:   1.3
 Release:   1%{?dist}
 Summary:   Get sources for RPM builds from DistGit repositories
 BuildArch: noarch
@@ -78,6 +78,9 @@ PYTHON=python3 ./run_tests.sh -vv --no-coverage
 
 
 %changelog
+* Mon Feb 09 2026 Pavel Raiskup <pavel@raiskup.cz> 1.3-1
+- dist-git-client: ask dist-git httpd server to send response as-is
+
 * Mon Jul 14 2025 Jakub Kadlcik <frostyx@email.cz> 1.2-1
 - Add configuration for CentOS SIG packages
 
