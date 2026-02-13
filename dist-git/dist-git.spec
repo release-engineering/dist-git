@@ -3,7 +3,7 @@
 %global installdir /var/lib/dist-git
 
 Name:           dist-git
-Version:        1.18
+Version:        1.19
 Release:        1%{?dist}
 Summary:        Package source version control system
 
@@ -249,6 +249,10 @@ fi
 
 
 %changelog
+* Fri Feb 13 2026 Pavel Raiskup <pavel@raiskup.cz> 1.19-1
+- Avoid using parameterized and nose
+- Add sysusers.d config file to allow rpm to create users/groups automatically
+
 * Fri Sep 27 2024 Pavel Raiskup <praiskup@redhat.com> 1.18-1
 - replace test on _selinux_policy_version by macro that does it all
 - handle situation when _selinux_policy_version is not defined
