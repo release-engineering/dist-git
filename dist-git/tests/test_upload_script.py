@@ -23,14 +23,57 @@ CGI_SCRIPT = os.path.join(os.path.dirname(__file__), '../scripts/httpd/upload.cg
 # A snippet for creating the server in a temporary location. We need to write a
 # separate script as it needs to run with working directory set to the
 # temporary directory.
-SERVER = """#!/usr/bin/{python}
-from {http_package} import HTTPServer
-from {cgi_package} import CGIHTTPRequestHandler
-s = HTTPServer(('%s', %s), CGIHTTPRequestHandler)
+# CGIHTTPRequestHandler was removed in Python 3.15 (no replacement provided),
+# so we use BaseHTTPRequestHandler and invoke the CGI script via subprocess.
+SERVER = """#!/usr/bin/python3
+import os
+import subprocess
+import sys
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+class CGIHandler(BaseHTTPRequestHandler):
+    def do_POST(self):
+        content_length = int(self.headers.get('Content-Length', 0))
+        body = self.rfile.read(content_length)
+        env = dict(os.environ)
+        env['REQUEST_METHOD'] = 'POST'
+        env['CONTENT_TYPE'] = self.headers.get('Content-Type', '')
+        env['CONTENT_LENGTH'] = str(content_length)
+        env['SCRIPT_NAME'] = '/cgi-bin/upload.cgi'
+        env['PATH_INFO'] = ''
+        env['QUERY_STRING'] = ''
+        env['SERVER_NAME'] = self.server.server_name
+        env['SERVER_PORT'] = str(self.server.server_port)
+        script = os.path.join(os.getcwd(), 'cgi-bin', 'upload.cgi')
+        proc = subprocess.run(
+            [sys.executable, script],
+            input=body, capture_output=True, env=env
+        )
+        output = proc.stdout
+        if b'\\r\\n\\r\\n' in output:
+            header_end = output.index(b'\\r\\n\\r\\n')
+            skip = 4
+        elif b'\\n\\n' in output:
+            header_end = output.index(b'\\n\\n')
+            skip = 2
+        else:
+            self.send_response(500)
+            self.end_headers()
+            self.wfile.write(output)
+            return
+        headers_raw = output[:header_end].decode()
+        body_out = output[header_end + skip:]
+        self.send_response(200, 'Script output follows')
+        for line in headers_raw.splitlines():
+            if ':' in line and not line.lower().startswith('status:'):
+                k, v = line.split(':', 1)
+                self.send_header(k.strip(), v.strip())
+        self.end_headers()
+        self.wfile.write(body_out)
+
+s = HTTPServer(('%s', %s), CGIHandler)
 s.handle_request()
-""".format(python="python3",
-           http_package="http.server",
-           cgi_package="http.server")
+"""
 
 # MD5 hash of "hello.txt" and "new.txt" strings used in a few tests
 HASH = '2e54144ba487ae25d03a3caba233da71'
