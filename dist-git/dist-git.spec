@@ -42,7 +42,7 @@ BuildRequires:  python3-requests
 # this should be Requires but see https://bugzilla.redhat.com/show_bug.cgi?id=1833810
 Recommends: moreutils
 
-%if 0%{?fedora} && 0%{?fedora} >= 41
+%if 0%{?fedora} >= 41 || 0%{?rhel} >= 11
 # The `cgi` module was removed from the Python 3.13 standard library
 BuildRequires:  python3-legacy-cgi
 Requires:       python3-legacy-cgi
